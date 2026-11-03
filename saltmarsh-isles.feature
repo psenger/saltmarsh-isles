@@ -1,0 +1,681 @@
+# Saltmarsh Isles: behaviour specification
+# Matches saltmarsh.html and saltmarsh-isles-spec.md.
+# One Feature, grouped into Rules (Gherkin 6+). Player seats: Crimson, Cobalt, Amber, Ivory.
+# "taps" means a click on desktop or a tap on touch screens.
+
+Feature: Saltmarsh Isles pass-and-play game
+  As a group of 2 to 4 players sharing one device
+  We want to roll, gather resources, build, trade and play development cards
+  So that the first player to 10 points wins
+
+  Background:
+    Given the game page is open
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Starting a new game
+
+    Scenario: The page opens on a fresh 3-player game
+      Then a 3-player game has started
+      And the players are Crimson, Cobalt and Amber
+      And the header shows "Crimson · setup"
+      And the status reads "Tap a glowing corner to place a settlement."
+      And the log contains "New game with 3 players. Place your first settlement."
+
+    Scenario Outline: Starting a game with a chosen player count
+      When I choose "<count> players" and tap "New game"
+      Then the players are <players>
+      And every player has 0 resource cards and 0 development cards
+      And the development deck holds 25 cards
+
+      Examples:
+        | count | players                         |
+        | 2     | Crimson, Cobalt                 |
+        | 3     | Crimson, Cobalt, Amber          |
+        | 4     | Crimson, Cobalt, Amber, Ivory   |
+
+    Scenario: Starting a new game closes the win screen
+      Given the victory screen is showing
+      When I tap "New game" on the victory screen
+      Then the victory screen is hidden
+      And a new board is generated
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: The board is generated fairly
+
+    Scenario: Board structure
+      Then the board has 19 tiles, 54 corners, 72 edges and 30 coastal edges
+      And the centre tile is the desert labelled "DUNES" with no number
+      And the robber starts on the desert
+
+    Scenario: Resource and number mix
+      Then the 18 land tiles are 4 timber, 3 clay, 4 wool, 4 grain and 3 ore
+      And the number discs are 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12
+      And each number disc shows dots equal to its pips
+      And 6 and 8 are drawn in red
+
+    Scenario Outline: Balancing rules hold on every generated board
+      When 200 boards are generated
+      Then on every board <rule>
+
+      Examples:
+        | rule                                                                  |
+        | no two tiles of the same resource are neighbours                      |
+        | no 6 or 8 neighbours another 6 or 8                                    |
+        | no number neighbours the same number                                  |
+        | no corner touches more than 11 pips                                   |
+        | each resource's pip total is within 3 of its fair share of 58 / 18    |
+
+    Scenario: Harbour layout
+      Then there are 9 harbours on coastal edges
+      And 4 harbours trade at 3:1 and there is one 2:1 harbour for each resource
+      And no two 3:1 harbours are neighbours around the coast
+      And each harbour is joined by jetties to the 2 corners of its edge
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Setup uses snake order
+
+    Scenario Outline: Placement order
+      Given a new <count>-player game
+      Then players place in the order <order>
+      And after the last placement the log reads "Setup done. Crimson rolls first."
+
+      Examples:
+        | count | order                                                         |
+        | 2     | Crimson, Cobalt, Cobalt, Crimson                              |
+        | 3     | Crimson, Cobalt, Amber, Amber, Cobalt, Crimson                |
+        | 4     | Crimson, Cobalt, Amber, Ivory, Ivory, Amber, Cobalt, Crimson  |
+
+    Scenario: Placing a setup settlement
+      Given it is Crimson's setup step
+      Then every corner that obeys the distance rule glows
+      When Crimson taps a glowing corner
+      Then a Crimson settlement is placed there
+      And the log reads "Crimson founded a settlement."
+      And the status reads "Tap a dashed edge next to it to lay a road."
+      And only edges touching that settlement are dashed
+
+    Scenario: Placing a setup road passes the turn on
+      Given Crimson has just placed a setup settlement
+      When Crimson taps a dashed edge
+      Then a Crimson road is placed there
+      And the log reads "Crimson laid a road."
+      And it becomes the next player's setup step
+
+    Scenario: Only the second setup settlement pays starting cards
+      Given Crimson's first setup settlement touches timber, clay and wool
+      Then Crimson holds 0 cards after the first placement
+      When Crimson's second setup settlement touches timber, clay and wool
+      Then Crimson receives 1 timber, 1 clay and 1 wool
+
+    Scenario: The desert pays nothing at setup
+      When a player's second setup settlement touches the desert and 2 grain tiles
+      Then that player receives 2 grain only
+
+    Scenario: Normal actions are locked during setup
+      Given the game is in setup
+      Then "Roll dice", the build buttons, "Buy a card", trading and "End turn" are disabled
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Rolling and production
+
+    Background:
+      Given setup is complete
+      And it is Crimson's turn and Crimson has not rolled
+
+    Scenario: Start of turn
+      Then the status reads "Roll the dice to start your turn."
+      And both dice show "–"
+      And of the turn actions, only "Roll dice" and playable Knights are enabled
+
+    Scenario: A roll that produces
+      Given Cobalt has a settlement and Amber has a city on a tile numbered 8
+      When Crimson rolls 8
+      Then Cobalt receives 1 card of that tile's resource
+      And Amber receives 2 cards of that tile's resource
+      And number discs showing 8 are ringed in the accent colour
+      And the log reads "Crimson rolled 8. Cobalt +1, Amber +2"
+      And the status reads "Build, trade, or end your turn."
+
+    Scenario: A roll that produces nothing
+      When Crimson rolls a number no building touches
+      Then the log ends with "Nobody harvested."
+
+    Scenario: The robber blocks production
+      Given the robber is on Cobalt's tile numbered 6
+      When Crimson rolls 6
+      Then Cobalt receives nothing from that tile
+
+    Scenario: Roll is single use
+      When Crimson rolls a number other than 7
+      Then "Roll dice" is disabled until the next turn
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Rolling a 7 makes players over 7 cards discard half, chosen by them
+
+    Background:
+      Given setup is complete and it is Crimson's turn
+      And Crimson holds 4 cards, Cobalt holds 9 cards and Amber holds 10 cards
+
+    Scenario: Discard queue forms in seat order
+      When Crimson rolls 7
+      Then the log reads "Crimson rolled 7."
+      And no tile produces
+      And Cobalt must discard 4 and then Amber must discard 5
+      And Crimson does not discard
+
+    Scenario: The panel belongs to the discarding player
+      When Crimson rolls 7
+      Then the header shows "Cobalt · discarding" with Cobalt's colour
+      And the status reads "Crimson rolled 7. Cobalt has more than 7 cards and must give up half. Pass the device to Cobalt."
+      And the hold is labelled "Cobalt's hold" and shows Cobalt's cards
+      And the discard box is outlined in Cobalt's colour
+      And the discard box reads "Cobalt, pick 4 cards to give up" with a counter "0 / 4"
+      And the discard box lists only resources Cobalt holds, each as "0 of N"
+      And the discard box shows "Next: Amber"
+
+    Scenario: Everything else is locked during discards
+      When Crimson rolls 7
+      Then "Roll dice", the build buttons, "Buy a card", every "Play" button, trading and "End turn" are disabled
+      And tapping a tile does not move the robber
+
+    Scenario: Picking cards with plus and minus
+      Given Cobalt is discarding 4
+      When Cobalt taps "+" on timber 3 times and "+" on clay once
+      Then the counter reads "4 / 4"
+      And every "+" button is disabled
+      And "Discard 4 cards" is enabled
+      When Cobalt taps "−" on clay
+      Then the counter reads "3 / 4"
+      And "Discard 4 cards" is disabled
+
+    Scenario: The minus button cannot go below zero
+      Given Cobalt is discarding and has picked 0 wool
+      Then the "−" button on wool is disabled
+
+    Scenario: The plus button cannot exceed what you hold
+      Given Cobalt holds 1 grain and has picked 1 grain
+      Then the "+" button on grain is disabled
+
+    Scenario: Confirming a discard
+      Given Cobalt has picked 3 timber and 1 clay
+      When Cobalt taps "Discard 4 cards"
+      Then Cobalt loses exactly 3 timber and 1 clay
+      And the log reads "Cobalt discarded 3 timber, 1 clay."
+      And the header shows "Amber · discarding"
+      And the discard box reads "Amber, pick 5 cards to give up"
+
+    Scenario: After the last discard the roller moves the robber
+      Given Amber is the last player discarding
+      When Amber confirms her discard
+      Then the header shows "Crimson"
+      And the log reads "Crimson now moves the robber."
+      And the status reads "Tap a tile to move the robber there."
+
+    Scenario: A 7 with nobody over 7 cards skips straight to the robber
+      Given every player holds 7 cards or fewer
+      When Crimson rolls 7
+      Then no discard box appears
+      And the status reads "Tap a tile to move the robber there."
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Moving the robber and stealing
+
+    Background:
+      Given setup is complete
+      And Crimson must move the robber
+
+    Scenario: Choosing a tile
+      Then every tile except the robber's current tile has a white outline
+      And the robber's current tile cannot be chosen
+      When Crimson taps a numbered tile
+      Then the robber's centre sits on that tile's centre
+      And that tile's number disc shrinks and moves below the robber
+      And the log reads "Crimson moved the robber."
+
+    Scenario: Robber on the desert
+      When the robber is on the desert
+      Then the "DUNES" label sits below the robber
+
+    Scenario: Choosing a victim is always a visible step
+      Given Cobalt has a building and 5 cards on the chosen tile
+      When Crimson moves the robber there
+      Then the status reads "Steal a card: tap a glowing building on the robber's tile, or a name below."
+      And the panel shows "Steal from Cobalt" with "5 cards"
+      And Cobalt's buildings on that tile glow and can be tapped
+
+    Scenario Outline: Stealing by tapping
+      Given Cobalt and Amber both have buildings and cards on the chosen tile
+      When Crimson moves the robber there
+      Then the panel shows "Steal from Cobalt" and "Steal from Amber"
+      When Crimson taps <target>
+      Then 1 random card moves from Cobalt to Crimson
+      And the log reads "Crimson stole a card from Cobalt."
+      And the steal buttons disappear
+
+      Examples:
+        | target                                   |
+        | Cobalt's glowing building on that tile    |
+        | the "Steal from Cobalt" button            |
+
+    Scenario: Players are not offered as victims when they cannot be robbed
+      Given the chosen tile has a Crimson settlement and an Amber settlement
+      And Amber holds 0 cards
+      When Crimson moves the robber there
+      Then no steal step appears
+      And the log reads "Nobody on that tile has cards to steal."
+
+    Scenario: After a 7 the turn continues
+      Given the robber was moved because of a 7
+      When Crimson finishes stealing
+      Then the status reads "Build, trade, or end your turn."
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Building
+
+    Background:
+      Given setup is complete and Crimson has rolled
+
+    Scenario Outline: Build buttons follow cost
+      Given Crimson <can> afford a <piece>
+      Then the "<button>" button is <state>
+
+      Examples:
+        | can    | piece      | button     | state    |
+        | can    | road       | Road       | enabled  |
+        | cannot | road       | Road       | disabled |
+        | can    | settlement | Settlement | enabled  |
+        | cannot | settlement | Settlement | disabled |
+        | can    | city       | City       | enabled  |
+        | cannot | city       | City       | disabled |
+
+    Scenario: Build button toggles a mode
+      When Crimson taps "Road"
+      Then the "Road" button is highlighted
+      And the status reads "Tap a dashed edge to build a road."
+      When Crimson taps "Road" again
+      Then no build mode is active
+
+    Scenario: Building a road
+      Given Crimson holds 1 timber and 1 clay
+      When Crimson taps "Road" and taps a dashed edge
+      Then a Crimson road is placed there
+      And Crimson pays 1 timber and 1 clay
+      And the log reads "Crimson built a road."
+
+    Scenario: Roads must connect
+      Then only edges touching a Crimson road, settlement or city are dashed
+
+    Scenario: Roads cannot pass through an opponent's building
+      Given a Crimson road ends at a corner holding a Cobalt settlement
+      Then no edge beyond that corner is offered to Crimson from that road
+
+    Scenario: Opponents' roads do not block roads
+      Given a Crimson road and a Cobalt road meet at an empty corner
+      Then Crimson can still build a road onward from that corner
+
+    Scenario: Building a settlement
+      Given Crimson holds 1 timber, 1 clay, 1 wool and 1 grain
+      When Crimson taps "Settlement" and taps a glowing corner
+      Then a Crimson settlement is placed there
+      And Crimson pays 1 timber, 1 clay, 1 wool and 1 grain
+      And the log reads "Crimson built a settlement."
+
+    Scenario: Settlement placement rules
+      Then glowing corners are empty
+      And no glowing corner is next to any building
+      And every glowing corner touches a Crimson road
+
+    Scenario: A shared crossroad is a race
+      Given a Crimson road and a Cobalt road both reach an empty corner
+      And no building is next to that corner
+      Then both Crimson and Cobalt may settle there
+      When Crimson settles there first
+      Then Cobalt can no longer settle there or build a road through it
+
+    Scenario: A crossroad next to settlements is blocked for everyone
+      Given each road reaching a corner is one segment from its owner's settlement
+      Then that corner does not glow for anyone
+
+    Scenario: Upgrading to a city
+      Given Crimson holds 2 grain and 3 ore
+      When Crimson taps "City"
+      Then Crimson's settlements pulse
+      When Crimson taps one of them
+      Then it becomes a city
+      And Crimson pays 2 grain and 3 ore
+      And the log reads "Crimson upgraded to a city."
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Trading with the bank at 4 for 1
+
+    Background:
+      Given setup is complete and Crimson has rolled
+
+    Scenario: A successful bank trade
+      Given Crimson holds 4 timber
+      When Crimson chooses timber to give and ore to get in "Trade with bank, 4 for 1"
+      And taps "Trade 4 for 1"
+      Then Crimson loses 4 timber and gains 1 ore
+      And the log reads "Crimson traded 4 timber for 1 ore with the bank."
+
+    Scenario Outline: The bank trade button is disabled when the trade is invalid
+      Given <situation>
+      Then "Trade 4 for 1" is disabled
+
+      Examples:
+        | situation                                       |
+        | Crimson holds 3 timber and chooses to give timber |
+        | Crimson chooses the same resource to give and get |
+        | Crimson has not rolled yet                         |
+
+    Scenario: The bank rate never changes
+      Given Crimson owns a 2:1 wool harbour
+      Then the bank box still trades 4 for 1
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Trading at captured harbours
+
+    Background:
+      Given setup is complete and Crimson has rolled
+
+    Scenario: No harbours captured
+      Given Crimson has no building on any harbour corner
+      Then "Your harbours" reads "None yet. Build a settlement on a corner joined to a harbour by a jetty."
+
+    Scenario: A captured harbour is listed with what holds it
+      Given Crimson has a settlement on one corner of a 3:1 harbour
+      Then "Your harbours" lists "3:1 any" held by "your settlement"
+      And the harbour on the board has a ring in Crimson's colour
+
+    Scenario: Holding both corners of a harbour
+      Given Crimson has a settlement on one corner and a city on the other corner of a 2:1 grain harbour
+      Then "Your harbours" lists "2:1 grain" held by "your settlement and city"
+
+    Scenario: Several captured harbours are listed separately
+      Given Crimson holds a 2:1 grain harbour and a 3:1 harbour
+      Then "Your harbours" shows 2 rows, each with its own trade button
+
+    Scenario: Trading at a 2:1 harbour
+      Given Crimson holds a 2:1 wool harbour and 2 wool
+      Then the give side of that row is fixed to "2 wool"
+      When Crimson chooses ore to get and taps "Trade 2 for 1"
+      Then Crimson loses 2 wool and gains 1 ore
+      And the log reads "Crimson traded 2 wool for 1 ore at the 2:1 wool harbour."
+
+    Scenario: Trading at a 3:1 harbour
+      Given Crimson holds a 3:1 harbour and 3 clay
+      When Crimson chooses clay to give and grain to get and taps "Trade 3 for 1"
+      Then Crimson loses 3 clay and gains 1 grain
+
+    Scenario: A harbour trade button is disabled without enough cards
+      Given Crimson holds a 2:1 wool harbour and 1 wool
+      Then that row's "Trade 2 for 1" is disabled
+
+    Scenario: Two players sharing a harbour
+      Given Crimson holds one corner and Cobalt holds the other corner of a 3:1 harbour
+      Then the harbour on the board has a Crimson ring and a Cobalt ring
+      And the harbour appears in both players' lists on their turns
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Development cards
+
+    Background:
+      Given setup is complete
+
+    Scenario: Buying a card
+      Given Crimson has rolled and holds 1 wool, 1 grain and 1 ore
+      When Crimson taps "Buy a card"
+      Then Crimson pays 1 wool, 1 grain and 1 ore
+      And Crimson gains 1 development card
+      And the deck count on the button drops by 1
+      And the log reads "Crimson bought a development card."
+
+    Scenario Outline: Buying is disabled when not allowed
+      Given <situation>
+      Then "Buy a card" is disabled
+
+      Examples:
+        | situation                                  |
+        | Crimson has not rolled                     |
+        | Crimson cannot afford wool, grain and ore  |
+        | the deck is empty                          |
+
+    Scenario: A card cannot be played on the turn it was bought
+      Given Crimson bought a Knight this turn
+      Then that card's "Play" button is disabled
+      And the card notes "bought this turn"
+
+    Scenario: Only one card can be played per turn
+      Given Crimson has played a development card this turn
+      Then every other card's "Play" button is disabled
+      And those cards note "one card per turn"
+
+    Scenario: A Knight may be played before rolling
+      Given Crimson has not rolled and holds a Knight bought on an earlier turn
+      Then that Knight's "Play" button is enabled
+
+    Scenario: Other cards need the roll first
+      Given Crimson has not rolled and holds a Bumper harvest bought on an earlier turn
+      Then that card's "Play" button is disabled
+
+    Scenario: Playing a Knight before rolling
+      Given Crimson has not rolled and holds a playable Knight
+      When Crimson taps "Play" on the Knight
+      Then the Knight leaves Crimson's cards
+      And Crimson's "Knights" badge increases by 1
+      And the log reads "Crimson played a Knight."
+      And no discard step happens
+      And the status reads "Tap a tile to move the robber there."
+      And "Roll dice" is disabled
+      When Crimson moves the robber and steals
+      Then the status reads "Roll the dice to start your turn."
+      And "Roll dice" is enabled
+
+    Scenario: Playing a Knight after rolling
+      Given Crimson has rolled and holds a playable Knight
+      When Crimson plays the Knight, moves the robber and steals
+      Then the status reads "Build, trade, or end your turn."
+
+    Scenario: Victory point cards
+      Given Crimson draws a victory point card
+      Then the card shows "counts automatically" and has no "Play" button
+      And Crimson's score shows "+1" only while it is Crimson's turn
+      And other players' views do not show Crimson's hidden point
+
+    Scenario: Road crew
+      Given Crimson has rolled and holds a playable Road crew
+      When Crimson taps "Play" on it
+      Then the status reads "Road crew: tap a dashed edge for a free road (2 left)."
+      And building, trading and ending the turn are disabled
+      When Crimson taps 2 dashed edges
+      Then 2 Crimson roads are placed without paying
+      And the log twice reads "Crimson built a free road."
+      And the status reads "Build, trade, or end your turn."
+
+    Scenario: Road crew with no room
+      Given Crimson has no legal edge to build on
+      When Crimson plays Road crew
+      Then the log reads "No room for new roads."
+
+    Scenario: Bumper harvest
+      Given Crimson has rolled and holds a playable Bumper harvest
+      When Crimson chooses ore and ore and taps "Play"
+      Then Crimson gains 2 ore
+      And the log reads "Crimson played Bumper harvest: ore and ore."
+
+    Scenario: Corner the market
+      Given Crimson has rolled and holds a playable Corner the market
+      And Cobalt holds 3 ore and Amber holds 2 ore
+      When Crimson chooses ore and taps "Play"
+      Then Crimson gains 5 ore
+      And Cobalt and Amber hold 0 ore
+      And the log reads "Crimson cornered the ore market and took 5."
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Longest road
+
+    Background:
+      Given setup is complete
+
+    Scenario: Claiming longest road
+      When Crimson's longest continuous road reaches 5 segments and nobody holds the award
+      Then Crimson holds longest road
+      And Crimson's "Road" badge is highlighted
+      And Crimson gains 2 points
+      And the log reads "Crimson takes longest road (5)."
+
+    Scenario: A branching road counts one path
+      Given Crimson has 3 roads meeting at one corner in a Y shape
+      Then Crimson's "Road" badge shows 2
+
+    Scenario: A tie does not take the award
+      Given Crimson holds longest road with 6 segments
+      When Cobalt's road reaches 6 segments
+      Then Crimson still holds longest road
+
+    Scenario: Beating the holder takes the award
+      Given Crimson holds longest road with 6 segments
+      When Cobalt's road reaches 7 segments
+      Then Cobalt holds longest road
+      And Crimson loses 2 points
+
+    Scenario: An opponent's settlement cuts the road
+      Given Crimson holds longest road with a 6-segment road
+      When Cobalt builds a settlement in the middle of it, leaving 3 and 3
+      Then Crimson's "Road" badge shows 3
+      And nobody holds longest road
+      And the log reads "Nobody holds longest road now."
+
+    Scenario: Holder is cut and two others tie
+      Given Crimson holds longest road
+      And Cobalt and Amber both have 6-segment roads
+      When Crimson's road is cut below 6
+      Then nobody holds longest road
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Largest army
+
+    Background:
+      Given setup is complete
+
+    Scenario: Claiming largest army
+      When Crimson plays a third Knight and nobody holds the award
+      Then Crimson holds largest army
+      And Crimson's "Knights" badge is highlighted
+      And Crimson gains 2 points
+      And the log reads "Crimson takes largest army (3 knights)."
+
+    Scenario: A tie does not take the award
+      Given Crimson holds largest army with 3 Knights
+      When Cobalt plays a third Knight
+      Then Crimson still holds largest army
+
+    Scenario: Beating the holder takes the award
+      Given Crimson holds largest army with 3 Knights
+      When Cobalt plays a fourth Knight
+      Then Cobalt holds largest army
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Scoreboard
+
+    Scenario: Each player's row
+      Given setup is complete
+      Then each player row shows their colour, name, card count and development card count
+      And a "Road N" badge with their longest road length
+      And a "Knights N" badge with their Knights played
+      And a score "N / 10" counting buildings and awards only
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Winning
+
+    Background:
+      Given setup is complete
+
+    Scenario Outline: Reaching 10 points on your own turn wins immediately
+      Given Crimson has <start> points
+      When Crimson <action>
+      Then Crimson wins
+
+      Examples:
+        | start | action                                                  |
+        | 9     | builds a settlement                                     |
+        | 8     | builds a city                                           |
+        | 8     | builds a road that takes longest road                   |
+        | 8     | plays a third Knight and takes largest army             |
+        | 9     | buys a victory point card                               |
+
+    Scenario: Hidden victory point cards count
+      Given Crimson has 8 public points and 2 victory point cards
+      When the win check runs on Crimson's turn
+      Then Crimson wins
+      And the log reads "Crimson wins with 10 points, including 2 hidden victory point cards!"
+      And the banner reads "Crimson rules the isles with 10 points."
+
+    Scenario: A passive win is caught at the start of the turn
+      Given Crimson has 8 points and a 6-segment road
+      And Amber holds longest road with a 7-segment road
+      And it is Cobalt's turn
+      When Cobalt builds a settlement that cuts Amber's road below 6
+      Then Crimson holds longest road and has 10 points
+      But Crimson has not won yet, because it is Cobalt's turn
+      When Cobalt ends the turn
+      Then Crimson wins at the start of Crimson's turn
+
+    Scenario: The game locks after a win
+      Given Crimson has won
+      Then the status reads "Game over."
+      And every action button is disabled
+      And the board stays visible
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Victory screen
+
+    Scenario: The win screen plays
+      When Crimson wins
+      Then a full-screen overlay appears over a blurred board
+      And the card is bordered in Crimson's colour with a crown badge
+      And it reads "Victory" and "Crimson wins"
+      And it shows "Rules the isles after N rounds."
+      And the breakdown lists only sources worth more than 0, then the total
+      And confetti bursts from the centre and from both bottom corners, then again 0.55 seconds later
+      And Crimson's settlements and cities glow gold and pulse
+
+    Scenario: Closing the win screen
+      Given the victory screen is showing
+      When I tap "See the board" or press Escape
+      Then the overlay closes
+      And the winner's pieces keep glowing
+
+    Scenario: The win screen is hidden at load
+      When the page loads, including from a downloaded copy of the file
+      Then the victory screen is hidden
+
+    Scenario: Previewing the win screen
+      Given setup is complete and it is Cobalt's turn
+      When I tap "Preview win"
+      Then the overlay reads "Preview" and "Cobalt wins"
+      And it reads "This is what the win screen looks like. The game carries on."
+      And "New game" is not offered
+      When I tap "Back to the game"
+      Then the overlay closes and the game continues unchanged
+
+    Scenario: Reduce Motion
+      Given the device has Reduce Motion turned on
+      When a player wins
+      Then the victory card appears without confetti or animation
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Ending the turn
+
+    Scenario: Passing the dice
+      Given setup is complete and Crimson has rolled
+      And no discard, robber move, steal or free road is pending
+      When Crimson taps "End turn"
+      Then it is Cobalt's turn
+      And both dice show "–"
+      And any build mode is cleared
+      And Cobalt may play a development card this turn
+
+    Scenario: End turn is locked until the roll
+      Given it is Crimson's turn and Crimson has not rolled
+      Then "End turn" is disabled
