@@ -1,0 +1,480 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1395FA2CC2E2AC65DEA7D067 /* SaltmarshIslesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC143C89C8A2667A1D68F679 /* SaltmarshIslesApp.swift */; };
+		303EFAC5D1D492C882B2E701 /* LaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */; };
+		52C86B407875159A4061FFA9 /* SaltmarshAI in Frameworks */ = {isa = PBXBuildFile; productRef = 2297B71C37292AE4D6FE2309 /* SaltmarshAI */; };
+		5EFCDFFA9DA5BA5CA070AE52 /* SaltmarshEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 749DB2FBDD9C43FB9320DD81 /* SaltmarshEngine */; };
+		EC7EA1E583E167C0B15F24E3 /* SaltmarshGame in Frameworks */ = {isa = PBXBuildFile; productRef = 7CB29321CD030244D8728963 /* SaltmarshGame */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C1DA14DA42EC747F492433BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CA21AE17723F7DE7D12AB784 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F543C124BF8C320F4E28CC40;
+			remoteInfo = SaltmarshIsles;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		287CAAF4C38B11129BA66303 /* saltmarsh-isles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "saltmarsh-isles"; path = .; sourceTree = SOURCE_ROOT; };
+		9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
+		CC143C89C8A2667A1D68F679 /* SaltmarshIslesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaltmarshIslesApp.swift; sourceTree = "<group>"; };
+		ECDA6975E75DD53CAF214F56 /* SaltmarshIsles.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SaltmarshIsles.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA07F455C4B732D3F594F4C5 /* AppUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6612D30A797A77858A529EA4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EFCDFFA9DA5BA5CA070AE52 /* SaltmarshEngine in Frameworks */,
+				52C86B407875159A4061FFA9 /* SaltmarshAI in Frameworks */,
+				EC7EA1E583E167C0B15F24E3 /* SaltmarshGame in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		03D2AB28D0141671A3E98994 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				CC143C89C8A2667A1D68F679 /* SaltmarshIslesApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		15113D88F07D531904BB670F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA07F455C4B732D3F594F4C5 /* AppUITests.xctest */,
+				ECDA6975E75DD53CAF214F56 /* SaltmarshIsles.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C4A42F6B26B68F58D4AF91BF /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				287CAAF4C38B11129BA66303 /* saltmarsh-isles */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		E7AE0C0F7160092B55423DEF = {
+			isa = PBXGroup;
+			children = (
+				03D2AB28D0141671A3E98994 /* App */,
+				FBB368C8FC7E533E174F1A28 /* AppUITests */,
+				C4A42F6B26B68F58D4AF91BF /* Packages */,
+				15113D88F07D531904BB670F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FBB368C8FC7E533E174F1A28 /* AppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */,
+			);
+			path = AppUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		09C3EC5667A06AE99527BC0F /* AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 43B6B0239F7FBD7F664DACC9 /* Build configuration list for PBXNativeTarget "AppUITests" */;
+			buildPhases = (
+				EC9125F19867C24BDC6B1491 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BFB278D0E02B037BFC27874D /* PBXTargetDependency */,
+			);
+			name = AppUITests;
+			packageProductDependencies = (
+			);
+			productName = AppUITests;
+			productReference = FA07F455C4B732D3F594F4C5 /* AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		F543C124BF8C320F4E28CC40 /* SaltmarshIsles */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4252827280D3DAB02CB35B93 /* Build configuration list for PBXNativeTarget "SaltmarshIsles" */;
+			buildPhases = (
+				ED91409FBAD8DE7498D370E5 /* Sources */,
+				6612D30A797A77858A529EA4 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SaltmarshIsles;
+			packageProductDependencies = (
+				749DB2FBDD9C43FB9320DD81 /* SaltmarshEngine */,
+				2297B71C37292AE4D6FE2309 /* SaltmarshAI */,
+				7CB29321CD030244D8728963 /* SaltmarshGame */,
+			);
+			productName = SaltmarshIsles;
+			productReference = ECDA6975E75DD53CAF214F56 /* SaltmarshIsles.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CA21AE17723F7DE7D12AB784 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					09C3EC5667A06AE99527BC0F = {
+						TestTargetID = F543C124BF8C320F4E28CC40;
+					};
+					F543C124BF8C320F4E28CC40 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = A46306A6A0BCD4625CBD65ED /* Build configuration list for PBXProject "SaltmarshIsles" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = E7AE0C0F7160092B55423DEF;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				26C3E275CC0159C5604AA98F /* XCLocalSwiftPackageReference "." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 15113D88F07D531904BB670F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F543C124BF8C320F4E28CC40 /* SaltmarshIsles */,
+				09C3EC5667A06AE99527BC0F /* AppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EC9125F19867C24BDC6B1491 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				303EFAC5D1D492C882B2E701 /* LaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ED91409FBAD8DE7498D370E5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1395FA2CC2E2AC65DEA7D067 /* SaltmarshIslesApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BFB278D0E02B037BFC27874D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F543C124BF8C320F4E28CC40 /* SaltmarshIsles */;
+			targetProxy = C1DA14DA42EC747F492433BF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		5901548D23D39AF2570D3804 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.psenger.AppUITests;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SaltmarshIsles;
+			};
+			name = Debug;
+		};
+		7BB60CFC4C6AEEC71A57F68E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				"INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad" = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.psenger.SaltmarshIsles;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8757A6F1500D47A1AA132D61 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.psenger.AppUITests;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SaltmarshIsles;
+			};
+			name = Release;
+		};
+		C36D7240A1DC57B29B44563F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				"INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad" = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.psenger.SaltmarshIsles;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CC77AABEF6B3BF8BE1582488 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		FFAD4813F62F9602ECAFFB39 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4252827280D3DAB02CB35B93 /* Build configuration list for PBXNativeTarget "SaltmarshIsles" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C36D7240A1DC57B29B44563F /* Debug */,
+				7BB60CFC4C6AEEC71A57F68E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		43B6B0239F7FBD7F664DACC9 /* Build configuration list for PBXNativeTarget "AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5901548D23D39AF2570D3804 /* Debug */,
+				8757A6F1500D47A1AA132D61 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A46306A6A0BCD4625CBD65ED /* Build configuration list for PBXProject "SaltmarshIsles" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC77AABEF6B3BF8BE1582488 /* Debug */,
+				FFAD4813F62F9602ECAFFB39 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		26C3E275CC0159C5604AA98F /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2297B71C37292AE4D6FE2309 /* SaltmarshAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SaltmarshAI;
+		};
+		749DB2FBDD9C43FB9320DD81 /* SaltmarshEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SaltmarshEngine;
+		};
+		7CB29321CD030244D8728963 /* SaltmarshGame */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SaltmarshGame;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = CA21AE17723F7DE7D12AB784 /* Project object */;
+}
