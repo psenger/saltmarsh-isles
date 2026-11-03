@@ -5,8 +5,8 @@
 | `saltmarsh.html` | The whole game in one file. Open it in any browser. |
 | `saltmarsh-isles-spec.md` | Build spec for the native Apple app, including rules, data model, UI, AI plan and test checklist. |
 | `saltmarsh-isles.feature` | Gherkin BDD scenarios for every player interaction: 16 rules, 89 scenarios. Referenced from the spec. |
-| `tests/playgame.py` | Plays a full 3-player game with bots in Chrome, records a video and checks rule invariants after every action. Run: `python3 playgame.py <output-folder>` |
-| `tests/steps.py` | Captures every screen of a rolled 7 and of a Knight, into `steps/`. |
+| `prototype-tests/playgame.py` | Plays a full 3-player game with bots in Chrome, records a video and checks rule invariants after every action. Run: `python3 playgame.py <output-folder>` |
+| `prototype-tests/steps.py` | Captures every screen of a rolled 7 and of a Knight, into `steps/`. |
 | `media/saltmarsh-full-game.mp4` | Recording of a full bot game, half speed. |
 | `media/final.png` | Final frame of that game (win screen). |
 | `media/discard.png`, `media/steal.png` | Discard picker and steal step. |

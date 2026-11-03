@@ -582,16 +582,16 @@ To run the scenarios against the native app:
 - drive the engine directly for the board and rules scenarios, and the UI for the screen scenarios;
 - give every interactive view an accessibility identifier matching the button labels in the scenarios ("Roll dice", "Discard 4 cards", "Steal from Cobalt"…), so steps can find them.
 
-The web prototype can be driven the same way with Playwright, using `tests/playgame.py` as a starting point.
+The web prototype can be driven the same way with Playwright, using `prototype-tests/playgame.py` as a starting point.
 
-**Automated full-game run.** `tests/playgame.py` plays a whole 3-player game in Chrome with simple bots and records a video. The bots press the real buttons; board taps call the same handler the board uses. After every action it checks:
+**Automated full-game run.** `prototype-tests/playgame.py` plays a whole 3-player game in Chrome with simple bots and records a video. The bots press the real buttons; board taps call the same handler the board uses. After every action it checks:
 - no negative card counts;
 - the distance rule is never broken;
 - every road and settlement is connected;
 - the longest road and largest army holders are valid;
 - there are never more than 25 development cards.
 
-The first run lasted 63 turns and 222 actions, with Amber winning with 5 cities. No checks failed and the page threw no errors. That run never awarded longest road and never drew Road crew, Corner the market or victory point cards, so the native app's batch tests should cover those. `tests/steps.py` captures every screen of a rolled 7 and of a Knight; the storyboards are in `media/steps/`. Items marked ✅ were checked against the prototype.
+The first run lasted 63 turns and 222 actions, with Amber winning with 5 cities. No checks failed and the page threw no errors. That run never awarded longest road and never drew Road crew, Corner the market or victory point cards, so the native app's batch tests should cover those. `prototype-tests/steps.py` captures every screen of a rolled 7 and of a Knight; the storyboards are in `media/steps/`. Items marked ✅ were checked against the prototype.
 
 ### Board
 
