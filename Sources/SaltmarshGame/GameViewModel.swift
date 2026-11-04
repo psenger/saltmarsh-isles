@@ -99,6 +99,8 @@ public final class GameViewModel {
             var moves = 0
             while !Task.isCancelled, moves < Self.aiMoveCap, let current = self.state,
                   let move = await TurnRunner.step(state: current, opponents: self.opponents) {
+                // A new game cancelled this turn while the opponent was deciding; the move is for the old game.
+                if Task.isCancelled { return }
                 var next = current
                 do { try Engine.apply(move, to: &next) } catch { break }
                 self.state = next
@@ -106,6 +108,8 @@ public final class GameViewModel {
                 moves += 1
                 await self.pacing.pause()
             }
+            // These flags now belong to whatever replaced a cancelled turn.
+            if Task.isCancelled { return }
             self.aiThinking = false
             self.aiTask = nil
         }

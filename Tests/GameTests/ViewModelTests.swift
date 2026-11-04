@@ -4,7 +4,50 @@ import SaltmarshAI
 import SaltmarshTestSupport
 @testable import SaltmarshGame
 
+/// Holds opponents inside their decision until the test lets them go, in arrival order.
+private actor Gate {
+    private var waiting: [CheckedContinuation<Void, Never>] = []
+    private(set) var arrivals = 0
+    func wait() async {
+        arrivals += 1
+        await withCheckedContinuation { waiting.append($0) }
+    }
+    func releaseOldest() { if !waiting.isEmpty { waiting.removeFirst().resume() } }
+    func releaseAll() { waiting.forEach { $0.resume() }; waiting = [] }
+    func untilArrivals(_ n: Int) async { while arrivals < n { await Task.yield() } }
+}
+
+private struct GatedOpponent: Opponent {
+    let gate: Gate
+    func chooseMove(view: PlayerView, legal: [Move]) async -> Move { await gate.wait(); return legal[0] }
+    func respondToTrade(_ o: TradeOffer, view: PlayerView) async -> TradeResponse { .declined }
+}
+
 @MainActor @Suite struct ViewModelTests {
+    @Test func aCancelledAITurnDoesNotOverwriteTheNewGame() async throws {
+        let gate = Gate()
+        let vm = GameViewModel(store: InMemoryGameStore(), pacing: NoPacing()) { c, _ in c.isAI ? GatedOpponent(gate: gate) : nil }
+        vm.newGame(GameConfig(controllers: [.ai(.mate), .ai(.mate)], seed: 1))
+        await gate.untilArrivals(1)
+        vm.newGame(GameConfig(controllers: [.human, .human, .human], seed: 2))
+        let fresh = vm.state
+        await gate.releaseAll()
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(vm.state == fresh)
+    }
+    @Test func aCancelledAITurnLeavesTheNewAITurnRunning() async throws {
+        let gate = Gate()
+        let vm = GameViewModel(store: InMemoryGameStore(), pacing: NoPacing()) { c, _ in c.isAI ? GatedOpponent(gate: gate) : nil }
+        vm.newGame(GameConfig(controllers: [.ai(.mate), .ai(.mate)], seed: 1))
+        await gate.untilArrivals(1)
+        vm.newGame(GameConfig(controllers: [.ai(.mate), .ai(.mate)], seed: 2))
+        await gate.untilArrivals(2)
+        await gate.releaseOldest()
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(vm.aiThinking)
+        vm.newGame(GameConfig(controllers: [.human, .human], seed: 3))
+        await gate.releaseAll()
+    }
     func model(_ controllers: [Controller], seed: UInt64 = 1, store: InMemoryGameStore = InMemoryGameStore()) -> GameViewModel {
         let vm = GameViewModel(store: store, pacing: NoPacing()) { c, seat in c.isAI ? RandomOpponent(seed: seed &* 31 &+ UInt64(seat)) : nil }
         vm.newGame(GameConfig(controllers: controllers, seed: seed)); return vm
