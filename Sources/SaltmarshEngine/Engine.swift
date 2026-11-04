@@ -29,6 +29,8 @@ extension Engine {
             return [.rollForFirst]
         case .setup(_, let placingRoad, _):
             return setupMoves(s, placingRoad: placingRoad)
+        case .awaitingRoll:
+            return [.roll]
         default:
             return []
         }
@@ -45,6 +47,8 @@ extension Engine {
             if case .setup = s.phase { applySetupSettlement(&s, corner: c) } else { throw EngineError.illegalMove(m) }
         case .placeRoad(let e):
             if case .setup = s.phase { applySetupRoad(&s, edge: e) } else { throw EngineError.illegalMove(m) }
+        case .roll:
+            applyRoll(&s)
         default:
             throw EngineError.illegalMove(m)
         }

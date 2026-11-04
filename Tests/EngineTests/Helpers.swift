@@ -44,6 +44,12 @@ extension GameState {
         bank = .uniform(19)
     }
 
+    /// Removes every building and road from the board.
+    mutating func clearBoard() {
+        for i in board.corners.indices { board.corners[i].owner = nil; board.corners[i].isCity = false }
+        for i in board.edges.indices { board.edges[i].owner = nil }
+    }
+
     mutating func place(settlement corner: Int, owner: Int) {
         board.corners[corner].owner = owner
         board.corners[corner].isCity = false
