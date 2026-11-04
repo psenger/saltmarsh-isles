@@ -24,6 +24,20 @@ enum TestGames {
         try! Engine.apply(.roll, to: &s)
         return s
     }
+
+    /// `afterSetup(seed:)`, then `moves` uniformly random legal moves drawn from `SeededRNG(seed:)`,
+    /// stopping early when the game ends.
+    static func midGame(seed: UInt64, moves: Int = 60) -> GameState {
+        var s = afterSetup(seed: seed)
+        var rng = SeededRNG(seed: seed)
+        for _ in 0..<moves {
+            if case .gameOver = s.phase { break }
+            let legal = Engine.legalMoves(s)
+            guard !legal.isEmpty else { break }
+            try! Engine.apply(legal[Int(rng.next() % UInt64(legal.count))], to: &s)
+        }
+        return s
+    }
 }
 
 extension GameState {
