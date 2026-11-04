@@ -25,6 +25,32 @@ enum TestGames {
         return s
     }
 
+    /// A fresh 3-player game driven by random legal moves from `SeededRNG(seed:)`, calling `check` after
+    /// every move, until the game ends or `maxMoves` is reached. Each pick chooses a move kind uniformly,
+    /// then a move of that kind uniformly, so the dozens of trade offers do not drown out builds and
+    /// games can actually finish. The same seed feeds the game config, so `Engine.replay` reproduces it.
+    static func randomGame(seed: UInt64, maxMoves: Int = 6000, check: ((GameState) -> Void)? = nil) -> (final: GameState, moves: [Move]) {
+        var s = Engine.newGame(GameConfig(controllers: [.human, .human, .human], seed: seed))
+        var rng = SeededRNG(seed: seed)
+        var moves: [Move] = []
+        for _ in 0..<maxMoves {
+            if case .gameOver = s.phase { break }
+            let legal = Engine.legalMoves(s)
+            guard !legal.isEmpty else { break }
+            let kinds = Array(Set(legal.map(kind))).sorted()
+            let chosenKind = kinds[Int(rng.next() % UInt64(kinds.count))]
+            let ofKind = legal.filter { kind($0) == chosenKind }
+            let move = ofKind[Int(rng.next() % UInt64(ofKind.count))]
+            try! Engine.apply(move, to: &s)
+            moves.append(move)
+            check?(s)
+        }
+        return (s, moves)
+    }
+
+    /// The enum case name of a move, without its payload.
+    private static func kind(_ m: Move) -> String { String("\(m)".prefix { $0 != "(" }) }
+
     /// `afterSetup(seed:)`, then `moves` uniformly random legal moves drawn from `SeededRNG(seed:)`,
     /// stopping early when the game ends.
     static func midGame(seed: UInt64, moves: Int = 60) -> GameState {
