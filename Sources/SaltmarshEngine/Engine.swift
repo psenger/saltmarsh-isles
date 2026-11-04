@@ -24,14 +24,24 @@ extension Engine {
     }
 
     public static func legalMoves(_ s: GameState) -> [Move] {
-        if case .rollingForFirst = s.phase { return [.rollForFirst] }
-        return []
+        switch s.phase {
+        case .rollingForFirst:
+            return [.rollForFirst]
+        default:
+            return []
+        }
     }
 
     public static func isLegal(_ m: Move, in s: GameState) -> Bool { legalMoves(s).contains(m) }
 
     public static func apply(_ m: Move, to s: inout GameState) throws {
-        throw EngineError.illegalMove(m)
+        guard isLegal(m, in: s) else { throw EngineError.illegalMove(m) }
+        switch m {
+        case .rollForFirst:
+            applyRollForFirst(&s)
+        default:
+            throw EngineError.illegalMove(m)
+        }
     }
 
     public static func actingPlayer(_ s: GameState) -> Int {
