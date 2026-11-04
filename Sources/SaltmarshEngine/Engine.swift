@@ -40,7 +40,7 @@ extension Engine {
         case .choosingVictim(let candidates, _):
             return candidates.map { .steal(from: $0) }
         case .main:
-            return buildMoves(s)
+            return buildMoves(s) + tradeMoves(s)
         default:
             return []
         }
@@ -76,6 +76,10 @@ extension Engine {
             }
         case .upgradeCity(let c):
             applyUpgradeCity(&s, corner: c)
+        case .bankTrade(let give, let get):
+            applyBankTrade(&s, give: give, get: get)
+        case .harbourTrade(let h, let give, let get):
+            applyHarbourTrade(&s, harbour: h, give: give, get: get)
         case .roll:
             applyRoll(&s)
         case .discard(let c):
