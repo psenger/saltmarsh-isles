@@ -55,6 +55,7 @@ extension Engine {
         s.board.edges[e].owner = s.current
         s.log("\(s.players[s.current].name) built a road.")
         updateAwards(&s)
+        checkWin(&s)
     }
 
     static func applyBuildSettlement(_ s: inout GameState, corner c: Int) {
@@ -62,11 +63,13 @@ extension Engine {
         s.board.corners[c].owner = s.current
         s.log("\(s.players[s.current].name) built a settlement.")
         updateAwards(&s)
+        checkWin(&s)
     }
 
     static func applyUpgradeCity(_ s: inout GameState, corner c: Int) {
         pay(&s, Cost.city)
         s.board.corners[c].isCity = true
         s.log("\(s.players[s.current].name) upgraded to a city.")
+        checkWin(&s)
     }
 }

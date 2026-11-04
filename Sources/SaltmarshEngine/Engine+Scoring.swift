@@ -33,6 +33,40 @@ extension Engine {
         }
     }
 
+    // MARK: Points and winning
+
+    /// Settlements, cities (2 each) and the two awards (2 each). Visible to everyone.
+    public static func publicPoints(_ s: GameState, player p: Int) -> Int {
+        s.settlements(of: p) + 2 * s.cities(of: p)
+            + (s.longestRoadHolder == p ? 2 : 0) + (s.largestArmyHolder == p ? 2 : 0)
+    }
+
+    /// Victory point cards in hand.
+    public static func hiddenPoints(_ s: GameState, player p: Int) -> Int {
+        s.players[p].devCards.filter { $0.type == .victoryPoint }.count
+    }
+
+    public static func totalPoints(_ s: GameState, player p: Int) -> Int {
+        publicPoints(s, player: p) + hiddenPoints(s, player: p)
+    }
+
+    /// Ends the game when the current player has reached 10 points. Only the current player can win.
+    @discardableResult
+    static func checkWin(_ s: inout GameState) -> Bool {
+        if case .gameOver = s.phase { return false }
+        let p = s.current
+        let total = totalPoints(s, player: p)
+        guard total >= 10 else { return false }
+        s.phase = .gameOver(winner: p)
+        let hidden = hiddenPoints(s, player: p)
+        if hidden == 0 {
+            s.log("\(s.players[p].name) wins with \(total) points!")
+        } else {
+            s.log("\(s.players[p].name) wins with \(total) points, including \(hidden) hidden victory point card\(hidden > 1 ? "s" : "")!")
+        }
+        return true
+    }
+
     /// 2 at a matching 2:1 harbour, 3 at a 3:1 harbour, otherwise the bank's 4.
     public static func bestRate(_ s: GameState, player p: Int, giving r: Resource) -> Int {
         var rate = 4

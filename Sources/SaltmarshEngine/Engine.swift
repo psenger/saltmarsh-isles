@@ -42,7 +42,7 @@ extension Engine {
         case .placingFreeRoads:
             return freeRoadMoves(s)
         case .main:
-            return buildMoves(s) + tradeMoves(s) + devCardMoves(s)
+            return buildMoves(s) + tradeMoves(s) + devCardMoves(s) + [.endTurn]
         default:
             return []
         }
@@ -89,6 +89,8 @@ extension Engine {
             applyBumperHarvest(&s, a, b)
         case .playCornerMarket(let r):
             applyCornerMarket(&s, r)
+        case .endTurn:
+            applyEndTurn(&s)
         case .bankTrade(let give, let get):
             applyBankTrade(&s, give: give, get: get)
         case .harbourTrade(let h, let give, let get):

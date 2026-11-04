@@ -48,6 +48,15 @@ extension Engine {
         return recipients.map { "\(s.players[$0].name) +\(received[$0])" }.joined(separator: ", ")
     }
 
+    static func applyEndTurn(_ s: inout GameState) {
+        s.current = (s.current + 1) % s.playerCount
+        s.dice = nil
+        s.devCardPlayedThisTurn = false
+        s.turn += 1
+        s.phase = .awaitingRoll
+        checkWin(&s)
+    }
+
     // MARK: Sevens
 
     /// Every way to discard `count` cards from `hand` when there are at most 256 of them; otherwise the single

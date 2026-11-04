@@ -46,6 +46,7 @@ extension Engine {
         let type = s.devDeck.removeLast()
         s.players[s.current].devCards.append(DevCard(type: type, boughtOnTurn: s.turn))
         s.log("\(s.players[s.current].name) bought a development card.")
+        checkWin(&s)
     }
 
     static func applyPlayKnight(_ s: inout GameState) {
@@ -55,6 +56,7 @@ extension Engine {
         s.log("\(s.players[s.current].name) played a Knight.")
         updateAwards(&s)
         s.phase = .movingRobber(returnTo: returnTo)
+        checkWin(&s)
     }
 
     static func applyPlayRoadCrew(_ s: inout GameState) {
@@ -86,6 +88,7 @@ extension Engine {
         updateAwards(&s)
         s.phase = .placingFreeRoads(remaining: remaining - 1)
         endFreeRoadsIfStuck(&s)
+        checkWin(&s)
     }
 
     static func applyBumperHarvest(_ s: inout GameState, _ a: Resource, _ b: Resource) {

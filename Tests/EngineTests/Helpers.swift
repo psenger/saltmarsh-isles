@@ -62,24 +62,78 @@ extension GameState {
 
     mutating func place(road edge: Int, owner: Int) { board.edges[edge].owner = owner }
 
-    /// Walks `length` edges from `start`, each step to the lowest-index adjacent corner not in `avoiding`,
-    /// adding every visited corner (start included) to `avoiding`. Returns the edge indices walked.
+    /// A path of `length` edges from `start` through corners not in `avoiding`, preferring lower-index
+    /// corners and backtracking when a branch dead-ends. Adds every corner on the path (start included)
+    /// to `avoiding`. Returns the edge indices walked.
     func chain(from start: Int, length: Int, avoiding: inout Set<Int>) -> [Int] {
-        var edges: [Int] = []
-        var at = start
-        avoiding.insert(start)
-        for _ in 0..<length {
-            guard let next = board.corners[at].adjacent.filter({ !avoiding.contains($0) }).min() else { break }
-            edges.append(board.edgeIndex(between: at, next)!)
-            avoiding.insert(next)
-            at = next
+        guard let corners = chainCorners(from: start, length: length, avoiding: avoiding) else {
+            preconditionFailure("no chain of \(length) edges from corner \(start)")
         }
-        precondition(edges.count == length, "chain from corner \(start) stopped after \(edges.count) of \(length) edges")
-        return edges
+        avoiding.formUnion(corners)
+        return zip(corners, corners.dropFirst()).map { board.edgeIndex(between: $0, $1)! }
+    }
+
+    /// Like `chain`, starting at the lowest-index corner not in `avoiding` that satisfies `startWhere`
+    /// and from which such a chain exists.
+    func firstChain(length: Int, avoiding: inout Set<Int>, startWhere: (Int) -> Bool = { _ in true }) -> [Int] {
+        for start in board.corners.indices where !avoiding.contains(start) && startWhere(start) {
+            if chainCorners(from: start, length: length, avoiding: avoiding) != nil {
+                return chain(from: start, length: length, avoiding: &avoiding)
+            }
+        }
+        preconditionFailure("no chain of \(length) edges available")
+    }
+
+    private func chainCorners(from start: Int, length: Int, avoiding: Set<Int>) -> [Int]? {
+        var visited = avoiding
+        visited.insert(start)
+        var path = [start]
+        func search(_ at: Int, _ remaining: Int) -> Bool {
+            if remaining == 0 { return true }
+            for next in board.corners[at].adjacent.sorted() where !visited.contains(next) {
+                visited.insert(next)
+                path.append(next)
+                if search(next, remaining - 1) { return true }
+                visited.remove(next)
+                path.removeLast()
+            }
+            return false
+        }
+        return search(start, length) ? path : nil
     }
 
     mutating func placeChain(_ edges: [Int], owner: Int) {
         for e in edges { board.edges[e].owner = owner }
+    }
+
+    /// The first `n` corners in index order that are unowned, not in `avoiding`, and not adjacent to
+    /// an owned or already chosen corner.
+    func spreadCorners(_ n: Int, avoiding: Set<Int> = []) -> [Int] {
+        var chosen: [Int] = []
+        for c in board.corners.indices where chosen.count < n {
+            guard !avoiding.contains(c), board.corners[c].owner == nil else { continue }
+            let clear = board.corners[c].adjacent.allSatisfy { board.corners[$0].owner == nil && !chosen.contains($0) }
+            if clear { chosen.append(c) }
+        }
+        precondition(chosen.count == n, "only \(chosen.count) of \(n) spread corners available")
+        return chosen
+    }
+
+    /// Places two roads `owned → x → y` along the lowest-index free corners such that `owner` may
+    /// settle at `y`; returns `y`.
+    mutating func addReach(from owned: Int, owner: Int) -> Int {
+        for x in board.corners[owned].adjacent.sorted() where board.corners[x].owner == nil {
+            for y in board.corners[x].adjacent.sorted() where y != owned && board.corners[y].owner == nil {
+                var trial = self
+                trial.place(road: board.edgeIndex(between: owned, x)!, owner: owner)
+                trial.place(road: board.edgeIndex(between: x, y)!, owner: owner)
+                if Engine.canSettle(trial, corner: y, player: owner, setup: false) {
+                    self = trial
+                    return y
+                }
+            }
+        }
+        preconditionFailure("no settlement spot reachable from corner \(owned)")
     }
 
     func tile(numbered n: Int) -> Int { board.tiles.firstIndex { $0.number == n }! }
