@@ -29,6 +29,7 @@ struct GamePanel: View {
                 Text(screen.status)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("status")
+                if !screen.holdTitle.isEmpty { ResourceRow(title: screen.holdTitle, id: "hold", counts: screen.handCounts) }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
@@ -36,8 +37,7 @@ struct GamePanel: View {
                 VStack(alignment: .leading, spacing: 12) {
                     moment
                     orderStrip
-                    if !screen.holdTitle.isEmpty { ResourceRow(title: screen.holdTitle, counts: screen.handCounts) }
-                    ResourceRow(title: "Bank", counts: screen.bank)
+                    ResourceRow(title: "Bank", id: "bank", counts: screen.bank)
                     if showsTradeAndCards { TradeAndCards(vm: vm, screen: screen) }
                     scoreboard
                     log
@@ -235,21 +235,49 @@ struct SeatDot: View {
     }
 }
 
-/// Five resource counts under a title: the hold and the bank.
+/// A square box in the resource's board colour: the amount above its name, centred both ways.
+struct ResourceBox: View {
+    let resource: Resource
+    let amount: Int
+    /// Accessibility identifier prefix, such as "hold".
+    let id: String
+
+    private var ink: Color {
+        resource == .grain || resource == .wool ? Color(hex: 0x1d2a30) : .white
+    }
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 6)
+            .fill(BoardView.fill(for: resource))
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(.black.opacity(0.35), lineWidth: 1))
+            .aspectRatio(1, contentMode: .fit)
+            .overlay {
+                VStack(spacing: 0) {
+                    Text("\(amount)").font(.callout.monospacedDigit().bold())
+                    Text(resource.rawValue).font(.caption2).minimumScaleFactor(0.7).lineLimit(1)
+                }
+                .foregroundStyle(ink)
+                .padding(2)
+            }
+            .frame(maxWidth: 64)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("\(amount) \(resource.rawValue)")
+            .accessibilityIdentifier("\(id) \(resource.rawValue)")
+    }
+}
+
+/// Five resource boxes under a title: the hold and the bank.
 struct ResourceRow: View {
     let title: String
+    let id: String
     let counts: ResourceCounts
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title).font(.caption).foregroundStyle(.secondary)
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 ForEach(Resource.allCases, id: \.self) { resource in
-                    VStack(spacing: 0) {
-                        Text("\(counts[resource])").font(.callout.monospacedDigit().bold())
-                        Text(resource.rawValue).font(.caption2)
-                    }
-                    .frame(maxWidth: .infinity)
+                    ResourceBox(resource: resource, amount: counts[resource], id: id)
                 }
             }
         }

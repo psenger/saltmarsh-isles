@@ -56,7 +56,7 @@ struct BoardView: View {
         }
     }
 
-    private static func fill(for resource: Resource) -> Color {
+    static func fill(for resource: Resource) -> Color {
         switch resource {
         case .timber: Color(hex: 0x3f6b3a)
         case .clay: Color(hex: 0xb5643c)

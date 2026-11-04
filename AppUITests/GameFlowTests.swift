@@ -66,6 +66,26 @@ final class GameFlowTests: XCTestCase {
     }
     #endif
 
+    private func assertSquareBox(_ app: XCUIApplication, _ id: String, reads label: String? = nil, file: StaticString = #filePath, line: UInt = #line) {
+        let box = app.descendants(matching: .any)[id].firstMatch
+        XCTAssertTrue(box.exists, "no box \(id)", file: file, line: line)
+        XCTAssertEqual(box.frame.width, box.frame.height, accuracy: 1, "\(id) is not square", file: file, line: line)
+        if let label { XCTAssertEqual(box.label, label, file: file, line: line) }
+    }
+
+    func testResourcesAreSquareBoxesAndTheHandStaysOnScreen() {
+        let app = XCUIApplication()
+        app.launch()
+        startNewGame(app)
+        XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5))
+        for resource in ["timber", "clay", "wool", "grain", "ore"] {
+            assertSquareBox(app, "hold \(resource)", reads: "0 \(resource)")
+            assertSquareBox(app, "bank \(resource)", reads: "19 \(resource)")
+        }
+        XCTAssertTrue(app.descendants(matching: .any)["hold timber"].firstMatch.isHittable)
+        keepScreenshot(app, named: "resource boxes")
+    }
+
     func testTheLogScrollsInsideAFixedBox() {
         let app = XCUIApplication()
         app.launch()
@@ -137,6 +157,9 @@ final class GameFlowTests: XCTestCase {
                 turns += 1
             } else if now == "Build, trade, or end your turn." {
                 once("main")
+                assertSquareBox(app, "give timber")
+                assertSquareBox(app, "want ore")
+                XCTAssertTrue(app.descendants(matching: .any)["hold timber"].firstMatch.isHittable, "the hand is off screen")
                 app.buttons["End turn"].tap()
             } else if now == "Tap a tile to move the robber there." {
                 once("robber")

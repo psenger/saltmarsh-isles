@@ -149,30 +149,29 @@ struct TradeAndCards: View {
         }
     }
 
-    private func offerBuilder(_ section: TradeSection) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 4) {
-                GridRow {
-                    Text(""); Text("Give"); Text(""); Text("Want"); Text("")
-                }
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+    private func offerSide(_ title: String, counts: ResourceCounts, adjust: @escaping (Resource, Int) -> Void) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title).font(.caption).foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 6) {
                 ForEach(Resource.allCases, id: \.self) { resource in
-                    GridRow {
-                        Text(resource.rawValue).font(.callout)
-                        Text("\(section.offerGive[resource])").font(.callout.monospacedDigit())
-                        Stepper("Give \(resource.rawValue)",
-                                onIncrement: { vm.offerAdjust(give: resource, by: 1) },
-                                onDecrement: { vm.offerAdjust(give: resource, by: -1) })
-                            .labelsHidden()
-                        Text("\(section.offerWant[resource])").font(.callout.monospacedDigit())
-                        Stepper("Want \(resource.rawValue)",
-                                onIncrement: { vm.offerAdjust(want: resource, by: 1) },
-                                onDecrement: { vm.offerAdjust(want: resource, by: -1) })
-                            .labelsHidden()
+                    VStack(spacing: 4) {
+                        ResourceBox(resource: resource, amount: counts[resource], id: title.lowercased())
+                        HStack(spacing: 2) {
+                            Button("−") { adjust(resource, -1) }.accessibilityLabel("\(title) one less \(resource.rawValue)")
+                            Button("+") { adjust(resource, 1) }.accessibilityLabel("\(title) one more \(resource.rawValue)")
+                        }
+                        .controlSize(.small)
                     }
+                    .frame(maxWidth: 64)
                 }
             }
+        }
+    }
+
+    private func offerBuilder(_ section: TradeSection) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            offerSide("Give", counts: section.offerGive) { vm.offerAdjust(give: $0, by: $1) }
+            offerSide("Want", counts: section.offerWant) { vm.offerAdjust(want: $0, by: $1) }
             HStack {
                 Picker("To", selection: Binding(get: { section.target }, set: { vm.offerTarget($0) })) {
                     Text("Everyone").tag(Int?.none)
