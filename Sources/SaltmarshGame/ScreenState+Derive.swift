@@ -68,12 +68,12 @@ extension ScreenState {
         // The hand on show.
         var handCounts = ResourceCounts()
         var holdTitle = ""
-        if aiThinking {
-            let humans = s.players.indices.filter { !s.players[$0].controller.isAI }
-            if humans.count == 1 { handCounts = s.players[humans[0]].hand; holdTitle = Strings.hold(name(humans[0])) }
-        } else if !responderPending {
-            handCounts = s.players[panelOwner].hand
-            holdTitle = Strings.hold(name(panelOwner))
+        let humans = s.players.indices.filter { !s.players[$0].controller.isAI }
+        // The human the panel belongs to; with an AI acting, the only human if there is just one. Never an AI.
+        let handOwner = !aiThinking && !s.players[panelOwner].controller.isAI ? panelOwner : (humans.count == 1 ? humans[0] : nil)
+        if let handOwner {
+            handCounts = s.players[handOwner].hand
+            holdTitle = Strings.hold(name(handOwner))
         }
 
         // Buttons.

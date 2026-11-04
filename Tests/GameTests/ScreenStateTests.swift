@@ -68,7 +68,7 @@ import SaltmarshTestSupport
         let vm = humans(s); vm.offerAdjust(give: .timber, by: 2); vm.offerAdjust(want: .ore, by: 1); vm.proposeOffer()
         var sc = vm.screen
         #expect(sc.header == "Cobalt · trade offer"); #expect(sc.headerSeat == .cobalt); #expect(sc.status == "Crimson offers 2 timber for 1 ore.")
-        #expect(sc.buttons["Accept"] == false); #expect(sc.acceptProblem == "You don't have 1 ore"); #expect(sc.buttons["Decline"] == true); #expect(sc.handCounts.isEmpty)
+        #expect(sc.buttons["Accept"] == false); #expect(sc.acceptProblem == "You don't have 1 ore"); #expect(sc.buttons["Decline"] == true); #expect(sc.holdTitle == "Cobalt's hold"); #expect(sc.handCounts == [.grain: 1])
         vm.respondToOffer(accept: false); sc = vm.screen
         #expect(sc.header == "Amber · trade offer"); #expect(sc.buttons["Accept"] == true); #expect(sc.acceptProblem == nil)
         vm.respondToOffer(accept: true); sc = vm.screen
@@ -91,6 +91,15 @@ import SaltmarshTestSupport
         s.players[2].controller = .human
         let two = ScreenState.derive(state: s, ui: UIState(), aiThinking: true, reduceMotion: false)
         #expect(two.handCounts.isEmpty); #expect(two.holdTitle == "")
+    }
+    @Test func anAIsHandIsNeverShown() {
+        var s = TestGames.rolled(8); s.clearHands(); s.set(hand: [.ore: 2], for: 0); s.set(hand: [.wool: 3], for: 1)
+        s.players[1].controller = .ai(.mate); s.players[2].controller = .ai(.mate); s.current = 1; s.phase = .gameOver(winner: 1)
+        let one = ScreenState.derive(state: s, ui: UIState(), aiThinking: false, reduceMotion: false)
+        #expect(one.holdTitle == "Crimson's hold"); #expect(one.handCounts == [.ore: 2])
+        s.players[2].controller = .human
+        let two = ScreenState.derive(state: s, ui: UIState(), aiThinking: false, reduceMotion: false)
+        #expect(two.holdTitle == ""); #expect(two.handCounts.isEmpty)
     }
     @Test func scoreboardRows() {
         var s = TestGames.rolled(8); s.players[0].devCards = [DevCard(type: .victoryPoint, boughtOnTurn: 0)]; s.players[1].controller = .ai(.mate)

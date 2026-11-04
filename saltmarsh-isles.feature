@@ -475,7 +475,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Then the log reads "Crimson offers 2 timber for 1 ore."
       And the header shows "Cobalt · trade offer" with Cobalt's colour
       And the status reads "Crimson offers 2 timber for 1 ore."
-      And no hand is shown
+      And the hold is labelled "Cobalt's hold" and shows Cobalt's cards
       And "Accept" is enabled
 
     Scenario: A responder who cannot pay may only decline
@@ -916,4 +916,5 @@ Feature: Saltmarsh Isles pass-and-play game
       Given a 3-player game with Crimson human and the others AI
       And Cobalt has offered 1 ore for 1 timber to Crimson
       Then the header shows "Crimson · trade offer"
+      And the hold is labelled "Crimson's hold" and shows Crimson's cards
       And "Accept" and "Decline" are offered

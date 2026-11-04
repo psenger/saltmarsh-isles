@@ -195,7 +195,7 @@ Allowed on the current player's turn, after rolling, whenever `main` phase actio
 **Responding.** The phase becomes `tradeOffered`. Each targeted seat answers:
 
 - An AI seat answers at once: accepted (only if it holds the want side), declined, or countered with a changed offer it would accept. The AI judges offers with the same position evaluator it uses for moves; see section 6.
-- A human seat is handed the device: the panel takes on their colour, header "<Name> · trade offer", and shows "<Proposer> offers <give> for <want>" with Accept and Decline. Accept is disabled with "You don't have <want>" when they can't pay. Their hand is not shown. Human seats cannot counter on screen (owner's decision: they say it aloud and the proposer edits the offer). Human responders are asked one at a time in seat order; the status line says who the device goes to.
+- A human seat is handed the device: the panel takes on their colour, header "<Name> · trade offer", and shows "<Proposer> offers <give> for <want>" with Accept and Decline. Accept is disabled with "You don't have <want>" when they can't pay. Their own hand is shown in the hold so they can judge the offer (owner's decision, 2026-11-05). Human seats cannot counter on screen (owner's decision: they say it aloud and the proposer edits the offer). Human responders are asked one at a time in seat order; the status line says who the device goes to.
 
 **Closing.** When every response is in, the panel returns to the proposer and lists each seat's answer. The proposer taps "Trade with <Name>" on an acceptance or a counter, or "Withdraw". Executing a counter means the proposer accepts the counter's terms. Exactly one trade happens per offer. Cards move between the two hands; the bank is not involved. The log reads "<A> traded <give> with <B> for <want>." or "<A> withdrew the offer."
 
@@ -342,6 +342,7 @@ Everything from the spec's section 5 panel list, plus:
 - All four rule gaps closed in this version (owner).
 - Human trade responders: Accept/Decline only, no on-screen counter (owner confirmed).
 - AI seats may propose trades to humans (owner confirmed).
+- A human trade responder sees their own hand; an AI's hand is never shown (owner, 2026-11-05).
 - The feature file is executed directly by the tests (owner).
 - HTML prototype untouched; spec and feature file updated (owner).
 
