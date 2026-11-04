@@ -42,25 +42,36 @@ extension Engine {
         case .placingFreeRoads:
             return freeRoadMoves(s)
         case .main:
-            return buildMoves(s) + tradeMoves(s) + devCardMoves(s) + [.endTurn]
+            return buildMoves(s) + tradeMoves(s) + devCardMoves(s) + playerTradeMoves(s) + [.endTurn]
+        case .tradeOffered(let offer, let responses):
+            return tradeResponseMoves(s, offer: offer, responses: responses)
         default:
             return []
         }
     }
 
-    /// `legalMoves` enumerates choices; for moves with an unbounded choice space (discards, and later
-    /// trade offers) legality is the predicate itself, so a valid move outside the listed set still applies.
-    public static func isLegal(_ m: Move, in s: GameState) -> Bool {
+    public static func isLegal(_ m: Move, in s: GameState) -> Bool { legalityError(m, in: s) == nil }
+
+    /// `legalMoves` enumerates choices; for moves with an unbounded choice space (discards, trade offers,
+    /// counter-offers) legality is the predicate itself, so a valid move outside the listed set still applies.
+    /// A well-placed but malformed offer reports `invalidOffer` with the reason.
+    static func legalityError(_ m: Move, in s: GameState) -> EngineError? {
         switch m {
         case .discard(let c):
-            return isValidDiscard(c, in: s)
+            return isValidDiscard(c, in: s) ? nil : .illegalMove(m)
+        case .proposeTrade(let offer):
+            guard case .main = s.phase, offer.proposer == s.current else { return .illegalMove(m) }
+            return validate(offer, in: s).map { .invalidOffer($0) }
+        case .respondToTrade(let seat, .countered(let counter)):
+            guard case .tradeOffered(let offer, let responses) = s.phase, responses[seat] == .pending else { return .illegalMove(m) }
+            return counterProblem(counter, from: seat, to: offer, in: s).map { .invalidOffer($0) }
         default:
-            return legalMoves(s).contains(m)
+            return legalMoves(s).contains(m) ? nil : .illegalMove(m)
         }
     }
 
     public static func apply(_ m: Move, to s: inout GameState) throws {
-        guard isLegal(m, in: s) else { throw EngineError.illegalMove(m) }
+        if let error = legalityError(m, in: s) { throw error }
         switch m {
         case .rollForFirst:
             applyRollForFirst(&s)
@@ -89,6 +100,14 @@ extension Engine {
             applyBumperHarvest(&s, a, b)
         case .playCornerMarket(let r):
             applyCornerMarket(&s, r)
+        case .proposeTrade(let offer):
+            applyProposeTrade(&s, offer)
+        case .respondToTrade(let seat, let response):
+            applyRespondToTrade(&s, seat: seat, response)
+        case .executeTrade(let seat):
+            applyExecuteTrade(&s, with: seat)
+        case .withdrawTrade:
+            applyWithdrawTrade(&s)
         case .endTurn:
             applyEndTurn(&s)
         case .bankTrade(let give, let get):
@@ -103,8 +122,6 @@ extension Engine {
             applyMoveRobber(&s, tile: t)
         case .steal(let v):
             applySteal(&s, from: v)
-        default:
-            throw EngineError.illegalMove(m)
         }
     }
 
