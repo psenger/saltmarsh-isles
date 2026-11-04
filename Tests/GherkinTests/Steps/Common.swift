@@ -3,6 +3,10 @@ import SaltmarshEngine
 import SaltmarshTestSupport
 @testable import SaltmarshGame
 
+/// "3 timber" and "1 timber, 1 clay and 1 wool" as regex fragments (never "9 cards").
+let resItem = #"\d+ (?:timber|clay|wool|grain|ore)"#
+let resList = #"\#(resItem)(?:, \#(resItem))*(?: and \#(resItem))?"#
+
 /// Steps every rule uses: header, status, log, hands and button states.
 @MainActor
 func registerCommon(_ r: StepRegistry) {
@@ -59,21 +63,27 @@ func registerCommon(_ r: StepRegistry) {
             w.set(hand: hand, for: w.seat(name))
         }
     }
-    r.given(#"(\w+) holds (\d+ \w+(?:, \d+ \w+)*(?: and \d+ \w+)?)"#) { w, c, _ in
+    r.given(#"(\w+) holds (\#(resList))"#) { w, c, _ in
         w.set(hand: World.resources(c[1]), for: w.seat(c[0]))
     }
-    r.then(#"(\w+) holds (\d+ \w+(?:, \d+ \w+)*(?: and \d+ \w+)?)"#) { w, c, _ in
+    r.given(#"(\w+) holds (\#(resList)), (\w+) holds (\#(resList)) and (\w+) holds (\#(resList))"#) { w, c, _ in
+        for (name, list) in [(c[0], c[1]), (c[2], c[3]), (c[4], c[5])] { w.set(hand: World.resources(list), for: w.seat(name)) }
+    }
+    r.given(#"(\w+) holds (\#(resList)) and (\w+) holds (\#(resList))"#) { w, c, _ in
+        for (name, list) in [(c[0], c[1]), (c[2], c[3])] { w.set(hand: World.resources(list), for: w.seat(name)) }
+    }
+    r.then(#"(\w+) holds (\#(resList))"#) { w, c, _ in
         try expectEqual(w.state.players[w.seat(c[0])].hand, World.resources(c[1]), "\(c[0])'s hand")
     }
-    r.then(#"(\w+) receives (\d+ \w+(?:, \d+ \w+)*(?: and \d+ \w+)?)"#) { w, c, _ in
+    r.then(#"(\w+) receives (\#(resList))"#) { w, c, _ in
         let before = w.rememberedHands.isEmpty ? ResourceCounts() : w.rememberedHands[w.seat(c[0])]
         try expectEqual(w.state.players[w.seat(c[0])].hand - before, World.resources(c[1]), "\(c[0]) received")
     }
-    r.then(#"(\w+) pays (\d+ \w+(?:, \d+ \w+)*(?: and \d+ \w+)?)"#) { w, c, _ in
+    r.then(#"(\w+) pays (\#(resList))"#) { w, c, _ in
         let before = w.rememberedHands[w.seat(c[0])]
         try expectEqual(before - w.state.players[w.seat(c[0])].hand, World.resources(c[1]), "\(c[0]) paid")
     }
-    r.then(#"(\w+) loses (\d+ \w+) and gains (\d+ \w+)"#) { w, c, _ in
+    r.then(#"(\w+) loses (\#(resItem)) and gains (\#(resItem))"#) { w, c, _ in
         let seat = w.seat(c[0]), before = w.rememberedHands[seat], after = w.state.players[seat].hand
         let lost = World.resources(c[1]), gained = World.resources(c[2])
         try expectEqual(after, before - lost + gained, "\(c[0])'s hand after the trade")

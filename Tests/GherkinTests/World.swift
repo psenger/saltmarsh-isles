@@ -103,6 +103,15 @@ final class World {
         load(s)
     }
 
+    /// A Crimson settlement at corner 0 with a road along its first edge, when Crimson owns nothing yet.
+    func ensureCrimsonBase() {
+        guard !state.board.corners.contains(where: { $0.owner == 0 }) else { return }
+        mutate { s in
+            s.place(settlement: 0, owner: 0)
+            s.place(road: s.board.corners[0].edges[0], owner: 0)
+        }
+    }
+
     /// Crimson at 9 points with a settlement in hand and a reachable corner; returns the corner.
     func crimsonAtNine() -> Int {
         var s = TestGames.rolled(8); s.clearBoard(); s.clearHands()

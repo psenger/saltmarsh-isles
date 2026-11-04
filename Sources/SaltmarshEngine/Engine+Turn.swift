@@ -116,14 +116,17 @@ extension Engine {
         s.robberTile = t
         s.log("\(s.players[s.current].name) moved the robber.")
         var candidates: [Int] = []
+        var opponentsOnTile = false
         for c in s.board.tiles[t].corners {
-            if let o = s.board.corners[c].owner, o != s.current, s.players[o].hand.total > 0, !candidates.contains(o) {
-                candidates.append(o)
+            if let o = s.board.corners[c].owner, o != s.current {
+                opponentsOnTile = true
+                if s.players[o].hand.total > 0, !candidates.contains(o) { candidates.append(o) }
             }
         }
         candidates.sort()
         if candidates.isEmpty {
-            s.log("Nobody on that tile has cards to steal.")
+            // Only worth saying when someone is there to rob and has nothing.
+            if opponentsOnTile { s.log("Nobody on that tile has cards to steal.") }
             s.phase = returnTo
         } else {
             s.phase = .choosingVictim(candidates: candidates, returnTo: returnTo)
