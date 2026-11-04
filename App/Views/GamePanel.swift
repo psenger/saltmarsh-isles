@@ -199,11 +199,18 @@ struct GamePanel: View {
 
     @ViewBuilder private var log: some View {
         if !screen.log.isEmpty {
-            VStack(alignment: .leading, spacing: 2) {
-                ForEach(Array(screen.log.suffix(30).reversed().enumerated()), id: \.offset) { _, line in
-                    Text(line).font(.caption).fixedSize(horizontal: false, vertical: true)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 2) {
+                    ForEach(Array(screen.log.reversed().enumerated()), id: \.offset) { _, line in
+                        Text(line).font(.caption).fixedSize(horizontal: false, vertical: true)
+                    }
                 }
+                .padding(6)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .frame(height: 140)
+            .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 6))
+            .accessibilityIdentifier("log")
         }
     }
 

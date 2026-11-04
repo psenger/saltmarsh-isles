@@ -66,6 +66,15 @@ final class GameFlowTests: XCTestCase {
     }
     #endif
 
+    func testTheLogScrollsInsideAFixedBox() {
+        let app = XCUIApplication()
+        app.launch()
+        startNewGame(app)
+        let log = app.scrollViews["log"]
+        XCTAssertTrue(log.waitForExistence(timeout: 5))
+        XCTAssertLessThanOrEqual(log.frame.height, 150)
+    }
+
     func testPreviewWinClosesWithBackToTheGame() {
         let app = XCUIApplication()
         app.launch()
