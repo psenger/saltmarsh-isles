@@ -1,5 +1,6 @@
 import Testing
 @testable import SaltmarshEngine
+import SaltmarshTestSupport
 
 @Suite struct BuildTests {
     /// Crimson has rolled; one Crimson settlement at corner 0 with a road along its first edge; empty hands.

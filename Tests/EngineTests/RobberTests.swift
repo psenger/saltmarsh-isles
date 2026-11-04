@@ -1,5 +1,6 @@
 import Testing
 @testable import SaltmarshEngine
+import SaltmarshTestSupport
 
 @Suite struct RobberTests {
     func sevenRolled(crimson: Int = 4, cobalt: Int = 9, amber: Int = 10) -> GameState {

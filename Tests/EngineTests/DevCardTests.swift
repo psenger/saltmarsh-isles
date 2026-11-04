@@ -1,5 +1,6 @@
 import Testing
 @testable import SaltmarshEngine
+import SaltmarshTestSupport
 
 @Suite struct DevCardTests {
     func base() -> GameState { var s = TestGames.rolled(8); s.clearBoard(); s.clearHands(); s.place(settlement: 0, owner: 0); s.place(road: s.board.corners[0].edges[0], owner: 0); return s }

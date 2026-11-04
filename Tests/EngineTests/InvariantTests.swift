@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 @testable import SaltmarshEngine
+import SaltmarshTestSupport
 
 @Suite struct InvariantTests {
     /// Random games run per test. A game takes about two seconds in a debug build, so the default stays

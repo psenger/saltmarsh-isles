@@ -1,5 +1,6 @@
 import Testing
 @testable import SaltmarshEngine
+import SaltmarshTestSupport
 
 @Suite struct RollTests {
     func crimsonToRoll(_ roll: Int) -> GameState {

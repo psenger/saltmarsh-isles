@@ -1,5 +1,6 @@
 import Testing
 @testable import SaltmarshEngine
+import SaltmarshTestSupport
 
 @Suite struct PlayerTradeTests {
     func base() -> GameState { var s = TestGames.rolled(8); s.clearBoard(); s.clearHands(); s.set(hand: [.timber: 3, .wool: 1], for: 0); s.set(hand: [.ore: 2], for: 1); s.set(hand: [.grain: 2, .ore: 1], for: 2); return s }

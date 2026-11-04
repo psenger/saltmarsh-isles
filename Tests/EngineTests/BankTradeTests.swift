@@ -1,5 +1,6 @@
 import Testing
 @testable import SaltmarshEngine
+import SaltmarshTestSupport
 
 @Suite struct BankTradeTests {
     func base() -> GameState { var s = TestGames.rolled(8); s.clearBoard(); s.clearHands(); return s }

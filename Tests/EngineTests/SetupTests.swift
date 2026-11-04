@@ -1,5 +1,6 @@
 import Testing
 @testable import SaltmarshEngine
+import SaltmarshTestSupport
 
 @Suite struct SetupTests {
     @Test(arguments: [(2, [0, 1, 1, 0]), (3, [0, 1, 2, 2, 1, 0]), (4, [0, 1, 2, 3, 3, 2, 1, 0])])

@@ -1,5 +1,6 @@
 import Testing
 @testable import SaltmarshEngine
+import SaltmarshTestSupport
 
 @Suite struct AwardTests {
     func board() -> (GameState, Set<Int>) { var s = TestGames.afterSetup(); s.clearBoard(); return (s, []) }

@@ -14,10 +14,12 @@ let package = Package(
         .target(name: "SaltmarshEngine"),
         .target(name: "SaltmarshAI", dependencies: ["SaltmarshEngine"]),
         .target(name: "SaltmarshGame", dependencies: ["SaltmarshEngine", "SaltmarshAI"]),
+        // Test-only state mutators and seeded game builders, shared by every test target; not an app product.
+        .target(name: "SaltmarshTestSupport", dependencies: ["SaltmarshEngine"]),
         .executableTarget(name: "ai-bench", dependencies: ["SaltmarshEngine", "SaltmarshAI"]),
-        .testTarget(name: "EngineTests", dependencies: ["SaltmarshEngine"]),
-        .testTarget(name: "AITests", dependencies: ["SaltmarshEngine", "SaltmarshAI"]),
-        .testTarget(name: "GherkinTests", dependencies: ["SaltmarshEngine", "SaltmarshAI", "SaltmarshGame"]),
+        .testTarget(name: "EngineTests", dependencies: ["SaltmarshEngine", "SaltmarshTestSupport"]),
+        .testTarget(name: "AITests", dependencies: ["SaltmarshEngine", "SaltmarshAI", "SaltmarshTestSupport"]),
+        .testTarget(name: "GherkinTests", dependencies: ["SaltmarshEngine", "SaltmarshAI", "SaltmarshGame", "SaltmarshTestSupport"]),
     ],
     swiftLanguageModes: [.v6]
 )

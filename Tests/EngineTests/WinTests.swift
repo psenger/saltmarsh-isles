@@ -1,5 +1,6 @@
 import Testing
 @testable import SaltmarshEngine
+import SaltmarshTestSupport
 
 @Suite struct WinTests {
     /// Crimson has rolled; board and hands empty; Crimson owns `settlements` + `cities` buildings on spread corners and a two-road reach to `reach`.

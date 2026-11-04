@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 @testable import SaltmarshEngine
+import SaltmarshTestSupport
 
 @Suite struct ViewTests {
     @Test func viewHidesOpponentCardsAndKeepsCounts() {
