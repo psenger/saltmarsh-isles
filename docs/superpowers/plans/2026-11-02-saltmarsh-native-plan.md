@@ -42,8 +42,8 @@ Input classes the spec implies but a straight reading of the scenarios would not
 | Plan | Phases | Deliverable | Status |
 |---|---|---|---|
 | [Plan 1: scaffold and engine](2026-11-03-plan-1-engine.md) | 0, 1, 2 | Package, Xcode project, full rules engine with the four new rules, redaction and sampling, property tests | done (129 tests passing) |
-| Plan 2: heuristic AI | 3 | Deckhand, Sailor, Mate; move resolver; dial-effect test | after Plan 1 |
-| Plan 3: game layer and Gherkin runner | 4, 5 | View model, `ScreenState`, turn runner, store, parser, steps, updated feature file | after Plan 2 |
+| Plan 2: heuristic AI | 3 | Deckhand, Sailor, Mate; move resolver; dial-effect test | after the playable screen (reordered 2026-11-04 so the owner sees a game sooner; Plan 3 ships a seeded random stand-in opponent) |
+| [Plan 3: game layer and Gherkin runner](2026-11-04-plan-3-game-layer.md) | 4, 5 | View model, `ScreenState`, turn runner, store, parser, steps, updated feature file | in progress |
 | Plan 4: rollout search and benchmark | 6 | Captain, Admiral, `ai-bench`, tuned budgets | after Plan 3 |
 | Plan 5: SwiftUI app, spec update | 7, 8 | Views, file store, UI tests, spec and README rewrite | after Plan 4 |
 
