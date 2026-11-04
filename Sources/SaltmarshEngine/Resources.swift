@@ -88,6 +88,11 @@ public enum DevCardType: String, CaseIterable, Codable, Hashable, Sendable {
 public struct DevCard: Codable, Hashable, Sendable {
     public var type: DevCardType
     public var boughtOnTurn: Int
+
+    public init(type: DevCardType, boughtOnTurn: Int) {
+        self.type = type
+        self.boughtOnTurn = boughtOnTurn
+    }
 }
 
 public enum Cost {

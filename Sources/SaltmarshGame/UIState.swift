@@ -1,6 +1,6 @@
 import SaltmarshEngine
 
-public enum BuildMode: Equatable, Sendable {
+public enum BuildMode: Hashable, Sendable {
     case road, settlement, city
 }
 

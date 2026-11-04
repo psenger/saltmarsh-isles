@@ -84,7 +84,7 @@ public final class GameViewModel {
         if let s = state { try? store.save(s) }
     }
 
-    static func isOver(_ s: GameState) -> Bool {
+    nonisolated static func isOver(_ s: GameState) -> Bool {
         if case .gameOver = s.phase { return true }
         return false
     }
