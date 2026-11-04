@@ -31,12 +31,29 @@ extension Engine {
             return setupMoves(s, placingRoad: placingRoad)
         case .awaitingRoll:
             return [.roll]
+        case .discarding(let queue):
+            guard let p = queue.first else { return [] }
+            let hand = s.players[p].hand
+            return discardOptions(hand: hand, count: hand.total / 2).map { .discard($0) }
+        case .movingRobber:
+            return s.board.tiles.indices.filter { $0 != s.robberTile }.map { .moveRobber(tile: $0) }
+        case .choosingVictim(let candidates, _):
+            return candidates.map { .steal(from: $0) }
         default:
             return []
         }
     }
 
-    public static func isLegal(_ m: Move, in s: GameState) -> Bool { legalMoves(s).contains(m) }
+    /// `legalMoves` enumerates choices; for moves with an unbounded choice space (discards, and later
+    /// trade offers) legality is the predicate itself, so a valid move outside the listed set still applies.
+    public static func isLegal(_ m: Move, in s: GameState) -> Bool {
+        switch m {
+        case .discard(let c):
+            return isValidDiscard(c, in: s)
+        default:
+            return legalMoves(s).contains(m)
+        }
+    }
 
     public static func apply(_ m: Move, to s: inout GameState) throws {
         guard isLegal(m, in: s) else { throw EngineError.illegalMove(m) }
@@ -49,6 +66,12 @@ extension Engine {
             if case .setup = s.phase { applySetupRoad(&s, edge: e) } else { throw EngineError.illegalMove(m) }
         case .roll:
             applyRoll(&s)
+        case .discard(let c):
+            applyDiscard(&s, c)
+        case .moveRobber(let t):
+            applyMoveRobber(&s, tile: t)
+        case .steal(let v):
+            applySteal(&s, from: v)
         default:
             throw EngineError.illegalMove(m)
         }

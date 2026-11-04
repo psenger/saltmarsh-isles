@@ -47,4 +47,93 @@ extension Engine {
         if recipients.isEmpty { return "Nobody harvested." }
         return recipients.map { "\(s.players[$0].name) +\(received[$0])" }.joined(separator: ", ")
     }
+
+    // MARK: Sevens
+
+    /// Every way to discard `count` cards from `hand` when there are at most 256 of them; otherwise the single
+    /// greedy choice that repeatedly drops a card from the largest remaining pile (ties in `Resource` order).
+    public static func discardOptions(hand: ResourceCounts, count: Int) -> [ResourceCounts] {
+        let resources = Resource.allCases
+        var options: [ResourceCounts] = []
+        var current = ResourceCounts()
+        func enumerate(_ i: Int, _ remaining: Int) {
+            if options.count > 256 { return }
+            if i == resources.count {
+                if remaining == 0 { options.append(current) }
+                return
+            }
+            let r = resources[i]
+            for n in 0...min(hand[r], remaining) {
+                current[r] = n
+                enumerate(i + 1, remaining - n)
+            }
+            current[r] = 0
+        }
+        enumerate(0, count)
+        if options.count <= 256 { return options }
+
+        var left = hand, pick = ResourceCounts()
+        for _ in 0..<count {
+            var best = resources[0]
+            for r in resources where left[r] > left[best] { best = r }
+            left[best] -= 1
+            pick[best] += 1
+        }
+        return [pick]
+    }
+
+    static func isValidDiscard(_ c: ResourceCounts, in s: GameState) -> Bool {
+        guard case .discarding(let queue) = s.phase, let p = queue.first else { return false }
+        let hand = s.players[p].hand
+        return c.total == hand.total / 2 && hand.contains(c)
+    }
+
+    static func applyDiscard(_ s: inout GameState, _ c: ResourceCounts) {
+        guard case .discarding(var queue) = s.phase, !queue.isEmpty else { return }
+        let p = queue.removeFirst()
+        s.players[p].hand = s.players[p].hand - c
+        s.bank = s.bank + c
+        s.log("\(s.players[p].name) discarded \(c).")
+        if queue.isEmpty {
+            s.phase = .movingRobber(returnTo: .main)
+            s.log("\(s.players[s.current].name) now moves the robber.")
+        } else {
+            s.phase = .discarding(queue: queue)
+        }
+    }
+
+    static func applyMoveRobber(_ s: inout GameState, tile t: Int) {
+        guard case .movingRobber(let returnTo) = s.phase else { return }
+        s.robberTile = t
+        s.log("\(s.players[s.current].name) moved the robber.")
+        var candidates: [Int] = []
+        for c in s.board.tiles[t].corners {
+            if let o = s.board.corners[c].owner, o != s.current, s.players[o].hand.total > 0, !candidates.contains(o) {
+                candidates.append(o)
+            }
+        }
+        candidates.sort()
+        if candidates.isEmpty {
+            s.log("Nobody on that tile has cards to steal.")
+            s.phase = returnTo
+        } else {
+            s.phase = .choosingVictim(candidates: candidates, returnTo: returnTo)
+        }
+    }
+
+    static func applySteal(_ s: inout GameState, from victim: Int) {
+        guard case .choosingVictim(_, let returnTo) = s.phase else { return }
+        let hand = s.players[victim].hand
+        var k = Int.random(in: 0..<hand.total, using: &s.rng)
+        for (r, n) in hand.nonZero {
+            if k < n {
+                s.players[victim].hand[r] -= 1
+                s.players[s.current].hand[r] += 1
+                break
+            }
+            k -= n
+        }
+        s.log("\(s.players[s.current].name) stole a card from \(s.players[victim].name).")
+        s.phase = returnTo
+    }
 }
