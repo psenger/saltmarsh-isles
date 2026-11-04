@@ -5,7 +5,7 @@ import Testing
 @Suite struct FeatureTests {
     static func scenarios() -> [Scenario] {
         let feature = try! GherkinParser.parse(try! String(contentsOfFile: ParserTests.featurePath, encoding: .utf8))
-        return feature.rules.filter { StepLibrary.coveredRules.contains($0.name) }.flatMap { rule in
+        return feature.rules.flatMap { rule in
             rule.scenarios.filter { !$0.tags.contains("ui") }.map { scenario in
                 var s = scenario
                 s.steps = feature.background + rule.background + scenario.steps

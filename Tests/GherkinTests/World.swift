@@ -19,6 +19,11 @@ final class World {
     var rememberedHands: [ResourceCounts] = []
     var rememberedDeckCount = 0
     var rememberedPoints = 0
+    var rememberedState: GameState?
+    /// Edges of the road chain a step built, for a later cut.
+    var rememberedChain: [Int] = []
+    /// Corners road chains must avoid (owned, adjacent to owned, or already walked).
+    var used: Set<Int> = []
     var boards: [Board] = []
 
     init() {
@@ -77,11 +82,36 @@ final class World {
         while case .setup = state.phase { try! vm.apply(Engine.legalMoves(state).first!) }
     }
 
-    /// Setup complete with `first` (default Crimson) rolling first, board and hands cleared unless `keepBoard`.
+    /// Setup complete with `first` (default Crimson) rolling first, board and hands cleared unless `clear` is false.
+    /// Seat controllers carry over from the current game.
     func afterSetup(first: Int = 0, clear: Bool = true) {
         var s = TestGames.afterSetup(players: state.playerCount, seed: state.seed, first: first)
+        for i in s.players.indices { s.players[i].controller = state.players[i].controller }
         if clear { s.clearBoard(); s.clearHands() }
         load(s)
+    }
+
+    /// Corners nobody may build near: owned corners and their neighbours.
+    var blockedCorners: Set<Int> {
+        Set(state.board.corners.indices.filter { state.board.corners[$0].owner != nil }.flatMap { [$0] + state.board.corners[$0].adjacent })
+    }
+
+    /// The corner shared by two consecutive chain edges.
+    func junction(_ e1: Int, _ e2: Int) -> Int {
+        let b = state.board
+        return Set([b.edges[e1].a, b.edges[e1].b]).intersection([b.edges[e2].a, b.edges[e2].b]).first!
+    }
+
+    /// Lays `length` connected roads for `owner` away from every building, and refreshes the awards.
+    @discardableResult
+    func layChain(length: Int, owner: Int, startWhere: (Int) -> Bool = { _ in true }) -> [Int] {
+        used.formUnion(blockedCorners)
+        var s = state
+        let chain = s.firstChain(length: length, avoiding: &used, startWhere: startWhere)
+        s.placeChain(chain, owner: owner)
+        Engine.updateAwards(&s)
+        load(s)
+        return chain
     }
 
     /// Forces the next roll to total `n`.

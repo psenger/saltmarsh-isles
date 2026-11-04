@@ -576,6 +576,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Given setup is complete and Crimson has rolled
 
     Scenario: Build buttons show how many pieces are left
+      Given Crimson has the 2 settlements and 2 roads from setup on the board
       Then the "Settlement" button shows "3 left"
       And the "City" button shows "4 left"
       And the "Road" button shows "13 left"
