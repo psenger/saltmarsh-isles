@@ -45,7 +45,7 @@ Input classes the spec implies but a straight reading of the scenarios would not
 | Plan 2: heuristic AI | 3 | Deckhand, Sailor, Mate; move resolver; dial-effect test. Must also close design section 6.5: `TurnRunner`'s stand-in fallback never builds, so an always-wrong opponent's game stalls at the move cap instead of finishing; put the heuristic ahead of it and assert the game ends in `illegalAIMovesAreResolved` | after the playable screen (reordered 2026-11-04 so the owner sees a game sooner; Plan 3 ships a seeded random stand-in opponent) |
 | [Plan 3: game layer and Gherkin runner](2026-11-04-plan-3-game-layer.md) | 4, 5 | View model, `ScreenState`, turn runner, store, parser, steps, updated feature file | done (142 scenario cases pass under `swift test`; the 2 `@ui` scenarios wait for `AppUITests`) |
 | Plan 4: rollout search and benchmark | 6 | Captain, Admiral, `ai-bench`, tuned budgets | after Plan 3 |
-| Plan 5: SwiftUI app, spec update | 7, 8 | Views, file store, UI tests, spec and README rewrite | after Plan 4 |
+| Plan 5: SwiftUI app, spec update | 7, 8 | Polish on the playable screen, remaining UI tests, spec and README rewrite | after Plan 4 |
 
 Each later plan is written when its predecessor's code exists, so its signatures are copied from real code rather than guessed. Each plan starts with the header above and inherits this file's Global Constraints and Review Focus.
 
@@ -57,6 +57,7 @@ Each later plan is written when its predecessor's code exists, so its signatures
 - Verification commands per phase are in the approved plan at `/Users/psenger/.claude/plans/wild-leaping-grove.md` Part 2 and repeated in each plan.
 - Change of method on 2026-11-04: Plan 1 Tasks 7 to 18 were executed inline (superpowers:executing-plans) with a self-review at the end, after three implementer subagents in a row hung on unanswered permission prompts and blocked the session. Later plans run inline unless the owner is present to answer subagent prompts.
 - Inserted after Plan 1 at the owner's request to see something on screen early: `App/Views/BoardView.swift` (Canvas drawing of a board in the prototype's style) and `App/Views/BoardPreviewScreen.swift` (generated board plus a "New board" button), built for macOS and the iPhone 15 Pro simulator. Plan 5 extends `BoardView` with pieces, glow and dash intent rather than replacing it.
+- Inserted after Plan 3 at the owner's request: [the minimal playable game screen](2026-11-04-minimal-game-screen.md). It replaces `BoardPreviewScreen`, draws pieces and board intent in `BoardView`, and makes every engine move reachable, with autosave and resume. Plan 5 keeps these views and adds what is left: confetti, animation, effort descriptions, iPad tuning, spec and README rewrite. `FileGameStore` lives in `SaltmarshGame` so it runs under `swift test`. Mac XCUITest needs the owner's authentication, so it does not run unattended.
 
 ## Corrections to carry into the feature file (Plan 3)
 
