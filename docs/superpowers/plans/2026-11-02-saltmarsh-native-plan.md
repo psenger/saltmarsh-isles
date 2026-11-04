@@ -55,6 +55,8 @@ Each later plan is written when its predecessor's code exists, so its signatures
 - Test-first: every rule gets a failing test before the code.
 - One commit per task; plain conventional messages.
 - Verification commands per phase are in the approved plan at `/Users/psenger/.claude/plans/wild-leaping-grove.md` Part 2 and repeated in each plan.
+- Change of method on 2026-11-04: Plan 1 Tasks 7 to 18 were executed inline (superpowers:executing-plans) with a self-review at the end, after three implementer subagents in a row hung on unanswered permission prompts and blocked the session. Later plans run inline unless the owner is present to answer subagent prompts.
+- Inserted after Plan 1 at the owner's request to see something on screen early: `App/Views/BoardView.swift` (Canvas drawing of a board in the prototype's style) and `App/Views/BoardPreviewScreen.swift` (generated board plus a "New board" button), built for macOS and the iPhone 15 Pro simulator. Plan 5 extends `BoardView` with pieces, glow and dash intent rather than replacing it.
 
 ## Corrections to carry into the feature file (Plan 3)
 
