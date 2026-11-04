@@ -37,6 +37,18 @@ Input classes the spec implies but a straight reading of the scenarios would not
 
 ---
 
+## Open questions: REQUIRED to resolve in the next session
+
+Raised 2026-11-05 at the end of the Plan 3 and playable screen session. Resolve every item before starting Plan 2. Record each answer here and remove the item once it is settled. Do not treat any of these as decided.
+
+1. **Hand-off file never read.** `/var/folders/sb/1szn9lh95nd_vnbt29d8j7dh0000gn/T/hand-off.md` was blocked by `permissions.blockReadsOutsideWorkingDirectories`. Owner: run `/add-dir` on its folder or paste it. Then check it for anything the session missed. The file is in a temp folder and may be gone.
+2. **Mac UI tests have never run.** The runner needs the owner's Touch ID or password. Owner: run `make test` at the machine. `testEscapeClosesTheWinScreen` and Mac board clicks stay unverified until then. This also runs the 3.5 minute soak test.
+3. **Owner's Mac play-test result.** Owner: play a game on the Mac build and report what is wrong. Fix or schedule each report.
+4. **No independent review yet.** Plan 3 and the playable screen had self-reviews only. Decide: run a fresh whole-branch review now, or before merge. Subagents have hung here on permission prompts, so the owner should be present for it.
+5. **Paths not driven through the UI.** Stealing, accepting a trade, the player's own offers, harbour and bank trades, development cards, and a real win screen (only the preview was opened). Decide: extend `AppUITests`, accept the owner's play-test as coverage, or leave them to Plan 5.
+6. **Owner has not accepted the Rulings below.** Review them, above all R1 and R2. Change any that are wrong.
+7. **Owner has not assigned the Carried forward items below.** Confirm or change the proposed plan for each.
+
 ## Roadmap
 
 | Plan | Phases | Deliverable | Status |
@@ -58,6 +70,43 @@ Each later plan is written when its predecessor's code exists, so its signatures
 - Change of method on 2026-11-04: Plan 1 Tasks 7 to 18 were executed inline (superpowers:executing-plans) with a self-review at the end, after three implementer subagents in a row hung on unanswered permission prompts and blocked the session. Later plans run inline unless the owner is present to answer subagent prompts.
 - Inserted after Plan 1 at the owner's request to see something on screen early: `App/Views/BoardView.swift` (Canvas drawing of a board in the prototype's style) and `App/Views/BoardPreviewScreen.swift` (generated board plus a "New board" button), built for macOS and the iPhone 15 Pro simulator. Plan 5 extends `BoardView` with pieces, glow and dash intent rather than replacing it.
 - Inserted after Plan 3 at the owner's request: [the minimal playable game screen](2026-11-04-minimal-game-screen.md). It replaces `BoardPreviewScreen`, draws pieces and board intent in `BoardView`, and makes every engine move reachable, with autosave and resume. Plan 5 keeps these views and adds what is left: confetti, animation, effort descriptions, iPad tuning, spec and README rewrite. `FileGameStore` lives in `SaltmarshGame` so it runs under `swift test`. Mac XCUITest needs the owner's authentication, so it does not run unattended.
+
+## Rulings (awaiting owner review)
+
+Decisions made on the owner's behalf during execution. The plan ledgers were deleted when each plan finished, so this list is the record.
+
+Plan 3:
+
+- **R1. Design section 6.5 is not met yet.** `TurnRunner`'s stand-in fallback (end turn, withdraw, roll) never builds, so an always-wrong opponent's game stops at `aiMoveCap` with no winner. This comes from reading the code, not from a test; `illegalAIMovesAreResolved` only asserts `turn > 0`. It stands until Plan 2 because `RandomOpponent` only returns legal moves. Cost if wrong: an all-AI game with such an opponent stalls.
+- **R2. Label coverage test dropped (Task 14).** Plan 3 called for `LabelCoverageTests`. Every quoted feature string is already asserted by a passing scenario, and a substring scan cannot handle interpolated names and numbers without a brittle allow-list. Cost if wrong: string drift is caught by a scenario, not a dedicated test.
+- **R3. Step bodies are `async throws` from the start (Task 8).** Task 13 needs `await`. Cost if wrong: none.
+- **R4. AI fallback prefers end turn, withdraw or roll before `legal[0]` (Task 4).** With `legal[0]` alone, two stubborn bots re-propose the same trade forever. Cost if wrong: none, Plan 2's heuristic goes ahead of it.
+- **R5. Reduce Motion stays an executable scenario (Task 9).** Only "Escape closes the win screen" and "The win screen is hidden at load" are `@ui`, which gives more coverage under `swift test`. Cost if wrong: none.
+- **R6. Trading Background gives Crimson 3 timber (Task 9).** A 3-timber counter is then payable; the invalid-offer example uses 4 timber. Cost if wrong: not recorded.
+- **R7. `FeatureTests` ran only covered rules until Task 13 (Task 10).** This kept the suite green between tasks; the filter is now removed. Cost if wrong: none.
+- **R8. Robber log line (Task 11).** The engine logs "Nobody on that tile has cards to steal." only when the robber's new tile holds an opponent building, because the feature file expects "Crimson moved the robber." as the last line on an empty tile. Cost if wrong: one log line.
+- **R9. Seat-name captures use `([A-Z]\w+)` (Task 13).** Otherwise a capture could swallow "nobody". Cost if wrong: not recorded.
+
+Playable screen:
+
+- **R10. `FileGameStore` lives in `SaltmarshGame`, not `App` as design section 4 draws it.** It then runs under `swift test`. Cost if wrong: one file move.
+- **R11. The plan was not held for owner review.** The owner said to write and execute without stopping. Cost if wrong: rework of the screen.
+- **R12. Mac is verified by build, launch and screenshot; XCUITest runs on the iPhone simulator only.** The Mac runner fails with "Authentication cancelled" when unattended. Cost if wrong: a Mac-only UI bug survives until the owner runs `make test`.
+- **R13. Header, dice and status are pinned above the scrolling panel, with the moment's buttons first.** Screenshots showed a trade offer scrolled off screen; `isHittable` assertions now cover it. Cost if wrong: panel order changes.
+
+## Carried forward (proposed plan, awaiting owner confirmation)
+
+| Item | Proposed plan |
+|---|---|
+| Close design section 6.5 and strengthen `illegalAIMovesAreResolved` to assert the game ends | Plan 2 (already in its Roadmap row) |
+| `ScreenState.orderStrip` has no "next to place" highlight (design section 5.1); the panel approximates it by marking the current seat | Plan 5 |
+| An unsent offer carries over to the next player's turn, because `UIState` is only cleared by a sent offer or a new game | Plan 5 |
+| `HarbourRow.defaultChoice` reads the current player's hand, so an AI's 3:1 row hints at what it holds in the game layer; the panel hides it during AI turns | Plan 2 |
+| At game over, the panel can show an AI winner's hand and cards | Plan 5 |
+| With no game, the board behind the new game sheet shows every tile as DUNES, and stays that way after Cancel | Plan 5 |
+| A second Mac window has its own view model and both write the same save | Plan 5 |
+| The soak test adds about 3.5 minutes to every `AppUITests` run | Plan 5 |
+| Effort descriptions on the new game sheet, confetti, animation, iPad tuning | Plan 5 |
 
 ## Corrections to carry into the feature file (Plan 3)
 
