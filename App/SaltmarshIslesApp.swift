@@ -4,7 +4,10 @@ import SwiftUI
 struct SaltmarshIslesApp: App {
     var body: some Scene {
         WindowGroup("Saltmarsh Isles") {
-            BoardPreviewScreen()
+            GameScreen()
         }
+        #if os(macOS)
+        .defaultSize(width: 1100, height: 720)
+        #endif
     }
 }

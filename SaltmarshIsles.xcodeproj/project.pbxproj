@@ -8,11 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		1395FA2CC2E2AC65DEA7D067 /* SaltmarshIslesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC143C89C8A2667A1D68F679 /* SaltmarshIslesApp.swift */; };
+		1423C35FA64CD1F619C46D31 /* GamePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161290410D3F23E29D6B7BEA /* GamePanel.swift */; };
+		17D36040D771367C61C15202 /* VictoryOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDB0D55A20F738780116C1F /* VictoryOverlay.swift */; };
 		303EFAC5D1D492C882B2E701 /* LaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */; };
+		38DD71A4A5741DD92D6CE525 /* GameFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D0AF059581137B37B89706 /* GameFlowTests.swift */; };
 		52C86B407875159A4061FFA9 /* SaltmarshAI in Frameworks */ = {isa = PBXBuildFile; productRef = 2297B71C37292AE4D6FE2309 /* SaltmarshAI */; };
 		5EFCDFFA9DA5BA5CA070AE52 /* SaltmarshEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 749DB2FBDD9C43FB9320DD81 /* SaltmarshEngine */; };
+		6EB9B43E4C9370C0E4B8409E /* NewGameSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFF9A39044BC641253934ECE /* NewGameSheet.swift */; };
 		A0BBF1378BC6867BA490F2E7 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3BA7A66E1A9C181A578BE9 /* BoardView.swift */; };
-		B88111ECA85C73EE0A26DCE3 /* BoardPreviewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B6CE270EAE338A4E855365E /* BoardPreviewScreen.swift */; };
+		A6AFBFE150AE119D6B36C4B1 /* TradeAndCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BD1A45A05AF221C1EF48B7 /* TradeAndCards.swift */; };
+		E0F9B049B06566265E67D1F7 /* GameScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2EF33FE7D2A84C73A586145 /* GameScreen.swift */; };
 		EC7EA1E583E167C0B15F24E3 /* SaltmarshGame in Frameworks */ = {isa = PBXBuildFile; productRef = 7CB29321CD030244D8728963 /* SaltmarshGame */; };
 /* End PBXBuildFile section */
 
@@ -27,12 +32,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		161290410D3F23E29D6B7BEA /* GamePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePanel.swift; sourceTree = "<group>"; };
 		287CAAF4C38B11129BA66303 /* saltmarsh-isles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "saltmarsh-isles"; path = .; sourceTree = SOURCE_ROOT; };
 		4A3BA7A66E1A9C181A578BE9 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
-		4B6CE270EAE338A4E855365E /* BoardPreviewScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardPreviewScreen.swift; sourceTree = "<group>"; };
+		8CDB0D55A20F738780116C1F /* VictoryOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VictoryOverlay.swift; sourceTree = "<group>"; };
 		9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
+		B2EF33FE7D2A84C73A586145 /* GameScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScreen.swift; sourceTree = "<group>"; };
+		C5BD1A45A05AF221C1EF48B7 /* TradeAndCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAndCards.swift; sourceTree = "<group>"; };
 		CC143C89C8A2667A1D68F679 /* SaltmarshIslesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaltmarshIslesApp.swift; sourceTree = "<group>"; };
+		DFF9A39044BC641253934ECE /* NewGameSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGameSheet.swift; sourceTree = "<group>"; };
 		ECDA6975E75DD53CAF214F56 /* SaltmarshIsles.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SaltmarshIsles.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3D0AF059581137B37B89706 /* GameFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameFlowTests.swift; sourceTree = "<group>"; };
 		FA07F455C4B732D3F594F4C5 /* AppUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -79,8 +89,12 @@
 		DA9C181F7ADAE6E38BA74D25 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				4B6CE270EAE338A4E855365E /* BoardPreviewScreen.swift */,
 				4A3BA7A66E1A9C181A578BE9 /* BoardView.swift */,
+				161290410D3F23E29D6B7BEA /* GamePanel.swift */,
+				B2EF33FE7D2A84C73A586145 /* GameScreen.swift */,
+				DFF9A39044BC641253934ECE /* NewGameSheet.swift */,
+				C5BD1A45A05AF221C1EF48B7 /* TradeAndCards.swift */,
+				8CDB0D55A20F738780116C1F /* VictoryOverlay.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -98,6 +112,7 @@
 		FBB368C8FC7E533E174F1A28 /* AppUITests */ = {
 			isa = PBXGroup;
 			children = (
+				F3D0AF059581137B37B89706 /* GameFlowTests.swift */,
 				9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */,
 			);
 			path = AppUITests;
@@ -190,6 +205,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				38DD71A4A5741DD92D6CE525 /* GameFlowTests.swift in Sources */,
 				303EFAC5D1D492C882B2E701 /* LaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -198,9 +214,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B88111ECA85C73EE0A26DCE3 /* BoardPreviewScreen.swift in Sources */,
 				A0BBF1378BC6867BA490F2E7 /* BoardView.swift in Sources */,
+				1423C35FA64CD1F619C46D31 /* GamePanel.swift in Sources */,
+				E0F9B049B06566265E67D1F7 /* GameScreen.swift in Sources */,
+				6EB9B43E4C9370C0E4B8409E /* NewGameSheet.swift in Sources */,
 				1395FA2CC2E2AC65DEA7D067 /* SaltmarshIslesApp.swift in Sources */,
+				A6AFBFE150AE119D6B36C4B1 /* TradeAndCards.swift in Sources */,
+				17D36040D771367C61C15202 /* VictoryOverlay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
