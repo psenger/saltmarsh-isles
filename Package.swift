@@ -19,6 +19,7 @@ let package = Package(
         .executableTarget(name: "ai-bench", dependencies: ["SaltmarshEngine", "SaltmarshAI"]),
         .testTarget(name: "EngineTests", dependencies: ["SaltmarshEngine", "SaltmarshTestSupport"]),
         .testTarget(name: "AITests", dependencies: ["SaltmarshEngine", "SaltmarshAI", "SaltmarshTestSupport"]),
+        .testTarget(name: "GameTests", dependencies: ["SaltmarshEngine", "SaltmarshAI", "SaltmarshGame", "SaltmarshTestSupport"]),
         .testTarget(name: "GherkinTests", dependencies: ["SaltmarshEngine", "SaltmarshAI", "SaltmarshGame", "SaltmarshTestSupport"]),
     ],
     swiftLanguageModes: [.v6]
