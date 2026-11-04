@@ -39,6 +39,8 @@ extension Engine {
             return s.board.tiles.indices.filter { $0 != s.robberTile }.map { .moveRobber(tile: $0) }
         case .choosingVictim(let candidates, _):
             return candidates.map { .steal(from: $0) }
+        case .main:
+            return buildMoves(s)
         default:
             return []
         }
@@ -61,9 +63,19 @@ extension Engine {
         case .rollForFirst:
             applyRollForFirst(&s)
         case .placeSettlement(let c):
-            if case .setup = s.phase { applySetupSettlement(&s, corner: c) } else { throw EngineError.illegalMove(m) }
+            switch s.phase {
+            case .setup: applySetupSettlement(&s, corner: c)
+            case .main: applyBuildSettlement(&s, corner: c)
+            default: throw EngineError.illegalMove(m)
+            }
         case .placeRoad(let e):
-            if case .setup = s.phase { applySetupRoad(&s, edge: e) } else { throw EngineError.illegalMove(m) }
+            switch s.phase {
+            case .setup: applySetupRoad(&s, edge: e)
+            case .main: applyBuildRoad(&s, edge: e)
+            default: throw EngineError.illegalMove(m)
+            }
+        case .upgradeCity(let c):
+            applyUpgradeCity(&s, corner: c)
         case .roll:
             applyRoll(&s)
         case .discard(let c):

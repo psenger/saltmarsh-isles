@@ -26,4 +26,47 @@ extension Engine {
             return corner.edges.contains { $0 != e && s.board.edges[$0].owner == p }
         }
     }
+
+    // MARK: Paid builds in the main phase
+
+    static func buildMoves(_ s: GameState) -> [Move] {
+        let p = s.current, hand = s.players[p].hand, left = piecesLeft(s, player: p)
+        var moves: [Move] = []
+        if left.roads > 0 && hand.contains(Cost.road) {
+            moves += s.board.edges.indices.filter { canRoad(s, edge: $0, player: p) }.map { .placeRoad(edge: $0) }
+        }
+        if left.settlements > 0 && hand.contains(Cost.settlement) {
+            moves += s.board.corners.indices.filter { canSettle(s, corner: $0, player: p, setup: false) }.map { .placeSettlement(corner: $0) }
+        }
+        if left.cities > 0 && hand.contains(Cost.city) {
+            moves += s.board.corners.indices.filter { s.board.corners[$0].owner == p && !s.board.corners[$0].isCity }.map { .upgradeCity(corner: $0) }
+        }
+        return moves
+    }
+
+    /// Moves `cost` from the current player's hand to the bank.
+    static func pay(_ s: inout GameState, _ cost: ResourceCounts) {
+        s.players[s.current].hand = s.players[s.current].hand - cost
+        s.bank = s.bank + cost
+    }
+
+    static func applyBuildRoad(_ s: inout GameState, edge e: Int) {
+        pay(&s, Cost.road)
+        s.board.edges[e].owner = s.current
+        s.log("\(s.players[s.current].name) built a road.")
+        updateAwards(&s)
+    }
+
+    static func applyBuildSettlement(_ s: inout GameState, corner c: Int) {
+        pay(&s, Cost.settlement)
+        s.board.corners[c].owner = s.current
+        s.log("\(s.players[s.current].name) built a settlement.")
+        updateAwards(&s)
+    }
+
+    static func applyUpgradeCity(_ s: inout GameState, corner c: Int) {
+        pay(&s, Cost.city)
+        s.board.corners[c].isCity = true
+        s.log("\(s.players[s.current].name) upgraded to a city.")
+    }
 }
