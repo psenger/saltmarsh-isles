@@ -30,7 +30,7 @@ extension Engine {
         case .setup(_, let placingRoad, _):
             return setupMoves(s, placingRoad: placingRoad)
         case .awaitingRoll:
-            return [.roll]
+            return [.roll] + devCardMoves(s)
         case .discarding(let queue):
             guard let p = queue.first else { return [] }
             let hand = s.players[p].hand
@@ -39,8 +39,10 @@ extension Engine {
             return s.board.tiles.indices.filter { $0 != s.robberTile }.map { .moveRobber(tile: $0) }
         case .choosingVictim(let candidates, _):
             return candidates.map { .steal(from: $0) }
+        case .placingFreeRoads:
+            return freeRoadMoves(s)
         case .main:
-            return buildMoves(s) + tradeMoves(s)
+            return buildMoves(s) + tradeMoves(s) + devCardMoves(s)
         default:
             return []
         }
@@ -72,10 +74,21 @@ extension Engine {
             switch s.phase {
             case .setup: applySetupRoad(&s, edge: e)
             case .main: applyBuildRoad(&s, edge: e)
+            case .placingFreeRoads: applyFreeRoad(&s, edge: e)
             default: throw EngineError.illegalMove(m)
             }
         case .upgradeCity(let c):
             applyUpgradeCity(&s, corner: c)
+        case .buyDevCard:
+            applyBuyDevCard(&s)
+        case .playKnight:
+            applyPlayKnight(&s)
+        case .playRoadCrew:
+            applyPlayRoadCrew(&s)
+        case .playBumperHarvest(let a, let b):
+            applyBumperHarvest(&s, a, b)
+        case .playCornerMarket(let r):
+            applyCornerMarket(&s, r)
         case .bankTrade(let give, let get):
             applyBankTrade(&s, give: give, get: get)
         case .harbourTrade(let h, let give, let get):
