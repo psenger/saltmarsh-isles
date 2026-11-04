@@ -62,6 +62,26 @@ extension GameState {
 
     mutating func place(road edge: Int, owner: Int) { board.edges[edge].owner = owner }
 
+    /// Walks `length` edges from `start`, each step to the lowest-index adjacent corner not in `avoiding`,
+    /// adding every visited corner (start included) to `avoiding`. Returns the edge indices walked.
+    func chain(from start: Int, length: Int, avoiding: inout Set<Int>) -> [Int] {
+        var edges: [Int] = []
+        var at = start
+        avoiding.insert(start)
+        for _ in 0..<length {
+            guard let next = board.corners[at].adjacent.filter({ !avoiding.contains($0) }).min() else { break }
+            edges.append(board.edgeIndex(between: at, next)!)
+            avoiding.insert(next)
+            at = next
+        }
+        precondition(edges.count == length, "chain from corner \(start) stopped after \(edges.count) of \(length) edges")
+        return edges
+    }
+
+    mutating func placeChain(_ edges: [Int], owner: Int) {
+        for e in edges { board.edges[e].owner = owner }
+    }
+
     func tile(numbered n: Int) -> Int { board.tiles.firstIndex { $0.number == n }! }
 
     func corner(onTileNumbered n: Int, index k: Int = 0) -> Int { board.tiles[tile(numbered: n)].corners[k] }
