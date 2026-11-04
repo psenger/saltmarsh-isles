@@ -5,7 +5,7 @@ import Testing
 @Suite struct FeatureTests {
     static func scenarios() -> [Scenario] {
         let feature = try! GherkinParser.parse(try! String(contentsOfFile: ParserTests.featurePath, encoding: .utf8))
-        return feature.rules.flatMap { rule in
+        return feature.rules.filter { StepLibrary.coveredRules.contains($0.name) }.flatMap { rule in
             rule.scenarios.filter { !$0.tags.contains("ui") }.map { scenario in
                 var s = scenario
                 s.steps = feature.background + rule.background + scenario.steps
@@ -14,8 +14,7 @@ import Testing
         }
     }
 
-    // Enabled once the step groups of Plan 3 Tasks 10 to 13 are registered in StepLibrary.
-    @MainActor @Test(.disabled("step definitions land in Plan 3 Tasks 10 to 13"), arguments: scenarios())
+    @MainActor @Test(arguments: scenarios())
     func scenario(_ scenario: Scenario) async {
         let world = World()
         let registry = StepLibrary.make()
