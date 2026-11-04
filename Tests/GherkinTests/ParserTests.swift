@@ -10,11 +10,12 @@ import SaltmarshEngine
     @Test func parsesTheRealFile() throws {
         let feature = try GherkinParser.parse(try String(contentsOfFile: Self.featurePath, encoding: .utf8))
         #expect(feature.name == "Saltmarsh Isles pass-and-play game")
-        #expect(feature.background.map(\.text) == ["the game page is open"])
-        #expect(feature.rules.count == 16)
+        #expect(feature.background.map(\.text) == ["a new 3-player game with human seats"])
+        #expect(feature.rules.count == 21)
         let scenarios = feature.rules.flatMap(\.scenarios)
-        #expect(scenarios.count == 111)                                   // 89 scenarios, 8 outlines expanded to 30 rows
-        #expect(scenarios.filter { $0.name.hasSuffix("(row 1)") }.count == 8)
+        #expect(scenarios.count == 144, "actual \(scenarios.count)")   // 112 scenarios plus 9 outlines expanded to 32 rows
+        #expect(scenarios.filter { $0.name.hasSuffix("(row 1)") }.count == 9)
+        #expect(scenarios.filter { $0.tags.contains("ui") }.count == 2)
     }
     @Test func ruleBackgroundIsPrepended() throws {
         let text = """

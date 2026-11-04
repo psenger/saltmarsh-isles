@@ -1,28 +1,29 @@
 # Saltmarsh Isles: behaviour specification
-# Matches saltmarsh.html and saltmarsh-isles-spec.md.
+# Matches the native app (SaltmarshCore) and saltmarsh-isles-spec.md.
 # One Feature, grouped into Rules (Gherkin 6+). Player seats: Crimson, Cobalt, Amber, Ivory.
-# "taps" means a click on desktop or a tap on touch screens.
+# "taps" means a click on a Mac or a tap on iPhone and iPad.
+# Scenarios tagged @ui need a running app and live in AppUITests; every other scenario runs under `swift test`.
 
 Feature: Saltmarsh Isles pass-and-play game
-  As a group of 2 to 4 players sharing one device
+  As a group of 2 to 4 players sharing one device, or one player against AI seats
   We want to roll, gather resources, build, trade and play development cards
   So that the first player to 10 points wins
 
   Background:
-    Given the game page is open
+    Given a new 3-player game with human seats
 
   # ─────────────────────────────────────────────────────────────
   Rule: Starting a new game
 
-    Scenario: The page opens on a fresh 3-player game
+    Scenario: A new game starts with the first-player roll
       Then a 3-player game has started
       And the players are Crimson, Cobalt and Amber
-      And the header shows "Crimson · setup"
-      And the status reads "Tap a glowing corner to place a settlement."
-      And the log contains "New game with 3 players. Place your first settlement."
+      And the header shows "Crimson · first roll"
+      And the status reads "Roll for first player."
+      And the log contains "New game with 3 players. Everyone rolls for first player."
 
     Scenario Outline: Starting a game with a chosen player count
-      When I choose "<count> players" and tap "New game"
+      When I start a <count>-player game
       Then the players are <players>
       And every player has 0 resource cards and 0 development cards
       And the development deck holds 25 cards
@@ -40,6 +41,35 @@ Feature: Saltmarsh Isles pass-and-play game
       And a new board is generated
 
   # ─────────────────────────────────────────────────────────────
+  Rule: Choosing who goes first
+
+    Scenario: Every seat rolls once, in seat order
+      When Crimson rolls 9 for first player
+      Then the log reads "Crimson rolled 9 for first player."
+      And the header shows "Cobalt · first roll"
+
+    Scenario: The highest roll goes first
+      When the first-player rolls are Crimson 3, Cobalt 12 and Amber 7
+      Then the log reads "Cobalt goes first. Place your first settlement."
+      And the header shows "Cobalt · setup"
+      And the order strip shows Cobalt, Amber, Crimson, Crimson, Amber, Cobalt
+
+    Scenario: A tie re-rolls among the tied seats only
+      When the first-player rolls are Crimson 12, Cobalt 2 and Amber 12
+      Then the log reads "Tie between Crimson and Amber. Roll again."
+      And the header shows "Crimson · first roll"
+      When Crimson rolls 4 for first player
+      Then the header shows "Amber · first roll"
+      When Amber rolls 10 for first player
+      Then the log reads "Amber goes first. Place your first settlement."
+
+    Scenario: Setup ends with the first player rolling
+      Given Amber won the first roll
+      When every setup placement is made
+      Then the log reads "Setup done. Amber rolls first."
+      And the header shows "Amber"
+
+  # ─────────────────────────────────────────────────────────────
   Rule: The board is generated fairly
 
     Scenario: Board structure
@@ -51,7 +81,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Then the 18 land tiles are 4 timber, 3 clay, 4 wool, 4 grain and 3 ore
       And the number discs are 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12
       And each number disc shows dots equal to its pips
-      And 6 and 8 are drawn in red
+      And the number discs 6 and 8 are marked hot
 
     Scenario Outline: Balancing rules hold on every generated board
       When 200 boards are generated
@@ -76,6 +106,7 @@ Feature: Saltmarsh Isles pass-and-play game
 
     Scenario Outline: Placement order
       Given a new <count>-player game
+      And Crimson won the first roll
       Then players place in the order <order>
       And after the last placement the log reads "Setup done. Crimson rolls first."
 
@@ -132,7 +163,7 @@ Feature: Saltmarsh Isles pass-and-play game
       When Crimson rolls 8
       Then Cobalt receives 1 card of that tile's resource
       And Amber receives 2 cards of that tile's resource
-      And number discs showing 8 are ringed in the accent colour
+      And the number discs showing 8 are marked hit
       And the log reads "Crimson rolled 8. Cobalt +1, Amber +2"
       And the status reads "Build, trade, or end your turn."
 
@@ -225,23 +256,23 @@ Feature: Saltmarsh Isles pass-and-play game
       And Crimson must move the robber
 
     Scenario: Choosing a tile
-      Then every tile except the robber's current tile has a white outline
+      Then every tile except the robber's current tile is selectable
       And the robber's current tile cannot be chosen
       When Crimson taps a numbered tile
-      Then the robber's centre sits on that tile's centre
-      And that tile's number disc shrinks and moves below the robber
+      Then the robber is on that tile
+      And that tile's number disc is marked as sitting below the robber
       And the log reads "Crimson moved the robber."
 
     Scenario: Robber on the desert
       When the robber is on the desert
-      Then the "DUNES" label sits below the robber
+      Then the desert label is marked as sitting below the robber
 
     Scenario: Choosing a victim is always a visible step
       Given Cobalt has a building and 5 cards on the chosen tile
       When Crimson moves the robber there
       Then the status reads "Steal a card: tap a glowing building on the robber's tile, or a name below."
       And the panel shows "Steal from Cobalt" with "5 cards"
-      And Cobalt's buildings on that tile glow and can be tapped
+      And Cobalt's buildings on that tile are steal targets
 
     Scenario Outline: Stealing by tapping
       Given Cobalt and Amber both have buildings and cards on the chosen tile
@@ -254,7 +285,7 @@ Feature: Saltmarsh Isles pass-and-play game
 
       Examples:
         | target                                   |
-        | Cobalt's glowing building on that tile    |
+        | Cobalt's building on that tile           |
         | the "Steal from Cobalt" button            |
 
     Scenario: Players are not offered as victims when they cannot be robbed
@@ -339,7 +370,7 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: Upgrading to a city
       Given Crimson holds 2 grain and 3 ore
       When Crimson taps "City"
-      Then Crimson's settlements pulse
+      Then Crimson's settlements are marked pulsing
       When Crimson taps one of them
       Then it becomes a city
       And Crimson pays 2 grain and 3 ore
@@ -385,7 +416,7 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: A captured harbour is listed with what holds it
       Given Crimson has a settlement on one corner of a 3:1 harbour
       Then "Your harbours" lists "3:1 any" held by "your settlement"
-      And the harbour on the board has a ring in Crimson's colour
+      And the harbour on the board carries a Crimson ring
 
     Scenario: Holding both corners of a harbour
       Given Crimson has a settlement on one corner and a city on the other corner of a 2:1 grain harbour
@@ -413,8 +444,157 @@ Feature: Saltmarsh Isles pass-and-play game
 
     Scenario: Two players sharing a harbour
       Given Crimson holds one corner and Cobalt holds the other corner of a 3:1 harbour
-      Then the harbour on the board has a Crimson ring and a Cobalt ring
+      Then the harbour on the board carries a Crimson ring and a Cobalt ring
       And the harbour appears in both players' lists on their turns
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Trading with other players
+
+    Background:
+      Given setup is complete and Crimson has rolled
+      And Crimson holds 3 timber, Cobalt holds 1 ore and Amber holds 1 grain
+
+    Scenario: The offer needs a card on each side
+      Then "Offer" is disabled
+      When Crimson adds 2 timber to the give side
+      Then "Offer" is disabled
+      When Crimson adds 1 ore to the want side
+      Then "Offer" is enabled
+
+    Scenario Outline: Invalid offers cannot be sent
+      Given Crimson builds an offer of <give> for <want>
+      Then "Offer" is disabled
+
+      Examples:
+        | give      | want            |
+        | 4 timber  | 1 ore           |
+        | 1 timber  | 1 timber, 1 ore |
+
+    Scenario: Offering to everyone
+      When Crimson offers 2 timber for 1 ore
+      Then the log reads "Crimson offers 2 timber for 1 ore."
+      And the header shows "Cobalt · trade offer" with Cobalt's colour
+      And the status reads "Crimson offers 2 timber for 1 ore."
+      And no hand is shown
+      And "Accept" is enabled
+
+    Scenario: A responder who cannot pay may only decline
+      When Crimson offers 2 timber for 1 grain
+      Then "Accept" is disabled with "You don't have 1 grain"
+      And "Decline" is enabled
+
+    Scenario: Responders answer one at a time in seat order
+      When Crimson offers 2 timber for 1 ore
+      And Cobalt taps "Decline"
+      Then the log reads "Cobalt declined the offer."
+      And the header shows "Amber · trade offer"
+      When Amber taps "Decline"
+      Then the header shows "Crimson"
+      And the status reads "Answers are in. Trade with someone or withdraw."
+
+    Scenario: Closing an accepted offer
+      When Crimson offers 2 timber for 1 ore
+      And Cobalt taps "Accept"
+      And Amber taps "Decline"
+      Then the responses list shows Cobalt "accepted" and Amber "declined"
+      When Crimson taps "Trade with Cobalt"
+      Then Crimson holds 1 timber and 1 ore
+      And Cobalt holds 2 timber
+      And the log reads "Crimson traded 2 timber with Cobalt for 1 ore."
+      And the status reads "Build, trade, or end your turn."
+
+    Scenario: Withdrawing an offer
+      When Crimson offers 2 timber for 1 ore
+      And Cobalt taps "Decline"
+      And Amber taps "Decline"
+      And Crimson taps "Withdraw"
+      Then every hand is unchanged
+      And the log reads "Crimson withdrew the offer."
+
+    Scenario: An offer nobody can answer
+      Given Cobalt holds 0 cards and Amber holds 0 cards
+      When Crimson offers 2 timber for 1 ore
+      Then the log reads "Nobody can answer that offer."
+      And the status reads "Build, trade, or end your turn."
+
+    Scenario: An offer to one seat asks only that seat
+      When Crimson offers 2 timber for 1 ore to Amber
+      Then the log reads "Crimson offers 2 timber for 1 ore to Amber."
+      And the header shows "Amber · trade offer"
+
+    Scenario: A counter-offer is shown and can be taken
+      Given Crimson offered 2 timber for 1 ore
+      And Cobalt countered with 3 timber for 1 ore
+      And Amber declined
+      Then the responses list shows Cobalt "countered: 3 timber for 1 ore"
+      When Crimson taps "Trade with Cobalt"
+      Then Crimson holds 0 timber and 1 ore
+      And the log reads "Crimson traded 3 timber with Cobalt for 1 ore."
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: The bank can run out
+
+    Background:
+      Given setup is complete
+      And it is Crimson's turn and Crimson has not rolled
+
+    Scenario: The bank row shows the supply
+      Then the bank row shows 19 of each resource
+
+    Scenario: One player owed a short resource takes what is left
+      Given the bank holds 1 ore
+      And Amber has a city on a tile numbered 8 producing ore
+      When Crimson rolls 8
+      Then Amber receives 1 ore
+      And the bank holds 0 ore
+      And the log reads "Bank is out of ore."
+
+    Scenario: Two players owed a short resource get nothing
+      Given the bank holds 1 ore
+      And Cobalt and Amber each have a settlement on a tile numbered 8 producing ore
+      When Crimson rolls 8
+      Then Cobalt and Amber receive no ore
+      And the bank holds 1 ore
+      And the log reads "Bank is out of ore."
+
+    Scenario: Trades cannot take what the bank lacks
+      Given Crimson has rolled and holds 4 timber
+      And the bank holds 0 ore
+      When Crimson chooses timber to give and ore to get in "Trade with bank, 4 for 1"
+      Then "Trade 4 for 1" is disabled
+
+    Scenario: Bumper harvest cannot take what the bank lacks
+      Given Crimson has rolled and holds a playable Bumper harvest
+      And the bank holds 1 ore
+      Then Crimson cannot choose ore and ore
+      But Crimson can choose grain and ore
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Piece limits
+
+    Background:
+      Given setup is complete and Crimson has rolled
+
+    Scenario: Build buttons show how many pieces are left
+      Then the "Settlement" button shows "3 left"
+      And the "City" button shows "4 left"
+      And the "Road" button shows "13 left"
+
+    Scenario: The sixth settlement is not offered
+      Given Crimson has 5 settlements on the board and can afford a settlement
+      Then the "Settlement" button shows "0 left"
+      And the "Settlement" button is disabled
+
+    Scenario: A city frees a settlement piece
+      Given Crimson has 5 settlements on the board and can afford a city
+      When Crimson upgrades one of them to a city
+      Then the "Settlement" button shows "1 left"
+
+    Scenario: Road crew with one road piece left
+      Given Crimson has 14 roads on the board and holds a playable Road crew
+      When Crimson plays Road crew and places one free road
+      Then the log reads "No roads left to build."
+      And the status reads "Build, trade, or end your turn."
 
   # ─────────────────────────────────────────────────────────────
   Rule: Development cards
@@ -584,6 +764,7 @@ Feature: Saltmarsh Isles pass-and-play game
       And a "Road N" badge with their longest road length
       And a "Knights N" badge with their Knights played
       And a score "N / 10" counting buildings and awards only
+      And a "+N" for hidden victory points, shown only on the current player's row
 
   # ─────────────────────────────────────────────────────────────
   Rule: Winning
@@ -599,7 +780,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Examples:
         | start | action                                                  |
         | 9     | builds a settlement                                     |
-        | 8     | builds a city                                           |
+        | 9     | builds a city                                           |
         | 8     | builds a road that takes longest road                   |
         | 8     | plays a third Knight and takes largest army             |
         | 9     | buys a victory point card                               |
@@ -632,22 +813,29 @@ Feature: Saltmarsh Isles pass-and-play game
 
     Scenario: The win screen plays
       When Crimson wins
-      Then a full-screen overlay appears over a blurred board
-      And the card is bordered in Crimson's colour with a crown badge
+      Then the victory card is showing
+      And the card carries Crimson's colour
       And it reads "Victory" and "Crimson wins"
       And it shows "Rules the isles after N rounds."
       And the breakdown lists only sources worth more than 0, then the total
-      And confetti bursts from the centre and from both bottom corners, then again 0.55 seconds later
-      And Crimson's settlements and cities glow gold and pulse
+      And the confetti schedule has a centre burst, two corner cannons and a second wave 0.55 seconds later
+      And Crimson's settlements and cities are marked as the champion's
 
     Scenario: Closing the win screen
       Given the victory screen is showing
-      When I tap "See the board" or press Escape
+      When I tap "See the board"
       Then the overlay closes
-      And the winner's pieces keep glowing
+      And the winner's pieces stay marked as the champion's
 
+    @ui
+    Scenario: Escape closes the win screen
+      Given the victory screen is showing
+      When I press Escape
+      Then the overlay closes
+
+    @ui
     Scenario: The win screen is hidden at load
-      When the page loads, including from a downloaded copy of the file
+      When the app launches
       Then the victory screen is hidden
 
     Scenario: Previewing the win screen
@@ -679,3 +867,52 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: End turn is locked until the roll
       Given it is Crimson's turn and Crimson has not rolled
       Then "End turn" is disabled
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Playing against AI seats
+
+    Scenario: Choosing seats for a new game
+      When I start a 3-player game with Crimson human, Cobalt an AI Mate and Amber an AI Admiral
+      Then the players are Crimson, Cobalt and Amber
+      And Cobalt and Amber are AI seats
+
+    Scenario: AI seats take their turns by themselves
+      Given a 3-player game with Crimson human and the others AI
+      When the AI seats have finished acting
+      Then it is Crimson who must act
+      And the status does not read "Cobalt is thinking…"
+
+    Scenario: Controls are locked while an AI acts
+      Given a 3-player game with Crimson human and the others AI
+      When Cobalt is thinking
+      Then the status reads "Cobalt is thinking…"
+      And every action button is disabled
+
+    Scenario: One human keeps seeing their hand during AI turns
+      Given a 3-player game with Crimson human and the others AI
+      When Cobalt is thinking
+      Then the hold is labelled "Crimson's hold"
+
+    Scenario: With two humans no hand shows during AI turns
+      Given a 3-player game with Crimson and Cobalt human and Amber AI
+      When Amber is thinking
+      Then no hand is shown
+
+    Scenario: An AI never shows hidden points
+      Given a 3-player game with Crimson human and the others AI
+      And Cobalt holds a victory point card and it is Cobalt's turn
+      Then Cobalt's row shows no "+N"
+
+    Scenario: An AI answers an offer at once
+      Given a 3-player game with Crimson human and the others AI
+      And setup is complete and Crimson has rolled
+      And Crimson holds 2 timber and Cobalt holds 1 ore
+      When Crimson offers 2 timber for 1 ore to Cobalt
+      Then Cobalt's answer is in without passing the device
+      And the header shows "Crimson"
+
+    Scenario: A human answers an AI's offer
+      Given a 3-player game with Crimson human and the others AI
+      And Cobalt has offered 1 ore for 1 timber to Crimson
+      Then the header shows "Crimson · trade offer"
+      And "Accept" and "Decline" are offered
