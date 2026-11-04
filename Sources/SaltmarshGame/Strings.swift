@@ -39,4 +39,35 @@ enum Strings {
     static func hold(_ name: String) -> String { "\(name)'s hold" }
     static let reverseOrder = "Round 2: reverse order"
     static let dash = "–"
+    static let noHarbours = "None yet. Build a settlement on a corner joined to a harbour by a jetty."
+    static let bankTitle = "Trade with bank, 4 for 1"
+    static func buyCard(_ left: Int) -> String { "Buy a card (\(left) left)" }
+    static func harbourTitle(_ h: Harbour) -> String {
+        switch h.kind {
+        case .any: "3:1 any"
+        case .specific(let r): "2:1 \(r.rawValue)"
+        }
+    }
+    static func harbourTrade(_ ratio: Int) -> String { "Trade \(ratio) for 1" }
+
+    // Discard box
+    static func discardTitle(_ name: String, _ n: Int) -> String { "\(name), pick \(n) cards to give up" }
+    static func discardCounter(_ picked: Int, _ n: Int) -> String { "\(picked) / \(n)" }
+    static func discardRow(_ picked: Int, _ held: Int) -> String { "\(picked) of \(held)" }
+    static func next(_ name: String) -> String { "Next: \(name)" }
+
+    // Development card notes
+    static let boughtThisTurn = "bought this turn", oneCardPerTurn = "one card per turn", countsAutomatically = "counts automatically"
+
+    // Trade responses
+    static let pending = "pending", accepted = "accepted", declined = "declined"
+    static func countered(_ counter: TradeOffer) -> String { "countered: \(counter.description)" }
+
+    // Victory card
+    static let victory = "Victory", preview = "Preview"
+    static func wins(_ name: String) -> String { "\(name) wins" }
+    static func rounds(_ n: Int) -> String { "Rules the isles after \(n) rounds." }
+    static let previewNote = "This is what the win screen looks like. The game carries on."
+    static func banner(_ name: String, _ points: Int) -> String { "\(name) rules the isles with \(points) points." }
+    static let settlements = "Settlements", cities = "Cities", longestRoad = "Longest road", largestArmy = "Largest army", victoryPointCards = "Victory point cards"
 }
