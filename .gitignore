@@ -21,3 +21,6 @@ Package.resolved
 # Test output
 TestResults/
 *.xcresult
+
+# Superpowers working files
+.superpowers/
