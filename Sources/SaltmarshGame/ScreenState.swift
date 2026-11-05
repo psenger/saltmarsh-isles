@@ -13,6 +13,8 @@ public struct ScoreRow: Equatable, Sendable {
     public var knightsHighlighted: Bool
     /// "N / 10", buildings and awards only.
     public var score: String
+    /// The N of `score`, for the compact header.
+    public var points: Int
     /// "+N" hidden victory points, shown for the current human seat only.
     public var hidden: String?
     public var isCurrent: Bool
@@ -138,6 +140,11 @@ public struct VictoryCard: Equatable, Sendable {
     public var confetti: ConfettiSchedule?
 }
 
+/// The tabs under the turn buttons, in the order they are shown.
+public enum PanelTab: String, CaseIterable, Sendable {
+    case trade = "Trade", cards = "Cards", players = "Players", log = "Log"
+}
+
 /// The blank screen shown while the device passes to a different human. Nothing else is drawn with it.
 public struct Handover: Equatable, Sendable {
     public var player: Int
@@ -206,6 +213,8 @@ public struct ScreenState: Equatable, Sendable {
     public var tradeSection: TradeSection
     public var victory: VictoryCard?
     public var victoryAnimation: VictoryAnimation
+    /// Empty while the game asks the player for something; that request takes the tab area.
+    public var enabledTabs: Set<PanelTab>
     /// When set, the app draws only this. The other fields keep their values so the rules can still read them.
     public var handover: Handover?
 
@@ -219,6 +228,6 @@ public struct ScreenState: Equatable, Sendable {
                     stealTargets: [], numberDiscBelowRobber: false, desertLabelBelowRobber: true, harbourRings: [:], championCorners: [],
                     discardBox: nil, harbours: HarboursPanel(emptyText: Strings.noHarbours, rows: []), bankTitle: Strings.bankTitle, bankChoice: TradeChoice.bankFallback, bankGiveOptions: [TradeChoice.bankFallback.give], bankRowEnabled: false,
                     devCards: [], buyLabel: Strings.buyCard(25), tradeSection: TradeSection(offerGive: ResourceCounts(), offerWant: ResourceCounts(), target: nil, targets: [], offerEnabled: false, offerProblem: nil, responses: []),
-                    victory: nil, victoryAnimation: .full, handover: nil)
+                    victory: nil, victoryAnimation: .full, enabledTabs: [.players, .log], handover: nil)
     }
 }

@@ -2,127 +2,208 @@ import SwiftUI
 import SaltmarshEngine
 import SaltmarshGame
 
-/// The panel beside or below the board: who acts, what they hold, and what they can do now.
+/// The panel beside or below the board. Everything above the tab area keeps its place in every
+/// state; a control that cannot be used greys out where it is. Only the tab area scrolls.
 struct GamePanel: View {
     let vm: GameViewModel
     let screen: ScreenState
-    let onNewGame: () -> Void
+
+    @State private var picked = PanelTab.trade
 
     private var isResponding: Bool { screen.buttons[Strings.decline] == true }
-    private var isChoosingVictim: Bool { !screen.stealTargets.isEmpty }
-
-    /// Trading and cards belong to the current player's own turn, after setup.
-    private var showsTradeAndCards: Bool {
-        !screen.aiThinking && !isResponding && !isChoosingVictim && screen.discardBox == nil
-            && screen.orderStrip == nil && !screen.header.isEmpty
+    /// The game wants something from this player, and that request takes the tab area.
+    private var hasRequest: Bool { screen.enabledTabs.isEmpty }
+    private var shownTab: PanelTab? {
+        if hasRequest { return nil }
+        return screen.enabledTabs.contains(picked) ? picked : .log
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Who acts and what is asked of them never scrolls away.
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    header
-                    Spacer(minLength: 0)
-                    dice
-                }
-                Text(screen.status)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityIdentifier("status")
-                if !screen.holdTitle.isEmpty { ResourceRow(title: screen.holdTitle, id: "hold", counts: screen.handCounts) }
+        VStack(alignment: .leading, spacing: 8) {
+            whoLine
+            hand
+            turnButtons
+            buildButtons
+            tabBar
+            tabArea
+        }
+        .padding(10)
+    }
+
+    // MARK: Always in place
+
+    private var whoLine: some View {
+        HStack(spacing: 6) {
+            SeatDot(seat: screen.headerSeat)
+            Text(screen.header)
+                .font(.callout.bold())
+                .lineLimit(1)
+                .accessibilityIdentifier("header")
+            Spacer(minLength: 4)
+            Text(screen.holdTitle)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .frame(height: 18)
+    }
+
+    private var hand: some View {
+        HStack(spacing: 6) {
+            ForEach(Resource.allCases, id: \.self) { resource in
+                ResourceBox(resource: resource, amount: screen.holdTitle.isEmpty ? nil : screen.handCounts[resource], id: "hold")
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    moment
-                    orderStrip
-                    ResourceRow(title: "Bank", id: "bank", counts: screen.bank)
-                    if showsTradeAndCards { TradeAndCards(vm: vm, screen: screen) }
-                    scoreboard
-                    log
-                    footer
-                    Text("Saltmarsh Isles").font(.caption).foregroundStyle(.secondary)
-                }
-                .padding(12)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var turnButtons: some View {
+        let roll = screen.buttons[Strings.rollForFirstButton] == true ? Strings.rollForFirstButton : Strings.rollDice
+        return HStack {
+            turnButton(roll) {
+                if roll == Strings.rollDice { vm.rollDice() } else { vm.rollForFirst() }
             }
+            turnButton(Strings.endTurn) { vm.endTurn() }
         }
     }
 
-    private func button(_ label: String, perform: @escaping () -> Void) -> some View {
+    private func turnButton(_ label: String, perform: @escaping () -> Void) -> some View {
+        Button(action: perform) {
+            Text(label).frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(Color(hex: 0x1d2a30))
+        .disabled(screen.buttons[label] != true)
+        .accessibilityIdentifier(label)
+    }
+
+    private var buildButtons: some View {
+        HStack {
+            buildButton(Strings.road, .road)
+            buildButton(Strings.settlement, .settlement)
+            buildButton(Strings.city, .city)
+        }
+    }
+
+    private func buildButton(_ label: String, _ mode: BuildMode) -> some View {
+        Button { vm.toggleBuildMode(mode) } label: {
+            VStack(spacing: 0) {
+                Text(label).lineLimit(1).minimumScaleFactor(0.8)
+                Text(Strings.piecesLeft(screen.buildLeft[mode] ?? 0)).font(.caption2)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.bordered)
+        .tint(screen.activeBuildMode == mode ? Color(hex: 0xd68910) : nil)
+        .disabled(screen.buttons[label] != true)
+        .accessibilityIdentifier(label)
+    }
+
+    private var tabBar: some View {
+        HStack(spacing: 0) {
+            ForEach(PanelTab.allCases, id: \.self) { tab in
+                let enabled = screen.enabledTabs.contains(tab), on = shownTab == tab
+                Button { picked = tab } label: {
+                    Text(tab.rawValue)
+                        .font(.callout)
+                        .fontWeight(on ? .bold : .regular)
+                        .foregroundStyle(enabled ? .primary : .tertiary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 5)
+                        .contentShape(Rectangle())
+                        .overlay(alignment: .bottom) {
+                            Rectangle().fill(.primary).frame(height: 2).opacity(on ? 1 : 0)
+                        }
+                }
+                .buttonStyle(.plain)
+                .disabled(!enabled)
+                .accessibilityIdentifier("tab \(tab.rawValue)")
+            }
+        }
+        .overlay(alignment: .bottom) { Divider() }
+    }
+
+    // MARK: The tab area
+
+    @ViewBuilder private var tabArea: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            orderStrip
+            switch shownTab {
+            case .trade: scrolling { TradeTab(vm: vm, screen: screen) }
+            case .cards: scrolling { CardsTab(vm: vm, screen: screen) }
+            case .players: scrolling { scoreboard }
+            case .log: log
+            case nil: scrolling { request }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private func scrolling(@ViewBuilder _ content: () -> some View) -> some View {
+        ScrollView {
+            content().frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    @ViewBuilder private var orderStrip: some View {
+        if let strip = screen.orderStrip {
+            HStack(spacing: 4) {
+                ForEach(Array(strip.enumerated()), id: \.offset) { _, seat in
+                    SeatDot(seat: seat)
+                        .overlay(Circle().stroke(.primary, lineWidth: seat == screen.headerSeat ? 2 : 0))
+                }
+                if let note = screen.orderStripNote { Text(note).font(.caption).lineLimit(1) }
+            }
+            .frame(height: 16)
+        }
+    }
+
+    // MARK: What the game is asking for
+
+    @ViewBuilder private var request: some View {
+        if isResponding {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(screen.status).font(.callout.bold()).fixedSize(horizontal: false, vertical: true)
+                HStack {
+                    requestButton(Strings.accept) { vm.respondToOffer(accept: true) }
+                    requestButton(Strings.decline) { vm.respondToOffer(accept: false) }
+                }
+                if let problem = screen.acceptProblem { Text(problem).font(.callout).foregroundStyle(.secondary) }
+            }
+        } else if let box = screen.discardBox {
+            discard(box)
+        } else if !screen.stealTargets.isEmpty {
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(screen.stealTargets, id: \.name) { target in
+                    Button("\(Strings.stealFrom(target.name)), \(Strings.cardCount(target.cards))") { vm.steal(from: target.seat.rawValue) }
+                        .buttonStyle(.bordered)
+                        .accessibilityIdentifier(Strings.stealFrom(target.name))
+                }
+            }
+        } else {
+            OfferAnswers(vm: vm, screen: screen)
+        }
+    }
+
+    private func requestButton(_ label: String, perform: @escaping () -> Void) -> some View {
         Button(label, action: perform)
             .buttonStyle(.bordered)
             .disabled(screen.buttons[label] != true)
             .accessibilityIdentifier(label)
     }
 
-    @ViewBuilder private var header: some View {
-        if !screen.header.isEmpty {
-            Text(screen.header)
-                .font(.title3.bold())
-                .foregroundStyle(screen.headerSeat == .ivory ? Color(hex: 0x1d2a30) : .white)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(seat: screen.headerSeat), in: RoundedRectangle(cornerRadius: 6))
-                .accessibilityIdentifier("header")
-        }
-    }
-
-    @ViewBuilder private var orderStrip: some View {
-        if let strip = screen.orderStrip {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 4) {
-                    ForEach(Array(strip.enumerated()), id: \.offset) { _, seat in
-                        SeatDot(seat: seat)
-                            .overlay(Circle().stroke(.primary, lineWidth: seat == screen.headerSeat ? 2 : 0))
-                    }
-                }
-                if let note = screen.orderStripNote { Text(note).font(.caption) }
-            }
-        }
-    }
-
-    private var dice: some View {
-        HStack(spacing: 4) {
-            ForEach(Array(screen.dice.enumerated()), id: \.offset) { _, face in
-                Text(face)
-                    .font(.title3.monospacedDigit().bold())
-                    .frame(width: 32, height: 32)
-                    .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
-            }
-        }
-    }
-
-    // MARK: What this moment asks for
-
-    @ViewBuilder private var moment: some View {
-        if isResponding {
-            HStack {
-                button(Strings.accept) { vm.respondToOffer(accept: true) }
-                button(Strings.decline) { vm.respondToOffer(accept: false) }
-            }
-            if let problem = screen.acceptProblem { Text(problem).font(.callout).foregroundStyle(.secondary) }
-        } else if let box = screen.discardBox {
-            discard(box)
-        } else if isChoosingVictim {
-            ForEach(screen.stealTargets, id: \.name) { target in
-                Button("\(Strings.stealFrom(target.name)), \(Strings.cardCount(target.cards))") { vm.steal(from: target.seat.rawValue) }
-                    .buttonStyle(.bordered)
-                    .accessibilityIdentifier(Strings.stealFrom(target.name))
-            }
-        } else if screen.buttons[Strings.rollForFirstButton] == true {
-            button(Strings.rollForFirstButton) { vm.rollForFirst() }
-        } else {
-            turnButtons
-        }
-    }
-
     private func discard(_ box: DiscardBox) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(box.title).font(.subheadline.bold())
-            Text(box.counter).font(.callout.monospacedDigit())
+            HStack {
+                Text(box.title).font(.subheadline.bold())
+                Spacer()
+                Text(box.counter).font(.callout.monospacedDigit())
+            }
+            // Above the rows, so it stays in view when the rows need scrolling.
+            Button(box.confirmLabel) { vm.confirmDiscard() }
+                .buttonStyle(.bordered)
+                .disabled(!box.confirmEnabled)
+                .accessibilityIdentifier(box.confirmLabel)
             ForEach(box.rows, id: \.resource) { row in
                 HStack {
                     Text(row.resource.rawValue).frame(width: 60, alignment: .leading)
@@ -133,94 +214,47 @@ struct GamePanel: View {
                 .buttonStyle(.bordered)
             }
             if let next = box.next { Text(next).font(.caption) }
-            Button(box.confirmLabel) { vm.confirmDiscard() }
-                .buttonStyle(.bordered)
-                .disabled(!box.confirmEnabled)
-                .accessibilityIdentifier(box.confirmLabel)
         }
         .padding(8)
         .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color(seat: box.outlineSeat), lineWidth: 2))
     }
 
-    private var turnButtons: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                button(Strings.rollDice) { vm.rollDice() }
-                button(Strings.endTurn) { vm.endTurn() }
-            }
-            HStack {
-                buildButton(Strings.road, .road)
-                buildButton(Strings.settlement, .settlement)
-                buildButton(Strings.city, .city)
-            }
-        }
-    }
+    // MARK: Players and Log
 
-    private func buildButton(_ label: String, _ mode: BuildMode) -> some View {
-        Button { vm.toggleBuildMode(mode) } label: {
-            VStack(spacing: 0) {
-                Text(label)
-                Text(Strings.piecesLeft(screen.buildLeft[mode] ?? 0)).font(.caption2)
+    private var scoreboard: some View {
+        Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 4) {
+            GridRow {
+                Text("Player"); Text("Cards"); Text("Dev"); Text("Road"); Text("Army"); Text("Points")
             }
-        }
-        .buttonStyle(.bordered)
-        .tint(screen.activeBuildMode == mode ? Color(hex: 0xd68910) : nil)
-        .disabled(screen.buttons[label] != true)
-        .accessibilityIdentifier(label)
-    }
-
-    // MARK: Always on show
-
-    @ViewBuilder private var scoreboard: some View {
-        if !screen.scoreboard.isEmpty {
-            Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 4) {
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+            ForEach(screen.scoreboard, id: \.name) { row in
                 GridRow {
-                    Text("Player"); Text("Cards"); Text("Dev"); Text("Road"); Text("Army"); Text("Points")
-                }
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                ForEach(screen.scoreboard, id: \.name) { row in
-                    GridRow {
-                        HStack(spacing: 4) {
-                            SeatDot(seat: row.seat)
-                            Text(row.name).fontWeight(row.isCurrent ? .bold : .regular)
-                        }
-                        Text("\(row.cards)")
-                        Text("\(row.devCards)")
-                        Text("\(row.road)").fontWeight(row.roadHighlighted ? .bold : .regular)
-                        Text("\(row.knights)").fontWeight(row.knightsHighlighted ? .bold : .regular)
-                        Text(row.score + (row.hidden.map { " \($0)" } ?? ""))
+                    HStack(spacing: 4) {
+                        SeatDot(seat: row.seat)
+                        Text(row.name).fontWeight(row.isCurrent ? .bold : .regular)
                     }
+                    Text("\(row.cards)")
+                    Text("\(row.devCards)")
+                    Text("\(row.road)").fontWeight(row.roadHighlighted ? .bold : .regular)
+                    Text("\(row.knights)").fontWeight(row.knightsHighlighted ? .bold : .regular)
+                    Text(row.score + (row.hidden.map { " \($0)" } ?? ""))
                 }
             }
-            .font(.callout.monospacedDigit())
         }
+        .font(.callout.monospacedDigit())
     }
 
-    @ViewBuilder private var log: some View {
-        if !screen.log.isEmpty {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 2) {
-                    ForEach(Array(screen.log.reversed().enumerated()), id: \.offset) { _, line in
-                        Text(line).font(.caption).fixedSize(horizontal: false, vertical: true)
-                    }
+    private var log: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 2) {
+                ForEach(Array(screen.log.reversed().enumerated()), id: \.offset) { _, line in
+                    Text(line).font(.caption).fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(6)
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .frame(height: 140)
-            .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 6))
-            .accessibilityIdentifier("log")
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-    }
-
-    private var footer: some View {
-        HStack {
-            button(Strings.newGame, perform: onNewGame)
-            #if DEBUG
-            button(Strings.previewWin) { vm.showPreviewWin() }
-            #endif
-        }
+        .accessibilityIdentifier("log")
     }
 }
 
@@ -238,11 +272,12 @@ struct SeatDot: View {
 /// A square box in the resource's board colour: the amount above its name, centred both ways.
 struct ResourceBox: View {
     let resource: Resource
-    let amount: Int
+    /// Nil keeps the box in place with no number, when no hand may be shown.
+    let amount: Int?
     /// Accessibility identifier prefix, such as "hold".
     let id: String
 
-    private var ink: Color {
+    static func ink(for resource: Resource) -> Color {
         resource == .grain || resource == .wool ? Color(hex: 0x1d2a30) : .white
     }
 
@@ -253,33 +288,15 @@ struct ResourceBox: View {
             .aspectRatio(1, contentMode: .fit)
             .overlay {
                 VStack(spacing: 0) {
-                    Text("\(amount)").font(.callout.monospacedDigit().bold())
+                    Text(amount.map(String.init) ?? " ").font(.callout.monospacedDigit().bold())
                     Text(resource.rawValue).font(.caption2).minimumScaleFactor(0.7).lineLimit(1)
                 }
-                .foregroundStyle(ink)
+                .foregroundStyle(Self.ink(for: resource))
                 .padding(2)
             }
             .frame(maxWidth: 64)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("\(amount) \(resource.rawValue)")
+            .accessibilityLabel(amount.map { "\($0) \(resource.rawValue)" } ?? resource.rawValue)
             .accessibilityIdentifier("\(id) \(resource.rawValue)")
-    }
-}
-
-/// Five resource boxes under a title: the hold and the bank.
-struct ResourceRow: View {
-    let title: String
-    let id: String
-    let counts: ResourceCounts
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title).font(.caption).foregroundStyle(.secondary)
-            HStack(spacing: 6) {
-                ForEach(Resource.allCases, id: \.self) { resource in
-                    ResourceBox(resource: resource, amount: counts[resource], id: id)
-                }
-            }
-        }
     }
 }

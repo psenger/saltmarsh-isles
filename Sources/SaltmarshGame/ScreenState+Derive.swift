@@ -236,6 +236,10 @@ extension ScreenState {
                                         targets: s.players.indices.filter { $0 != current }.map { s.players[$0].seat },
                                         offerEnabled: buttons[Strings.offerButton] == true, offerProblem: offerProblem, responses: responses)
 
+        // Trade and Cards belong to the current player, so they close while an AI is that player.
+        let hasRequest = responderPending || discardBox != nil || !stealTargets.isEmpty || buttons[Strings.withdraw] == true
+        let enabledTabs: Set<PanelTab> = hasRequest ? [] : (aiThinking || orderStrip != nil ? [.players, .log] : Set(PanelTab.allCases))
+
         // Victory card.
         var victory: VictoryCard?
         func breakdown(_ p: Int) -> [BreakdownRow] {
@@ -273,7 +277,7 @@ extension ScreenState {
             return ScoreRow(seat: p.seat, name: p.name, colorHex: p.seat.colorHex, cards: p.hand.total, devCards: p.devCards.count,
                             road: Engine.roadLength(s, player: i), roadHighlighted: s.longestRoadHolder == i,
                             knights: p.knightsPlayed, knightsHighlighted: s.largestArmyHolder == i,
-                            score: "\(Engine.publicPoints(s, player: i)) / 10",
+                            score: "\(Engine.publicPoints(s, player: i)) / 10", points: Engine.publicPoints(s, player: i),
                             hidden: i == current && !p.controller.isAI && hidden > 0 ? "+\(hidden)" : nil,
                             isCurrent: i == current)
         }
@@ -294,7 +298,7 @@ extension ScreenState {
             bankTitle: Strings.bankTitle, bankChoice: bankChoice, bankGiveOptions: TradeChoice.giveOptions(legal: bankPairs, shown: bankChoice),
             bankRowEnabled: !bankPairs.isEmpty,
             devCards: devRows, buyLabel: Strings.buyCard(s.devDeck.count), tradeSection: tradeSection,
-            victory: victory, victoryAnimation: reduceMotion ? .reduced : .full, handover: handover)
+            victory: victory, victoryAnimation: reduceMotion ? .reduced : .full, enabledTabs: enabledTabs, handover: handover)
     }
 }
 
