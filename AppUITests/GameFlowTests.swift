@@ -34,9 +34,24 @@ final class GameFlowTests: XCTestCase {
         app.buttons["Start game"].tap()
     }
 
+    /// What a text says. A Mac reports a text's words as its value, iOS as its label.
+    private func words(_ element: XCUIElement) -> String {
+        guard element.exists else { return "" }
+        return element.label.isEmpty ? (element.value as? String ?? "") : element.label
+    }
+
+    /// A text by what it says, on either platform.
+    private func text(_ app: XCUIApplication, _ words: String) -> XCUIElement {
+        app.staticTexts.matching(NSPredicate(format: "label ==[c] %@ OR value ==[c] %@", words, words)).firstMatch
+    }
+
+    /// A button in an alert. A Mac shows an alert as a sheet, so look for the button anywhere.
+    private func alertButton(_ app: XCUIApplication, _ name: String) -> XCUIElement {
+        app.buttons.matching(NSPredicate(format: "label == %@ OR title == %@", name, name)).firstMatch
+    }
+
     private func status(_ app: XCUIApplication) -> String {
-        let element = app.staticTexts["status"]
-        return element.exists ? element.label : ""
+        return words(app.staticTexts["status"])
     }
 
     /// Taps across the board until the status line moves on from `prompt`.
@@ -118,17 +133,24 @@ final class GameFlowTests: XCTestCase {
         startNewGame(app)
         XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["help"].exists, "the help belongs in a menu, not beside the dice")
+        #if os(macOS)
+        // On a Mac the help is Apple's help book, opened from the Help menu in another app, so check the item is there.
+        app.menuBarItems["Help"].click()
+        XCTAssertTrue(app.menuItems["Saltmarsh Isles Help"].waitForExistence(timeout: 5), "no help in the Help menu")
+        app.typeKey(.escape, modifierFlags: [])
+        #else
         chooseFromMenu(app, "How to Play")
-        XCTAssertTrue(app.staticTexts["The goal"].waitForExistence(timeout: 5), "the help did not open")
+        XCTAssertTrue(text(app, "The goal").waitForExistence(timeout: 5), "the help did not open")
         app.buttons["help done"].tap()
         XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5), "the help did not close")
+        #endif
     }
 
     func testSavedGameComesBackAndSurvivesARelaunch() {
         let app = XCUIApplication()
         app.launch()
         startNewGame(app)
-        let rolled = app.scrollViews["log"].staticTexts.matching(NSPredicate(format: "label CONTAINS 'for first player' AND label CONTAINS 'rolled'")).firstMatch
+        let rolled = app.scrollViews["log"].staticTexts.matching(NSPredicate(format: "(label CONTAINS 'for first player' AND label CONTAINS 'rolled') OR (value CONTAINS 'for first player' AND value CONTAINS 'rolled')")).firstMatch
         let rollFirst = app.buttons["Roll for first"]
         XCTAssertTrue(rollFirst.waitForExistence(timeout: 5))
         rollFirst.tap()
@@ -141,15 +163,19 @@ final class GameFlowTests: XCTestCase {
         XCTAssertTrue(field.waitForExistence(timeout: 5))
         XCTAssertFalse((field.value as? String ?? "").isEmpty, "the name is not prefilled")
         field.tap()
+        #if os(macOS)
+        field.typeKey("a", modifierFlags: .command)
+        #else
         field.press(forDuration: 1.2)
         if app.menuItems["Select All"].waitForExistence(timeout: 2) { app.menuItems["Select All"].tap() }
+        #endif
         field.typeText(name)
         let save = app.buttons["save confirm"]
         if save.isEnabled {
             save.tap()
         } else {
             app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'save slot'")).firstMatch.tap()
-            app.alerts.buttons["Replace"].tap()
+            alertButton(app, "Replace").tap()
         }
         XCTAssertFalse(field.waitForExistence(timeout: 2), "the save sheet did not close")
 
@@ -163,12 +189,12 @@ final class GameFlowTests: XCTestCase {
         let row = app.buttons["load slot \(name)"]
         XCTAssertTrue(row.waitForExistence(timeout: 5), "the save is not listed")
         row.tap()
-        app.alerts.buttons["Load"].tap()
+        alertButton(app, "Load").tap()
         XCTAssertTrue(rolled.waitForExistence(timeout: 5), "loading did not bring the game back")
 
         app.terminate()
         app.launch()
-        XCTAssertTrue(app.buttons["menu"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5))
         chooseFromMenu(app, "Load Game…")
         XCTAssertTrue(app.buttons["load slot \(name)"].waitForExistence(timeout: 5), "the save did not survive a relaunch")
         XCTAssertFalse(app.buttons["delete slot \(name)"].exists, "the load sheet should not offer delete")
@@ -178,7 +204,7 @@ final class GameFlowTests: XCTestCase {
         let trash = app.buttons["delete slot \(name)"]
         XCTAssertTrue(trash.waitForExistence(timeout: 5), "no trash can on the save")
         trash.tap()
-        app.alerts.buttons["Delete"].tap()
+        alertButton(app, "Delete").tap()
         XCTAssertFalse(trash.waitForExistence(timeout: 2), "the save was not deleted")
     }
 
@@ -188,10 +214,10 @@ final class GameFlowTests: XCTestCase {
         startNewGame(app)
         XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5))
         chooseFromMenu(app, "Preview lose")
-        XCTAssertTrue(app.staticTexts["Defeat"].waitForExistence(timeout: 5), "the defeat card did not open")
-        XCTAssertTrue(app.staticTexts["Better luck next time, captain."].exists)
+        XCTAssertTrue(text(app, "Defeat").waitForExistence(timeout: 5), "the defeat card did not open")
+        XCTAssertTrue(text(app, "Better luck next time, captain.").exists)
         app.buttons["Back to the game"].tap()
-        XCTAssertFalse(app.staticTexts["Defeat"].waitForExistence(timeout: 2), "the defeat card did not close")
+        XCTAssertFalse(text(app, "Defeat").waitForExistence(timeout: 2), "the defeat card did not close")
     }
 
     func testPreviewWinClosesWithBackToTheGame() {
@@ -204,7 +230,7 @@ final class GameFlowTests: XCTestCase {
         keepScreenshot(app, named: "preview win")
         back.tap()
         XCTAssertFalse(back.waitForExistence(timeout: 1))
-        XCTAssertEqual(app.staticTexts["header"].label, "Crimson · first roll")
+        XCTAssertEqual(words(app.staticTexts["header"]), "Crimson · first roll")
     }
 
     func testRelaunchResumesTheGame() {
@@ -212,11 +238,11 @@ final class GameFlowTests: XCTestCase {
         app.launch()
         startNewGame(app)
         XCTAssertTrue(app.staticTexts["header"].waitForExistence(timeout: 5))
-        let header = app.staticTexts["header"].label
+        let header = words(app.staticTexts["header"])
         app.terminate()
         app.launch()
         XCTAssertTrue(app.staticTexts["header"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts["header"].label, header)
+        XCTAssertEqual(words(app.staticTexts["header"]), header)
         XCTAssertFalse(app.buttons["Start game"].exists)
     }
 
@@ -317,8 +343,9 @@ final class GameFlowTests: XCTestCase {
         keepScreenshot(app, named: "first roll")
         XCTAssertTrue(app.staticTexts["status"].isHittable, "the status line is off screen")
         XCTAssertTrue(app.staticTexts["header"].isHittable, "the header is off screen")
-        XCTAssertFalse(app.buttons["bank give"].isEnabled, "the bank dropdown is enabled before the roll")
-        XCTAssertFalse(app.buttons["bank get"].isEnabled, "the bank dropdown is enabled before the roll")
+        // A Mac shows these menus as pop-up buttons, so match them by identifier alone.
+        XCTAssertFalse(app.descendants(matching: .any)["bank give"].firstMatch.isEnabled, "the bank dropdown is enabled before the roll")
+        XCTAssertFalse(app.descendants(matching: .any)["bank get"].firstMatch.isEnabled, "the bank dropdown is enabled before the roll")
         app.buttons["Roll dice"].tap()
         let moved = NSPredicate { _, _ in self.status(app) != self.rollPrompt }
         wait(for: [XCTNSPredicateExpectation(predicate: moved, object: nil)], timeout: 5)
@@ -414,7 +441,11 @@ final class GameFlowTests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
         openNewGameSheet(app)
+        #if os(macOS)
+        app.radioGroups.element(boundBy: 2).radioButtons["Human"].click()
+        #else
         app.segmentedControls.element(boundBy: 2).buttons["Human"].tap()
+        #endif
         app.buttons["Start game"].tap()
         XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5))
 

@@ -42,12 +42,15 @@ Input classes the spec implies but a straight reading of the scenarios would not
 Raised 2026-11-05 at the end of the Plan 3 and playable screen session. Resolve every item before starting Plan 2. Record each answer here and remove the item once it is settled. Do not treat any of these as decided.
 
 1. **Hand-off file never read.** `/var/folders/sb/1szn9lh95nd_vnbt29d8j7dh0000gn/T/hand-off.md` was blocked by `permissions.blockReadsOutsideWorkingDirectories`. Owner: run `/add-dir` on its folder or paste it. Then check it for anything the session missed. The file is in a temp folder and may be gone.
-2. **Mac UI tests have never run.** The runner needs the owner's Touch ID or password. Owner: run `make test` at the machine. `testEscapeClosesTheWinScreen` and Mac board clicks stay unverified until then. This also runs the 3.5 minute soak test.
-3. **Owner's Mac play-test result.** Owner: play a game on the Mac build and report what is wrong. Fix or schedule each report. First round of four UI reports fixed on 2026-11-05 (resource boxes, responder's hand, offer builder labels, scrolling log); the owner has not yet confirmed them on the rebuilt app, and the play-test is not finished.
 4. **No independent review yet.** Plan 3 and the playable screen had self-reviews only. Decide: run a fresh whole-branch review now, or before merge. Subagents have hung here on permission prompts, so the owner should be present for it.
 5. **Paths not driven through the UI.** Stealing, accepting a trade, the player's own offers, harbour and bank trades, development cards, and a real win screen (only the preview was opened). Decide: extend `AppUITests`, accept the owner's play-test as coverage, or leave them to Plan 5.
 6. **Owner has not accepted the Rulings below.** Review them, above all R1 and R2. Change any that are wrong.
 7. **Owner has not assigned the Carried forward items below.** Confirm or change the proposed plan for each.
+
+Settled:
+
+- **Mac UI tests (was item 2):** settled on 2026-11-06 with the owner at the machine. The first run saw no app window until the test runner was approved. Every later failure came from the tests assuming iOS: a Mac reports a text's words as its value, shows alerts as sheets, pickers as radio and pop-up buttons, and has no Game button. With the tests fixed, all 15 Mac UI tests passed (12 in a full run, the last 3 on their own) and all 14 iPhone UI tests passed. The tests use the Mac's real save folder, so back it up before running them.
+- **Owner's Mac play-test (was item 3):** closed by the owner on 2026-11-06. The owner played on 2026-11-05 and every report from that play was fixed.
 
 ## Roadmap
 
