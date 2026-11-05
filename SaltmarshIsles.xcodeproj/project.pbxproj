@@ -20,6 +20,7 @@
 		A0BBF1378BC6867BA490F2E7 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3BA7A66E1A9C181A578BE9 /* BoardView.swift */; };
 		A6AFBFE150AE119D6B36C4B1 /* TradeAndCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BD1A45A05AF221C1EF48B7 /* TradeAndCards.swift */; };
 		BEC8AD7E9D4FC26ED5153ACE /* GameButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B5684E51B694A9C11FBA2A /* GameButtonStyle.swift */; };
+		C5D1410A5762935036005EE1 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = DB2CBDF30F2CEB9BA4BBFB19 /* AppIcon.icon */; };
 		E0F9B049B06566265E67D1F7 /* GameScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2EF33FE7D2A84C73A586145 /* GameScreen.swift */; };
 		EC7EA1E583E167C0B15F24E3 /* SaltmarshGame in Frameworks */ = {isa = PBXBuildFile; productRef = 7CB29321CD030244D8728963 /* SaltmarshGame */; };
 		F1313749CC9030724E9D77C6 /* DieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56A80A23973F3A466F79827 /* DieView.swift */; };
@@ -47,6 +48,7 @@
 		C5BD1A45A05AF221C1EF48B7 /* TradeAndCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAndCards.swift; sourceTree = "<group>"; };
 		CC143C89C8A2667A1D68F679 /* SaltmarshIslesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaltmarshIslesApp.swift; sourceTree = "<group>"; };
 		D56A80A23973F3A466F79827 /* DieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DieView.swift; sourceTree = "<group>"; };
+		DB2CBDF30F2CEB9BA4BBFB19 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		DF498E839E40DDB1D16DEE0B /* HandoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandoverView.swift; sourceTree = "<group>"; };
 		DFF9A39044BC641253934ECE /* NewGameSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGameSheet.swift; sourceTree = "<group>"; };
 		ECDA6975E75DD53CAF214F56 /* SaltmarshIsles.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SaltmarshIsles.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,6 +73,7 @@
 		03D2AB28D0141671A3E98994 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				DB2CBDF30F2CEB9BA4BBFB19 /* AppIcon.icon */,
 				CC143C89C8A2667A1D68F679 /* SaltmarshIslesApp.swift */,
 				DA9C181F7ADAE6E38BA74D25 /* Views */,
 			);
@@ -156,6 +159,7 @@
 			buildConfigurationList = 4252827280D3DAB02CB35B93 /* Build configuration list for PBXNativeTarget "SaltmarshIsles" */;
 			buildPhases = (
 				ED91409FBAD8DE7498D370E5 /* Sources */,
+				9118D67661559D2190E54059 /* Resources */,
 				6612D30A797A77858A529EA4 /* Frameworks */,
 			);
 			buildRules = (
@@ -211,6 +215,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9118D67661559D2190E54059 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C5D1410A5762935036005EE1 /* AppIcon.icon in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		EC9125F19867C24BDC6B1491 /* Sources */ = {

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- The sea background is the "fill" in ../icon.json (#4f7f8f, the board's sea colour). -->
+  <!-- Tile: the board's wool green with its sea-deep edge, pointy-top like the board. -->
+  <polygon points="512,172 824,352 824,712 512,892 200,712 200,352"
+           fill="#9cc46a" stroke="#3b6573" stroke-width="28" stroke-linejoin="round"/>
+  <!-- Settlement: the board's settlement outline, scaled up, in Amber's seat colour. -->
+  <polygon points="359,676 359,506 512,370 665,506 665,676"
+           fill="#d68910" stroke="#1d2a30" stroke-width="26" stroke-linejoin="round"/>
+</svg>
