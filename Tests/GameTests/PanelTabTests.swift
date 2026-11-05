@@ -78,6 +78,38 @@ import SaltmarshTestSupport
         #expect(!section.offerEnabled)
         #expect(section.offerProblem == Strings.rollBeforeOffering)
     }
+    func winner(_ seat: Int, controllers: [Controller]) -> VictoryCard? {
+        var s = TestGames.rolled(8)
+        for (i, c) in controllers.enumerated() { s.players[i].controller = c }
+        var ui = UIState()
+        ui.overlay = .victory(winner: seat)
+        return ScreenState.derive(state: s, ui: ui, aiThinking: false, reduceMotion: false).victory
+    }
+    @Test func aHumansWinGetsVictoryAndConfetti() {
+        let card = winner(0, controllers: [.human, .ai(.mate), .ai(.mate)])
+        #expect(card?.title == Strings.victory)
+        #expect(card?.confetti != nil)
+    }
+    @Test func losingToAnAIGetsDefeatAndNoConfetti() {
+        let card = winner(1, controllers: [.human, .ai(.mate), .ai(.mate)])
+        #expect(card?.title == Strings.defeat)
+        #expect(card?.winner == "Cobalt wins")
+        #expect(card?.confetti == nil)
+    }
+    @Test func anAllAIGameStillCelebrates() {
+        let card = winner(1, controllers: [.ai(.mate), .ai(.mate), .ai(.mate)])
+        #expect(card?.title == Strings.victory)
+        #expect(card?.confetti != nil)
+    }
+    @Test func aCardOtherThanAKnightSaysToRollFirst() {
+        var s = TestGames.afterSetup()
+        s.players[0].devCards = [DevCard(type: .roadCrew, boughtOnTurn: -1), DevCard(type: .knight, boughtOnTurn: -1)]
+        let rows = screen(s).devCards
+        #expect(rows[0].note == Strings.rollFirst)
+        #expect(!rows[0].playEnabled)
+        #expect(rows[1].note == nil)
+        #expect(rows[1].playEnabled)
+    }
     @Test func scoreRowCarriesThePointsAlone() {
         #expect(screen(TestGames.rolled(8)).scoreboard[0].points == 2)
     }

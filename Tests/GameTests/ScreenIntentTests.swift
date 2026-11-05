@@ -82,7 +82,7 @@ import SaltmarshTestSupport
         vm.playCard(2, bumper: (.ore, .ore)); rows = vm.screen.devCards
         #expect(rows.map(\.name) == ["Knight", "Victory point"]); #expect(rows[0].note == "bought this turn")
         var t = TestGames.afterSetup(); t.players[0].devCards = [DevCard(type: .knight, boughtOnTurn: -1), DevCard(type: .roadCrew, boughtOnTurn: -1)]; vm.load(t); rows = vm.screen.devCards
-        #expect(rows[0].playEnabled); #expect(!rows[1].playEnabled); #expect(rows[1].note == nil)
+        #expect(rows[0].playEnabled); #expect(!rows[1].playEnabled); #expect(rows[1].note == Strings.rollFirst)
         var u = TestGames.rolled(8); u.players[0].devCards = [DevCard(type: .knight, boughtOnTurn: -1), DevCard(type: .roadCrew, boughtOnTurn: -1)]; u.devCardPlayedThisTurn = true; vm.load(u)
         #expect(vm.screen.devCards.map(\.note) == ["one card per turn", "one card per turn"])
     }

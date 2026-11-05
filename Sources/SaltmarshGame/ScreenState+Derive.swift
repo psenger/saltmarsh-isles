@@ -206,6 +206,7 @@ extension ScreenState {
             let note: String?
             if card.type == .victoryPoint { note = Strings.countsAutomatically }
             else if card.boughtOnTurn == s.turn { note = Strings.boughtThisTurn }
+            else if card.type != .knight, legal.contains(.roll) { note = Strings.rollFirst }
             else if s.devCardPlayedThisTurn { note = Strings.oneCardPerTurn }
             else { note = nil }
             let playable: Bool
@@ -258,9 +259,12 @@ extension ScreenState {
         switch ui.overlay {
         case .victory(let w):
             let total = Engine.totalPoints(s, player: w)
-            victory = VictoryCard(title: Strings.victory, winner: Strings.wins(name(w)), seat: s.players[w].seat,
-                                  subtitle: Strings.rounds(s.turn / s.playerCount + 1), breakdown: breakdown(w), total: total,
-                                  banner: Strings.banner(name(w), total), buttons: [Strings.seeTheBoard, Strings.newGame], confetti: confetti)
+            let rounds = s.turn / s.playerCount + 1
+            // An AI beat every human at the table. An all-AI game has nobody to commiserate with, so it still celebrates.
+            let lost = s.players[w].controller.isAI && !humans.isEmpty
+            victory = VictoryCard(title: lost ? Strings.defeat : Strings.victory, winner: Strings.wins(name(w)), seat: s.players[w].seat,
+                                  subtitle: lost ? Strings.defeated(name(w), rounds: rounds) : Strings.rounds(rounds), breakdown: breakdown(w), total: total,
+                                  banner: lost ? Strings.betterLuck : Strings.banner(name(w), total), buttons: [Strings.seeTheBoard, Strings.newGame], confetti: lost ? nil : confetti)
         case .preview(let p):
             let total = Engine.totalPoints(s, player: p)
             victory = VictoryCard(title: Strings.preview, winner: Strings.wins(name(p)), seat: s.players[p].seat,

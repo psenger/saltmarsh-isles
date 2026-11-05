@@ -17,7 +17,7 @@ import SaltmarshTestSupport
         return s
     }
     func passTo(_ player: Int, _ seat: Seat, button: String) -> Handover {
-        Handover(player: player, seat: seat, message: "Pass the device to \(seat.name)", button: button)
+        Handover(player: player, seat: seat, message: "Eyes off! Pass the device to \(seat.name)", button: button)
     }
 
     @Test func endTurnBlanksForTheNextHuman() {

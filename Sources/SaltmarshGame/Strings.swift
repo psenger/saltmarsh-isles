@@ -4,24 +4,24 @@ import SaltmarshEngine
 /// feature file's, word for word.
 public enum Strings {
     // Status line
-    public static let rollForFirst = "Roll for first player."
-    public static let setupCorner = "Tap a glowing corner to place a settlement."
-    public static let setupRoad = "Tap a dashed edge next to it to lay a road."
-    public static let awaitingRoll = "Roll the dice to start your turn."
-    public static let main = "Build, trade, or end your turn."
-    public static let roadMode = "Tap a dashed edge to build a road."
-    public static let settlementMode = "Tap a glowing corner to build a settlement."
-    public static let cityMode = "Tap one of your settlements to upgrade it."
-    public static let robber = "Tap a tile to move the robber there."
-    public static let victim = "Steal a card: tap a glowing building on the robber's tile, or a name below."
-    public static let answersIn = "Answers are in. Trade with someone or withdraw."
-    public static let gameOver = "Game over."
+    public static let rollForFirst = "Who sails first? Roll for it!"
+    public static let setupCorner = "Stake your claim! Tap a glowing corner to settle."
+    public static let setupRoad = "Now a road! Tap a dashed edge next to your settlement."
+    public static let awaitingRoll = "Your move, captain. Roll the dice!"
+    public static let main = "The isles are yours! Build, trade, or end your turn."
+    public static let roadMode = "Pave the way! Tap a dashed edge to build a road."
+    public static let settlementMode = "New home! Tap a glowing corner to build a settlement."
+    public static let cityMode = "Go big! Tap one of your settlements to make it a city."
+    public static let robber = "Send in the robber! Tap a tile to move it there."
+    public static let victim = "Pick a pocket! Tap a glowing building on the robber's tile, or a name below."
+    public static let answersIn = "The answers are in! Trade with someone or withdraw."
+    public static let gameOver = "That's the game!"
     public static func discarding(roller: String, name: String) -> String {
-        "\(roller) rolled 7. \(name) has more than 7 cards and must give up half."
+        "\(roller) rolled a 7! \(name) has more than 7 cards and must give up half."
     }
-    public static func freeRoads(_ left: Int) -> String { "Road crew: tap a dashed edge for a free road (\(left) left)." }
+    public static func freeRoads(_ left: Int) -> String { "Road crew on the job! Tap a dashed edge for a free road (\(left) left)." }
     public static func offer(from proposer: String, _ offer: TradeOffer) -> String { "\(proposer) offers \(offer.description)." }
-    public static func thinking(_ name: String) -> String { "\(name) is thinking…" }
+    public static func thinking(_ name: String) -> String { "\(name) is plotting…" }
     public static func cannotPay(_ want: ResourceCounts) -> String { "You don't have \(want)" }
 
     // Header suffixes
@@ -38,7 +38,7 @@ public enum Strings {
     public static func tradeWith(_ name: String) -> String { "Trade with \(name)" }
 
     // Handing the device to another human
-    public static func passDevice(_ name: String) -> String { "Pass the device to \(name)" }
+    public static func passDevice(_ name: String) -> String { "Eyes off! Pass the device to \(name)" }
     public static func startTurn(_ name: String) -> String { "Start turn, \(name)" }
     public static func handoverDiscard(_ name: String) -> String { "Discard, \(name)" }
     public static func seeOffer(_ name: String) -> String { "See the offer, \(name)" }
@@ -46,9 +46,9 @@ public enum Strings {
 
     // Panel labels
     public static let offerToPlayers = "Offer a trade to players…", back = "Back"
-    public static let rollBeforeOffering = "Roll the dice before offering a trade."
+    public static let rollBeforeOffering = "Not so fast! Roll the dice before offering a trade."
     public static func hold(_ name: String) -> String { "\(name)'s hold" }
-    public static let reverseOrder = "Round 2: reverse order"
+    public static let reverseOrder = "Round 2: back the other way!"
     public static let dash = "–"
     public static func cardCount(_ n: Int) -> String { "\(n) cards" }
     public static func piecesLeft(_ n: Int) -> String { "\(n) left" }
@@ -69,7 +69,7 @@ public enum Strings {
     public static func next(_ name: String) -> String { "Next: \(name)" }
 
     // Development card notes
-    public static let boughtThisTurn = "bought this turn", oneCardPerTurn = "one card per turn", countsAutomatically = "counts automatically"
+    public static let boughtThisTurn = "bought this turn", oneCardPerTurn = "one card per turn", countsAutomatically = "counts automatically", rollFirst = "roll first"
     public static func youDrew(_ card: String) -> String { "You drew: \(card)!" }
     public static func drawnCardText(_ type: DevCardType) -> String {
         switch type {
@@ -82,15 +82,18 @@ public enum Strings {
     }
 
     // The Cards tab and the card button
-    public static let card = "Card", noCardsYet = "No cards to play.", victoryPoints = "Victory points"
+    public static let card = "Card", noCardsYet = "Nothing up your sleeve yet.", victoryPoints = "Victory points"
     public static func pointsOfTen(_ n: Int) -> String { "\(n) / 10" }
+    public static func knightsPlayed(_ n: Int) -> String { "Knights played: \(n)" }
 
     // Trade responses
     public static let pending = "pending", accepted = "accepted", declined = "declined"
     public static func countered(_ counter: TradeOffer) -> String { "countered: \(counter.description)" }
 
     // Victory card
-    public static let victory = "Victory", preview = "Preview"
+    public static let victory = "Victory", preview = "Preview", defeat = "Defeat"
+    public static func defeated(_ name: String, rounds n: Int) -> String { "\(name) takes the isles after \(n) rounds." }
+    public static let betterLuck = "Better luck next time, captain."
     public static func wins(_ name: String) -> String { "\(name) wins" }
     public static func rounds(_ n: Int) -> String { "Rules the isles after \(n) rounds." }
     public static let previewNote = "This is what the win screen looks like. The game carries on."

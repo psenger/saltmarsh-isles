@@ -4,9 +4,9 @@ import XCTest
 /// of the two launch states it finds. Board taps sweep a grid, because the board is drawn and which
 /// corners are legal depends on the random seed.
 final class GameFlowTests: XCTestCase {
-    private let settlementPrompt = "Tap a glowing corner to place a settlement."
-    private let roadPrompt = "Tap a dashed edge next to it to lay a road."
-    private let rollPrompt = "Roll the dice to start your turn."
+    private let settlementPrompt = "Stake your claim! Tap a glowing corner to settle."
+    private let roadPrompt = "Now a road! Tap a dashed edge next to your settlement."
+    private let rollPrompt = "Your move, captain. Roll the dice!"
 
     /// Chooses from the menu in the header. On the handover screen there is no menu, so it passes that first.
     private func chooseFromMenu(_ app: XCUIApplication, _ item: String) {
@@ -112,6 +112,17 @@ final class GameFlowTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(log.frame.minY, app.buttons["tab Log"].frame.maxY)
     }
 
+    func testHelpOpensAndCloses() {
+        let app = XCUIApplication()
+        app.launch()
+        startNewGame(app)
+        XCTAssertTrue(app.buttons["help"].waitForExistence(timeout: 5))
+        app.buttons["help"].tap()
+        XCTAssertTrue(app.staticTexts["The goal"].waitForExistence(timeout: 5), "the help did not open")
+        app.buttons["help done"].tap()
+        XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5), "the help did not close")
+    }
+
     func testPreviewWinClosesWithBackToTheGame() {
         let app = XCUIApplication()
         app.launch()
@@ -170,7 +181,7 @@ final class GameFlowTests: XCTestCase {
             } else if now == rollPrompt {
                 app.buttons["Roll dice"].tap()
                 turns += 1
-            } else if now == "Build, trade, or end your turn." {
+            } else if now == "The isles are yours! Build, trade, or end your turn." {
                 once("main")
                 if seen.insert("offer builder").inserted {
                     XCTAssertTrue(app.descendants(matching: .any)["bank timber"].firstMatch.exists, "the bank is not in the Trade tab")
@@ -185,10 +196,10 @@ final class GameFlowTests: XCTestCase {
                 }
                 XCTAssertTrue(app.descendants(matching: .any)["hold timber"].firstMatch.isHittable, "the hand is off screen")
                 app.buttons["End turn"].tap()
-            } else if now == "Tap a tile to move the robber there." {
+            } else if now == "Send in the robber! Tap a tile to move it there." {
                 once("robber")
                 sweepBoard(app, while: now)
-            } else if now.hasPrefix("Steal a card") {
+            } else if now.hasPrefix("Pick a pocket") {
                 once("steal")
                 app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Steal from'")).firstMatch.tap()
             } else if now.contains("must give up half") {
@@ -246,13 +257,13 @@ final class GameFlowTests: XCTestCase {
     private func playOneStep(_ app: XCUIApplication) {
         let now = status(app)
         let decline = app.buttons["Decline"], rollFirst = app.buttons["Roll for first"]
-        if now == settlementPrompt || now == roadPrompt || now == "Tap a tile to move the robber there." {
+        if now == settlementPrompt || now == roadPrompt || now == "Send in the robber! Tap a tile to move it there." {
             sweepBoard(app, while: now)
         } else if now == rollPrompt {
             app.buttons["Roll dice"].tap()
-        } else if now == "Build, trade, or end your turn." {
+        } else if now == "The isles are yours! Build, trade, or end your turn." {
             app.buttons["End turn"].tap()
-        } else if now.hasPrefix("Steal a card") {
+        } else if now.hasPrefix("Pick a pocket") {
             app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Steal from'")).firstMatch.tap()
         } else if now.contains("must give up half") {
             let plus = app.buttons.matching(NSPredicate(format: "label == '+' AND enabled == true")).firstMatch
@@ -315,7 +326,7 @@ final class GameFlowTests: XCTestCase {
         var builtMode = false
         while Date() < end, moments.count < 12 {
             measure()
-            if status(app) == "Build, trade, or end your turn.", !builtMode, app.buttons["Road"].isEnabled {
+            if status(app) == "The isles are yours! Build, trade, or end your turn.", !builtMode, app.buttons["Road"].isEnabled {
                 builtMode = true
                 app.buttons["Road"].tap()
                 measure()

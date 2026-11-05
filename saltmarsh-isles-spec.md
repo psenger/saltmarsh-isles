@@ -1,8 +1,8 @@
 # Saltmarsh Isles: Build Spec for a Native Apple App
 
-This document describes the web prototype `saltmarsh.html` in enough detail to rebuild it in Swift and SwiftUI, then add AI opponents. Read it alongside the HTML file; every rule and number here matches that file.
+This document describes the web prototype `prototype/saltmarsh.html` in enough detail to rebuild it in Swift and SwiftUI, then add AI opponents. Read it alongside the HTML file; every rule and number here matches that file.
 
-Every player interaction is also written as executable behaviour in **`saltmarsh-isles.feature`** (Gherkin, 16 rules, 89 scenarios). This spec explains *how* the game works; the feature file states *what the screen must do* in testable Given/When/Then form. When the two disagree, fix whichever is wrong and update both. Section 7 explains how to run the feature file.
+Every player interaction is also written as executable behaviour in **`saltmarsh-isles.feature`** (Gherkin, 22 rules, 139 scenarios). This spec explains *how* the game works; the feature file states *what the screen must do* in testable Given/When/Then form. When the two disagree, fix whichever is wrong and update both. Section 7 explains how to run the feature file.
 
 > **Naming and art.** Game mechanics are free to reuse, but the name and artwork of the commercial game this is modelled on are trademarked. Keep the original name ("Saltmarsh Isles" or your own), original card names and original art if you ship to the App Store.
 
@@ -45,7 +45,7 @@ Each step is "place a settlement, then a road touching that settlement". Setup s
 
 The snake makes the picks fair. In a 3-player game every player's two pick positions add up to 7 (1+6, 2+5, 3+4). In a forward-only order they would add up to 5, 7 and 9. The last player's back-to-back picks let them plan a pair of settlements, which makes up for picking last.
 
-The prototype always starts with player 1. The official rules have everyone roll and the highest roller goes first. The native app should add that roll, plus an on-screen order strip and a "Round 2: reverse order" label so the double turn doesn't look like a bug.
+The prototype always starts with player 1. The official rules have everyone roll and the highest roller goes first. The native app should add that roll, plus an on-screen order strip and a "Round 2: back the other way!" label so the double turn doesn't look like a bug.
 
 ### 1.3 Turn flow
 
@@ -81,7 +81,7 @@ Building, trading, buying cards and ending the turn are all locked until the dic
      While discards are pending, everything else is locked. **The panel belongs to the discarding player, not the roller:**
      - the header shows their colour and "<Name> · discarding";
      - the hold is labelled "<Name>'s hold" and shows their cards;
-     - the status line reads "<Roller> rolled 7. <Name> has more than 7 cards and must give up half. Pass the device to <Name>."
+     - the status line reads "<Roller> rolled a 7! <Name> has more than 7 cards and must give up half. Pass the device to <Name>."
 
      When the last discard is confirmed, the panel returns to the roller for the robber move.
   3. The roller taps any other tile to move the robber there.
@@ -465,6 +465,7 @@ A full-screen overlay over a blurred view of the board:
   Pieces use the winner's colour, gold, white and the five resource colours, mixing tumbling rectangles, thin streamers and dots. They fall under gravity with drag and a sideways flutter, and stop after 6 seconds or once all have fallen off screen. Draw them on a full-screen layer that ignores touches.
 - **Board:** the winner's settlements and cities glow gold and pulse, during the overlay and after it's closed.
 - **Reduce Motion:** skip the confetti and all animations. The card still appears.
+- **Losing:** when an AI beats every human, the card reads "Defeat" and "Better luck next time, captain." with no confetti. An all-AI game still celebrates.
 
 In SwiftUI:
 
@@ -582,9 +583,9 @@ To run the scenarios against the native app:
 - drive the engine directly for the board and rules scenarios, and the UI for the screen scenarios;
 - give every interactive view an accessibility identifier matching the button labels in the scenarios ("Roll dice", "Discard 4 cards", "Steal from Cobalt"…), so steps can find them.
 
-The web prototype can be driven the same way with Playwright, using `prototype-tests/playgame.py` as a starting point.
+The web prototype can be driven the same way with Playwright, using `prototype/tests/playgame.py` as a starting point.
 
-**Automated full-game run.** `prototype-tests/playgame.py` plays a whole 3-player game in Chrome with simple bots and records a video. The bots press the real buttons; board taps call the same handler the board uses. After every action it checks:
+**Automated full-game run.** `prototype/tests/playgame.py` plays a whole 3-player game in Chrome with simple bots and records a video. The bots press the real buttons; board taps call the same handler the board uses. After every action it checks:
 - no negative card counts;
 - the distance rule is never broken;
 - every road and settlement is connected;

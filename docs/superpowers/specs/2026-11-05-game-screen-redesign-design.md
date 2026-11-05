@@ -47,7 +47,7 @@ Left to right, on one row:
 
 On iPhone the status line drops to its own row directly under the chips and dice.
 
-The header's height never changes. The status slot has a fixed height that fits two lines; text may wrap and shrink inside the slot but the slot never grows. Mac at minimum window width with four players is the tight case, and the longest strings (the offer text, "Steal a card: tap a glowing building on the robber's tile, or a name below.") must be checked there.
+The header's height never changes. The status slot has a fixed height that fits two lines; text may wrap and shrink inside the slot but the slot never grows. Mac at minimum window width with four players is the tight case, and the longest strings (the offer text, "Pick a pocket! Tap a glowing building on the robber's tile, or a name below.") must be checked there.
 
 ### Dice
 
@@ -67,7 +67,8 @@ Items 1 to 5 never scroll. All of them stay on screen in every state; when one c
 ### Tab contents
 
 - **Trade.** A one-line bank supply (five small coloured counts, no names), the bank trade row, one row per captured harbour (or the "None yet" text), and "Offer a trade to players…". That button replaces the tab's content with the offer builder and a way back. After an offer is made, the tab shows the responses with Trade and Withdraw until it closes.
-- **Cards.** The cards still to play, then a "Victory points" section: the total out of 10, a row per source worth more than 0, including hidden victory point cards, and a pill for each award held, such as "Longest road 8 +2". Buying a card shows "You drew: <card>!" over the panel for a few seconds, to the buyer only.
+- **Help.** A question mark in the header, beside the menu, opens the rules over anything, including a discard.
+- **Cards.** The cards still to play and, once any are played, how many Knights the player has played, then a "Victory points" section: the total out of 10, a row per source worth more than 0, including hidden victory point cards, and a pill for each award held, such as "Longest road 8 +2". Buying a card shows "You drew: <card>!" over the panel for a few seconds, to the buyer only.
 - **Players.** The full scoreboard, including cards, development cards, road and army, and the "+N" hidden points for the current human.
 - **Log.** The whole log, newest first.
 
@@ -85,7 +86,7 @@ Victory and preview stay as today's overlay. The new game sheet is unchanged.
 
 **The rule:** whenever the private view would change from one human to a different human, the screen goes blank until the new person taps a button. Games with one human never see it. An AI needs no handover.
 
-**What it shows:** a plain background, "Pass the device to Cobalt", and one button in that player's colour. Nothing of the game shows: no board, scores, log or menu. The game view must not be rendered underneath, so it cannot leak through accessibility, screenshots or a frame of animation.
+**What it shows:** a plain background, "Eyes off! Pass the device to Cobalt", and one button in that player's colour. Nothing of the game shows: no board, scores, log or menu. The game view must not be rendered underneath, so it cannot leak through accessibility, screenshots or a frame of animation.
 
 **The button names the person and why:**
 
@@ -118,7 +119,7 @@ Victory and preview stay as today's overlay. The new game sheet is unchanged.
 
 The feature file's background is a three-human game, so most scenarios cross handovers. **Existing `ScreenState` fields such as `buttons`, `handCounts` and `header` keep their current values and meaning during a handover**; the blank is expressed by the new value and enforced by the view rendering nothing else. Existing scenarios therefore stand unchanged. The handover view is the only thing the player can reach while it is up, because the game view is not rendered.
 
-**Copy change:** the discard status currently ends "Pass the device to Cobalt." Once the handover screen exists that sentence is read by Cobalt, after the device has reached them, and it already appears in one-human games, which section 6.6 of the main spec forbids. It becomes "Crimson rolled 7. Cobalt has more than 7 cards and must give up half." Update the scenario and `Strings` together.
+**Copy change:** the discard status currently ends "Eyes off! Pass the device to Cobalt." Once the handover screen exists that sentence is read by Cobalt, after the device has reached them, and it already appears in one-human games, which section 6.6 of the main spec forbids. It becomes "Crimson rolled a 7! Cobalt has more than 7 cards and must give up half." Update the scenario and `Strings` together.
 
 **New feature-file scenarios** go under a new rule, "Handing the device to another human", covering each row and example in section 4, including "With one human no handover ever appears" and the setup, game-over and reopen exceptions.
 

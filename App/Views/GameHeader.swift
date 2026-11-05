@@ -12,12 +12,15 @@ struct GameHeader: View {
     let statusOnOwnRow: Bool
     let onNewGame: () -> Void
 
+    @State private var showHelp = false
+
     var body: some View {
         VStack(spacing: 2) {
             HStack(spacing: 6) {
                 ForEach(screen.scoreboard, id: \.name) { chip($0) }
                 if statusOnOwnRow { Spacer(minLength: 0) } else { status }
                 dice
+                help
                 menu
             }
             if statusOnOwnRow { status }
@@ -67,6 +70,16 @@ struct GameHeader: View {
         }
     }
 
+    private var help: some View {
+        Button { showHelp = true } label: {
+            Image(systemName: "questionmark.circle").accessibilityLabel("Help")
+        }
+        .buttonStyle(.borderless)
+        .fixedSize()
+        .accessibilityIdentifier("help")
+        .sheet(isPresented: $showHelp) { HelpSheet() }
+    }
+
     private var menu: some View {
         Menu {
             Button(Strings.newGame, action: onNewGame)
@@ -83,5 +96,40 @@ struct GameHeader: View {
         #endif
         .fixedSize()
         .accessibilityIdentifier("menu")
+    }
+}
+
+/// The rules. It opens over anything, so a player can look something up in the middle of a discard.
+private struct HelpSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    ForEach(Help.sections, id: \.title) { section in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(section.title).font(.headline)
+                            ForEach(section.lines, id: \.self) { line in
+                                Text(line).font(.callout).fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+            }
+            .navigationTitle("How to play")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") { dismiss() }
+                        .keyboardShortcut(.cancelAction)
+                        .accessibilityIdentifier("help done")
+                }
+            }
+        }
+        #if os(macOS)
+        .frame(minWidth: 460, minHeight: 520)
+        #endif
     }
 }

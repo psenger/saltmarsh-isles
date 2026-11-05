@@ -19,7 +19,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Then a 3-player game has started
       And the players are Crimson, Cobalt and Amber
       And the header shows "Crimson · first roll"
-      And the status reads "Roll for first player."
+      And the status reads "Who sails first? Roll for it!"
       And the log contains "New game with 3 players. Everyone rolls for first player."
 
     Scenario Outline: Starting a game with a chosen player count
@@ -122,7 +122,7 @@ Feature: Saltmarsh Isles pass-and-play game
       When Crimson taps a glowing corner
       Then a Crimson settlement is placed there
       And the log reads "Crimson founded a settlement."
-      And the status reads "Tap a dashed edge next to it to lay a road."
+      And the status reads "Now a road! Tap a dashed edge next to your settlement."
       And only edges touching that settlement are dashed
 
     Scenario: Placing a setup road passes the turn on
@@ -154,7 +154,7 @@ Feature: Saltmarsh Isles pass-and-play game
       And it is Crimson's turn and Crimson has not rolled
 
     Scenario: Start of turn
-      Then the status reads "Roll the dice to start your turn."
+      Then the status reads "Your move, captain. Roll the dice!"
       And both dice show "–"
       And of the turn actions, only "Roll dice" and playable Knights are enabled
 
@@ -165,7 +165,7 @@ Feature: Saltmarsh Isles pass-and-play game
       And Amber receives 2 cards of that tile's resource
       And the number discs showing 8 are marked hit
       And the log reads "Crimson rolled 8. Cobalt +1, Amber +2"
-      And the status reads "Build, trade, or end your turn."
+      And the status reads "The isles are yours! Build, trade, or end your turn."
 
     Scenario: A roll that produces nothing
       When Crimson rolls a number no building touches
@@ -197,7 +197,7 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: The panel belongs to the discarding player
       When Crimson rolls 7
       Then the header shows "Cobalt · discarding" with Cobalt's colour
-      And the status reads "Crimson rolled 7. Cobalt has more than 7 cards and must give up half."
+      And the status reads "Crimson rolled a 7! Cobalt has more than 7 cards and must give up half."
       And the hold is labelled "Cobalt's hold" and shows Cobalt's cards
       And the discard box is outlined in Cobalt's colour
       And the discard box reads "Oh NO! Cobalt, the robber needs 4 cards from your deck" with a counter "0 / 4"
@@ -240,13 +240,13 @@ Feature: Saltmarsh Isles pass-and-play game
       When Amber confirms her discard
       Then the header shows "Crimson"
       And the log reads "Crimson now moves the robber."
-      And the status reads "Tap a tile to move the robber there."
+      And the status reads "Send in the robber! Tap a tile to move it there."
 
     Scenario: A 7 with nobody over 7 cards skips straight to the robber
       Given every player holds 7 cards or fewer
       When Crimson rolls 7
       Then no discard box appears
-      And the status reads "Tap a tile to move the robber there."
+      And the status reads "Send in the robber! Tap a tile to move it there."
 
   # ─────────────────────────────────────────────────────────────
   Rule: Moving the robber and stealing
@@ -270,7 +270,7 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: Choosing a victim is always a visible step
       Given Cobalt has a building and 5 cards on the chosen tile
       When Crimson moves the robber there
-      Then the status reads "Steal a card: tap a glowing building on the robber's tile, or a name below."
+      Then the status reads "Pick a pocket! Tap a glowing building on the robber's tile, or a name below."
       And the panel shows "Steal from Cobalt" with "5 cards"
       And Cobalt's buildings on that tile are steal targets
 
@@ -298,7 +298,7 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: After a 7 the turn continues
       Given the robber was moved because of a 7
       When Crimson finishes stealing
-      Then the status reads "Build, trade, or end your turn."
+      Then the status reads "The isles are yours! Build, trade, or end your turn."
 
   # ─────────────────────────────────────────────────────────────
   Rule: Building
@@ -322,7 +322,7 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: Build button toggles a mode
       When Crimson taps "Road"
       Then the "Road" button is highlighted
-      And the status reads "Tap a dashed edge to build a road."
+      And the status reads "Pave the way! Tap a dashed edge to build a road."
       When Crimson taps "Road" again
       Then no build mode is active
 
@@ -520,7 +520,7 @@ Feature: Saltmarsh Isles pass-and-play game
       And the header shows "Amber · trade offer"
       When Amber taps "Decline"
       Then the header shows "Crimson"
-      And the status reads "Answers are in. Trade with someone or withdraw."
+      And the status reads "The answers are in! Trade with someone or withdraw."
 
     Scenario: Closing an accepted offer
       When Crimson offers 2 timber for 1 ore
@@ -531,7 +531,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Then Crimson holds 1 timber and 1 ore
       And Cobalt holds 2 timber
       And the log reads "Crimson traded 2 timber with Cobalt for 1 ore."
-      And the status reads "Build, trade, or end your turn."
+      And the status reads "The isles are yours! Build, trade, or end your turn."
 
     Scenario: Withdrawing an offer
       When Crimson offers 2 timber for 1 ore
@@ -545,7 +545,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Given Cobalt holds 0 cards and Amber holds 0 cards
       When Crimson offers 2 timber for 1 ore
       Then the log reads "Nobody can answer that offer."
-      And the status reads "Build, trade, or end your turn."
+      And the status reads "The isles are yours! Build, trade, or end your turn."
 
     Scenario: An offer to one seat asks only that seat
       When Crimson offers 2 timber for 1 ore to Amber
@@ -631,7 +631,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Given Crimson has 14 roads on the board and holds a playable Road crew
       When Crimson plays Road crew and places one free road
       Then the log reads "No roads left to build."
-      And the status reads "Build, trade, or end your turn."
+      And the status reads "The isles are yours! Build, trade, or end your turn."
 
   # ─────────────────────────────────────────────────────────────
   Rule: Development cards
@@ -682,16 +682,16 @@ Feature: Saltmarsh Isles pass-and-play game
       And Crimson's "Knights" badge increases by 1
       And the log reads "Crimson played a Knight."
       And no discard step happens
-      And the status reads "Tap a tile to move the robber there."
+      And the status reads "Send in the robber! Tap a tile to move it there."
       And "Roll dice" is disabled
       When Crimson moves the robber and steals
-      Then the status reads "Roll the dice to start your turn."
+      Then the status reads "Your move, captain. Roll the dice!"
       And "Roll dice" is enabled
 
     Scenario: Playing a Knight after rolling
       Given Crimson has rolled and holds a playable Knight
       When Crimson plays the Knight, moves the robber and steals
-      Then the status reads "Build, trade, or end your turn."
+      Then the status reads "The isles are yours! Build, trade, or end your turn."
 
     Scenario: Victory point cards
       Given Crimson draws a victory point card
@@ -702,12 +702,12 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: Road crew
       Given Crimson has rolled and holds a playable Road crew
       When Crimson taps "Play" on it
-      Then the status reads "Road crew: tap a dashed edge for a free road (2 left)."
+      Then the status reads "Road crew on the job! Tap a dashed edge for a free road (2 left)."
       And building, trading and ending the turn are disabled
       When Crimson taps 2 dashed edges
       Then 2 Crimson roads are placed without paying
       And the log twice reads "Crimson built a free road."
-      And the status reads "Build, trade, or end your turn."
+      And the status reads "The isles are yours! Build, trade, or end your turn."
 
     Scenario: Road crew with no room
       Given Crimson has no legal edge to build on
@@ -841,7 +841,7 @@ Feature: Saltmarsh Isles pass-and-play game
 
     Scenario: The game locks after a win
       Given Crimson has won
-      Then the status reads "Game over."
+      Then the status reads "That's the game!"
       And every action button is disabled
       And the board stays visible
 
@@ -912,7 +912,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Given setup is complete and Crimson has rolled
       And Crimson has the device
       When Crimson taps "End turn"
-      Then the handover reads "Pass the device to Cobalt" with the button "Start turn, Cobalt"
+      Then the handover reads "Eyes off! Pass the device to Cobalt" with the button "Start turn, Cobalt"
       When the handover button is tapped
       Then no handover is shown
       And the hold is labelled "Cobalt's hold"
@@ -926,19 +926,19 @@ Feature: Saltmarsh Isles pass-and-play game
       Given setup is complete and it is Crimson's turn
       And Crimson holds 3 cards, Cobalt holds 8 cards and Amber holds 3 cards
       When Crimson rolls 7
-      Then the handover reads "Pass the device to Cobalt" with the button "Discard, Cobalt"
+      Then the handover reads "Eyes off! Pass the device to Cobalt" with the button "Discard, Cobalt"
 
     Scenario: A trade offer goes to each human privately and comes back
       Given setup is complete and Crimson has rolled
       And Crimson holds 3 timber, Cobalt holds 1 ore and Amber holds 1 grain
       When Crimson offers 2 timber for 1 ore
-      Then the handover reads "Pass the device to Cobalt" with the button "See the offer, Cobalt"
+      Then the handover reads "Eyes off! Pass the device to Cobalt" with the button "See the offer, Cobalt"
       When the handover button is tapped
       And Cobalt taps "Decline"
-      Then the handover reads "Pass the device to Amber" with the button "See the offer, Amber"
+      Then the handover reads "Eyes off! Pass the device to Amber" with the button "See the offer, Amber"
       When the handover button is tapped
       And Amber taps "Decline"
-      Then the handover reads "Pass the device to Crimson" with the button "Continue, Crimson"
+      Then the handover reads "Eyes off! Pass the device to Crimson" with the button "Continue, Crimson"
 
     Scenario: With one human no handover ever appears
       Given a 3-player game with Crimson human and the others AI
@@ -961,13 +961,13 @@ Feature: Saltmarsh Isles pass-and-play game
       Given setup is complete and Crimson has rolled
       And Crimson has the device
       When the game is reopened
-      Then the handover reads "Pass the device to Crimson" with the button "Continue, Crimson"
+      Then the handover reads "Eyes off! Pass the device to Crimson" with the button "Continue, Crimson"
 
     Scenario: Leaving the app hides the game until someone is ready
       Given setup is complete and Crimson has rolled
       And Crimson has the device
       When the app goes to the background
-      Then the handover reads "Pass the device to Crimson" with the button "Continue, Crimson"
+      Then the handover reads "Eyes off! Pass the device to Crimson" with the button "Continue, Crimson"
 
   # ─────────────────────────────────────────────────────────────
   Rule: Playing against AI seats
@@ -981,12 +981,12 @@ Feature: Saltmarsh Isles pass-and-play game
       Given a 3-player game with Crimson human and the others AI
       When the AI seats have finished acting
       Then it is Crimson who must act
-      And the status does not read "Cobalt is thinking…"
+      And the status does not read "Cobalt is plotting…"
 
     Scenario: Controls are locked while an AI acts
       Given a 3-player game with Crimson human and the others AI
       When Cobalt is thinking
-      Then the status reads "Cobalt is thinking…"
+      Then the status reads "Cobalt is plotting…"
       And every action button is disabled
 
     Scenario: One human keeps seeing their hand during AI turns

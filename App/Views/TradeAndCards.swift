@@ -182,6 +182,9 @@ struct CardsTab: View {
                     play(row)
                 }
             }
+            if let me = screen.scoreboard.first(where: \.isCurrent), me.knights > 0 {
+                Text(Strings.knightsPlayed(me.knights)).font(.callout).accessibilityIdentifier("knights played")
+            }
             Divider()
             victoryPoints
         }
