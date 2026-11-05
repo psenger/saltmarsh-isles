@@ -43,7 +43,7 @@ Raised 2026-11-05 at the end of the Plan 3 and playable screen session. Resolve 
 
 1. **Hand-off file never read.** `/var/folders/sb/1szn9lh95nd_vnbt29d8j7dh0000gn/T/hand-off.md` was blocked by `permissions.blockReadsOutsideWorkingDirectories`. Owner: run `/add-dir` on its folder or paste it. Then check it for anything the session missed. The file is in a temp folder and may be gone.
 2. **Mac UI tests have never run.** The runner needs the owner's Touch ID or password. Owner: run `make test` at the machine. `testEscapeClosesTheWinScreen` and Mac board clicks stay unverified until then. This also runs the 3.5 minute soak test.
-3. **Owner's Mac play-test result.** Owner: play a game on the Mac build and report what is wrong. Fix or schedule each report.
+3. **Owner's Mac play-test result.** Owner: play a game on the Mac build and report what is wrong. Fix or schedule each report. First round of four UI reports fixed on 2026-11-05 (resource boxes, responder's hand, offer builder labels, scrolling log); the owner has not yet confirmed them on the rebuilt app, and the play-test is not finished.
 4. **No independent review yet.** Plan 3 and the playable screen had self-reviews only. Decide: run a fresh whole-branch review now, or before merge. Subagents have hung here on permission prompts, so the owner should be present for it.
 5. **Paths not driven through the UI.** Stealing, accepting a trade, the player's own offers, harbour and bank trades, development cards, and a real win screen (only the preview was opened). Decide: extend `AppUITests`, accept the owner's play-test as coverage, or leave them to Plan 5.
 6. **Owner has not accepted the Rulings below.** Review them, above all R1 and R2. Change any that are wrong.
@@ -94,6 +94,14 @@ Playable screen:
 - **R12. Mac is verified by build, launch and screenshot; XCUITest runs on the iPhone simulator only.** The Mac runner fails with "Authentication cancelled" when unattended. Cost if wrong: a Mac-only UI bug survives until the owner runs `make test`.
 - **R13. Header, dice and status are pinned above the scrolling panel, with the moment's buttons first.** Screenshots showed a trade offer scrolled off screen; `isHittable` assertions now cover it. Cost if wrong: panel order changes.
 
+Owner's UI feedback, 2026-11-05 (the owner's instruction is recorded in design section 5.2; these are how it was read):
+
+- **R14. Resource boxes use the board's terrain colours.** The owner's item 3 said "color position" of item 1, which named no colour. Cost if wrong: one fill colour.
+- **R15. The bank uses the same boxes as the hold, and the discard rows do not.** The bank shares the component; discards were not mentioned. Cost if wrong: one view.
+- **R16. The offer builder became two rows of five boxes (Give, Want), with minus and plus under each box.** Each box has one amount, so the rule applies exactly. It replaces the steppers. Cost if wrong: one view.
+- **R17. The hand is pinned above the scrolling panel.** The owner asked for it to be visible on the player's turn. Cost if wrong: less scrolling room on iPhone.
+- **R18. The whole log is kept, newest first, in a 140 point box inside the scrolling panel.** Pinning it too would leave too little room on iPhone. Cost if wrong: one view.
+
 ## Carried forward (proposed plan, awaiting owner confirmation)
 
 | Item | Proposed plan |
@@ -102,7 +110,7 @@ Playable screen:
 | `ScreenState.orderStrip` has no "next to place" highlight (design section 5.1); the panel approximates it by marking the current seat | Plan 5 |
 | An unsent offer carries over to the next player's turn, because `UIState` is only cleared by a sent offer or a new game | Plan 5 |
 | `HarbourRow.defaultChoice` reads the current player's hand, so an AI's 3:1 row hints at what it holds in the game layer; the panel hides it during AI turns | Plan 2 |
-| At game over, the panel can show an AI winner's hand and cards | Plan 5 |
+| At game over, the panel can show an AI winner's development cards (the hand is fixed) | Plan 5 |
 | With no game, the board behind the new game sheet shows every tile as DUNES, and stays that way after Cancel | Plan 5 |
 | A second Mac window has its own view model and both write the same save | Plan 5 |
 | The soak test adds about 3.5 minutes to every `AppUITests` run | Plan 5 |
