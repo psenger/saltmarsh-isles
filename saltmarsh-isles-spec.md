@@ -73,7 +73,7 @@ Building, trading, buying cards and ending the turn are all locked until the dic
 - **A roll of 7:**
   1. Nobody produces.
   2. Every player holding more than 7 cards discards half, rounded down, and **chooses which cards**. Players discard one at a time, in seat order, passing the device. The discard box is outlined in the discarding player's colour and shows:
-     - "<Name>, pick N cards to give up" and a running "picked / N" counter;
+     - "Oh NO! <Name>, the robber needs N cards from your deck", with the robber icon in front of it, and a running "picked / N" counter;
      - one row per resource they hold, with − and + buttons and "x of y";
      - a "Discard N cards" button, enabled only when exactly N are picked;
      - "Next: <names>" when others are still waiting.

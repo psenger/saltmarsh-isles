@@ -58,7 +58,7 @@ Real dice: a rounded square with pips, faces 1 to 6. Before a roll, an empty das
 1. **Who line.** A dot in `headerSeat`'s colour, then `screen.header` ("Cobalt · discarding"), then `holdTitle` ("Cobalt's hold"). This replaces the large coloured bar and takes over its job of showing who the panel belongs to. The mockups show only the hold label; see section 7. Always one line, always present.
 2. **Hand.** Five resource boxes, the existing `ResourceBox`. When no hand may be shown (two or more humans during an AI turn), the same five boxes stay in place with no numbers, so nothing shifts.
 3. **Turn buttons.** "Roll dice" and "End turn". "Roll for first" takes the Roll dice position during the first roll.
-4. **Build buttons.** Road, Settlement, City, each with "N left" as today and its cost. The Buy a card button in the Cards tab shows its cost too.
+4. **Build buttons.** Road, Settlement, City and Card, in one row, each with "N left" and its cost. Card buys a development card, and its count is what is left in the deck.
 5. **Tabs.** Trade, Cards, Players, Log, always in this order.
 6. **Tab area.** Takes all remaining height at a size that does not depend on its content. Content that does not fit scrolls inside the area. This is the only scrolling in the panel.
 
@@ -67,7 +67,7 @@ Items 1 to 5 never scroll. All of them stay on screen in every state; when one c
 ### Tab contents
 
 - **Trade.** A one-line bank supply (five small coloured counts, no names), the bank trade row, one row per captured harbour (or the "None yet" text), and "Offer a trade to players…". That button replaces the tab's content with the offer builder and a way back. After an offer is made, the tab shows the responses with Trade and Withdraw until it closes.
-- **Cards.** "Buy a card", the development card rows, and below them a pill for each award the player holds, such as "Longest road 8 +2".
+- **Cards.** The cards still to play, then a "Victory points" section: the total out of 10, a row per source worth more than 0, including hidden victory point cards, and a pill for each award held, such as "Longest road 8 +2". Buying a card shows "You drew: <card>!" over the panel for a few seconds, to the buyer only.
 - **Players.** The full scoreboard, including cards, development cards, road and army, and the "+N" hidden points for the current human.
 - **Log.** The whole log, newest first.
 

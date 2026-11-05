@@ -159,39 +159,56 @@ struct TradeTab: View {
     }
 }
 
-/// The Cards tab: buying and playing development cards.
+/// The Cards tab: the cards still to play, and where the player's points come from.
 struct CardsTab: View {
     let vm: GameViewModel
     let screen: ScreenState
 
+    /// Victory point cards are never played, so they count under Victory points instead.
+    private var cardsToPlay: [DevCardRow] {
+        screen.devCards.filter { $0.note != Strings.countsAutomatically }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Button { vm.buyCard() } label: {
-                VStack(spacing: 3) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "rectangle.stack.fill").font(.caption).accessibilityHidden(true)
-                        Text(screen.buyLabel).fontWeight(.semibold)
-                    }
-                    CostChips(cost: screen.cardCost)
-                }
-                .frame(maxWidth: .infinity)
+            if cardsToPlay.isEmpty {
+                Text(Strings.noCardsYet).font(.callout).foregroundStyle(.secondary)
             }
-            .disabled(screen.buttons[Strings.buyCard] != true)
-            .accessibilityIdentifier(Strings.buyCard)
-            ForEach(screen.devCards, id: \.index) { row in
+            ForEach(cardsToPlay, id: \.index) { row in
                 HStack {
                     Text(row.name)
                     if let note = row.note { Text(note).font(.caption).foregroundStyle(.secondary) }
                     Spacer()
-                    if row.note != Strings.countsAutomatically { play(row) }
+                    play(row)
                 }
             }
-            awards
+            Divider()
+            victoryPoints
         }
         .buttonStyle(GameButtonStyle())
     }
 
-    /// The awards this player holds. Last, so that winning one moves nothing above it.
+    private var victoryPoints: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(Strings.victoryPoints).font(.subheadline.bold())
+                Spacer()
+                Text(Strings.pointsOfTen(screen.totalPoints)).font(.subheadline.monospacedDigit().bold())
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("victory points")
+            ForEach(screen.pointsBreakdown.filter { $0.label != Strings.longestRoad && $0.label != Strings.largestArmy }, id: \.label) { row in
+                HStack {
+                    Text(row.label)
+                    Spacer()
+                    Text("\(row.points)").monospacedDigit()
+                }
+                .font(.callout)
+            }
+            awards
+        }
+    }
+
     @ViewBuilder private var awards: some View {
         if let me = screen.scoreboard.first(where: \.isCurrent) {
             HStack(spacing: 6) {

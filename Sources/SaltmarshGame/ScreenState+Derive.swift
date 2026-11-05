@@ -298,8 +298,10 @@ extension ScreenState {
             discardBox: discardBox, harbours: HarboursPanel(emptyText: captured.isEmpty ? Strings.noHarbours : nil, rows: harbourRows),
             bankTitle: Strings.bankTitle, bankChoice: bankChoice, bankGiveOptions: TradeChoice.giveOptions(legal: bankPairs, shown: bankChoice),
             bankRowEnabled: !bankPairs.isEmpty,
-            devCards: devRows, buyLabel: Strings.buyCard(s.devDeck.count), tradeSection: tradeSection,
-            victory: victory, victoryAnimation: reduceMotion ? .reduced : .full, enabledTabs: enabledTabs, handover: handover)
+            devCards: devRows, tradeSection: tradeSection,
+            victory: victory, victoryAnimation: reduceMotion ? .reduced : .full, enabledTabs: enabledTabs, handover: handover,
+            drawnCard: ui.drawnCard.map { DrawnCard(title: Strings.youDrew($0.displayName), text: Strings.drawnCardText($0)) },
+            pointsBreakdown: aiThinking ? [] : breakdown(current), totalPoints: aiThinking ? 0 : Engine.totalPoints(s, player: current))
     }
 }
 

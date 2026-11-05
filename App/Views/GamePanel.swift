@@ -9,6 +9,7 @@ struct GamePanel: View {
     let screen: ScreenState
 
     @State private var picked = PanelTab.trade
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var isResponding: Bool { screen.buttons[Strings.decline] == true }
     /// The game wants something from this player, and that request takes the tab area.
@@ -28,6 +29,12 @@ struct GamePanel: View {
             tabArea
         }
         .padding(10)
+        .overlay(alignment: .bottom) {
+            if let card = screen.drawnCard {
+                DrawnCardNote(card: card, onDone: vm.dismissDrawnCard)
+            }
+        }
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: screen.drawnCard)
     }
 
     // MARK: Always in place
@@ -85,25 +92,34 @@ struct GamePanel: View {
             buildButton(Strings.road, icon: "road.lanes", .road)
             buildButton(Strings.settlement, icon: "house.fill", .settlement)
             buildButton(Strings.city, icon: "building.2.fill", .city)
+            Button { vm.buyCard() } label: {
+                buildFace(Strings.card, icon: "rectangle.stack.fill", cost: screen.cardCost, left: screen.deckCount)
+            }
+            .buttonStyle(GameButtonStyle(horizontalPadding: 4))
+            .disabled(screen.buttons[Strings.buyCard] != true)
+            .accessibilityIdentifier(Strings.buyCard)
         }
     }
 
     private func buildButton(_ label: String, icon: String, _ mode: BuildMode) -> some View {
         Button { vm.toggleBuildMode(mode) } label: {
-            VStack(spacing: 3) {
-                HStack(spacing: 4) {
-                    // A fixed box, because icons differ in height and would make the three buttons differ too.
-                    Image(systemName: icon).font(.caption).frame(width: 16, height: 14).accessibilityHidden(true)
-                    Text(label).fontWeight(.semibold).lineLimit(1).minimumScaleFactor(0.8)
-                }
-                CostChips(cost: screen.buildCost[mode] ?? ResourceCounts())
-                Text(Strings.piecesLeft(screen.buildLeft[mode] ?? 0)).font(.caption2)
-            }
-            .frame(maxWidth: .infinity)
+            buildFace(label, icon: icon, cost: screen.buildCost[mode] ?? ResourceCounts(), left: screen.buildLeft[mode] ?? 0)
         }
-        .buttonStyle(GameButtonStyle(fill: screen.activeBuildMode == mode ? GameButtonStyle.amber : GameButtonStyle.sea))
+        .buttonStyle(GameButtonStyle(fill: screen.activeBuildMode == mode ? GameButtonStyle.amber : GameButtonStyle.sea, horizontalPadding: 4))
         .disabled(screen.buttons[label] != true)
         .accessibilityIdentifier(label)
+    }
+
+    /// The icon sits above the name, so four buttons fit across a phone without shrinking "Settlement".
+    private func buildFace(_ label: String, icon: String, cost: ResourceCounts, left: Int) -> some View {
+        VStack(spacing: 3) {
+            // A fixed box, because icons differ in height and would make the buttons differ too.
+            Image(systemName: icon).font(.caption).frame(width: 16, height: 14).accessibilityHidden(true)
+            Text(label).font(.caption.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.8)
+            CostChips(cost: cost)
+            Text(Strings.piecesLeft(left)).font(.caption2)
+        }
+        .frame(maxWidth: .infinity)
     }
 
     private var tabBar: some View {
@@ -202,7 +218,8 @@ struct GamePanel: View {
     private func discard(_ box: DiscardBox) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text(box.title).font(.subheadline.bold())
+                RobberGlyph()
+                Text(box.title).font(.subheadline.bold()).fixedSize(horizontal: false, vertical: true)
                 Spacer()
                 Text(box.counter).font(.callout.monospacedDigit())
             }
@@ -277,6 +294,32 @@ struct SeatDot: View {
 }
 
 /// A square box in the resource's board colour: the amount above its name, centred both ways.
+/// Tells the buyer what they just drew, over the bottom of the panel. Touches pass through, and it goes by itself.
+private struct DrawnCardNote: View {
+    let card: DrawnCard
+    let onDone: () -> Void
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(card.title).font(.headline)
+            Text(card.text).font(.callout).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(GameButtonStyle.amber, lineWidth: 2))
+        .shadow(radius: 4)
+        .padding(10)
+        .allowsHitTesting(false)
+        .transition(.opacity)
+        .accessibilityIdentifier("drawn card")
+        .task(id: card.title) {
+            try? await Task.sleep(for: .seconds(4))
+            if !Task.isCancelled { onDone() }
+        }
+    }
+}
+
 /// A box of the hand on show that swells when its count goes up. A change of holder is not an increase.
 /// A payout from a roll waits for the dice to land; any other increase pulses at once.
 struct PulsingResourceBox: View {

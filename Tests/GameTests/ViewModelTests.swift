@@ -33,6 +33,11 @@ private struct RollThenEnd: Opponent {
     func respondToTrade(_ o: TradeOffer, view: PlayerView) async -> TradeResponse { .declined }
 }
 
+private struct BuyThenEnd: Opponent {
+    func chooseMove(view: PlayerView, legal: [Move]) async -> Move { legal.contains(.buyDevCard) ? .buyDevCard : .endTurn }
+    func respondToTrade(_ o: TradeOffer, view: PlayerView) async -> TradeResponse { .declined }
+}
+
 @MainActor @Suite struct ViewModelTests {
     @Test func aCancelledAITurnDoesNotOverwriteTheNewGame() async throws {
         let gate = Gate()
@@ -140,6 +145,72 @@ private struct RollThenEnd: Opponent {
         vm.load(TestGames.fresh())
         try vm.apply(.rollForFirst)
         #expect(vm.payingTiles.isEmpty)
+    }
+
+    /// A rolled game whose current player can afford one card, with `top` next in the deck.
+    func readyToBuy(_ top: DevCardType) -> GameState {
+        var s = TestGames.rolled(8)
+        s.clearHands()
+        s.set(hand: [.wool: 1, .grain: 1, .ore: 1], for: 0)
+        s.devDeck.append(top)
+        return s
+    }
+    func humansOnly(_ s: GameState) -> GameViewModel {
+        let vm = GameViewModel(store: InMemoryGameStore(), pacing: NoPacing()) { _, _ in nil }
+        vm.load(s)
+        return vm
+    }
+
+    @Test func buyingACardTellsTheBuyerWhatTheyDrew() {
+        let vm = humansOnly(readyToBuy(.victoryPoint))
+        vm.buyCard()
+        #expect(vm.screen.drawnCard?.title == "You drew: Victory point!")
+        #expect(vm.screen.drawnCard?.text == Strings.drawnCardText(.victoryPoint))
+    }
+    @Test func theCardsTabCountsEveryPointIncludingHiddenCards() {
+        var s = TestGames.rolled(8)
+        s.players[0].devCards = [DevCard(type: .victoryPoint, boughtOnTurn: 0)]
+        s.longestRoadHolder = 0
+        let screen = humansOnly(s).screen
+        #expect(screen.pointsBreakdown.first { $0.label == Strings.victoryPointCards }?.points == 1)
+        #expect(screen.pointsBreakdown.first { $0.label == Strings.longestRoad }?.points == 2)
+        #expect(screen.totalPoints == Engine.totalPoints(s, player: 0))
+    }
+    @Test func hiddenPointsStayHiddenWhileAnAIActs() {
+        var s = TestGames.rolled(8)
+        s.players[0].devCards = [DevCard(type: .victoryPoint, boughtOnTurn: 0)]
+        let screen = ScreenState.derive(state: s, ui: UIState(), aiThinking: true, reduceMotion: false)
+        #expect(screen.pointsBreakdown.isEmpty)
+        #expect(screen.totalPoints == 0)
+    }
+    @Test func aBuyThatFailsShowsNothing() {
+        var s = readyToBuy(.knight)
+        s.clearHands()
+        let vm = humansOnly(s)
+        vm.buyCard()
+        #expect(vm.screen.drawnCard == nil)
+    }
+    @Test func theDrawnCardGoesWhenDismissed() {
+        let vm = humansOnly(readyToBuy(.knight))
+        vm.buyCard()
+        vm.dismissDrawnCard()
+        #expect(vm.screen.drawnCard == nil)
+    }
+    @Test func theNextMoveHidesTheDrawnCardFromWhoeverIsNext() {
+        let vm = humansOnly(readyToBuy(.knight))
+        vm.buyCard()
+        vm.endTurn()
+        #expect(vm.screen.drawnCard == nil)
+    }
+    @Test func anAIsPurchaseStaysSecret() async {
+        var s = readyToBuy(.knight)
+        s.players[0].controller = .ai(.mate)
+        let deck = s.devDeck.count
+        let vm = GameViewModel(store: InMemoryGameStore(), pacing: NoPacing()) { c, _ in c.isAI ? BuyThenEnd() : nil }
+        vm.load(s)
+        await vm.waitForAI()
+        #expect(vm.state!.devDeck.count == deck - 1)
+        #expect(vm.screen.drawnCard == nil)
     }
 
     @Test func aiOnlyGameRunsToTheEnd() async {

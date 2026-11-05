@@ -32,6 +32,8 @@ public struct UIState: Equatable, Sendable {
     public var harbourChoice: [Int: TradeChoice] = [:]
     /// The human who last saw the private view. Not saved, so reopening a game hides it again.
     public var revealedTo: Int?
+    /// The card the human just bought, shown to them until the next move or until it times out.
+    public var drawnCard: DevCardType?
 
     public init() {}
 }

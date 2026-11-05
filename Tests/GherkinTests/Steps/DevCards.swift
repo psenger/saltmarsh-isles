@@ -41,7 +41,6 @@ func registerDevCards(_ r: StepRegistry) {
     }
     r.then(#"the deck count on the button drops by 1"#) { w, _, _ in
         try expectEqual(w.screen.deckCount, w.rememberedDeckCount - 1, "deck count")
-        try expectEqual(w.screen.buyLabel, "Buy a card (\(w.rememberedDeckCount - 1) left)", "buy label")
     }
     r.given(#"(\w+) cannot afford wool, grain and ore"#) { w, c, _ in
         roll(w, w.seat(c[0]))

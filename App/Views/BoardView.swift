@@ -276,14 +276,34 @@ struct BoardView: View {
         let t = board.tiles[robberTile]
         let x = t.center.x, y = t.center.y - 0.68
         context.fill(Path(ellipseIn: CGRect(x: x - 10, y: y + 8.5, width: 20, height: 7)), with: .color(.black.opacity(0.35)))
+        let body = Self.robberBody(x: x, y: y)
+        context.fill(body, with: .color(Color(hex: 0x22272b)))
+        context.stroke(body, with: .color(Color(hex: 0xf4efe2)), lineWidth: 1.5)
+    }
+
+    static func robberBody(x: Double, y: Double) -> Path {
         var body = Path()
         body.move(to: CGPoint(x: x - 8, y: y + 12))
         body.addQuadCurve(to: CGPoint(x: x - 4, y: y - 3), control: CGPoint(x: x - 7, y: y))
         body.addArc(center: CGPoint(x: x, y: y - 7.5), radius: 6, startAngle: .degrees(143), endAngle: .degrees(37), clockwise: false)
         body.addQuadCurve(to: CGPoint(x: x + 8, y: y + 12), control: CGPoint(x: x + 7, y: y))
         body.closeSubpath()
-        context.fill(body, with: .color(Color(hex: 0x22272b)))
-        context.stroke(body, with: .color(Color(hex: 0xf4efe2)), lineWidth: 1.5)
+        return body
+    }
+}
+
+/// The board's robber pawn, small enough to sit beside text.
+struct RobberGlyph: View {
+    var body: some View {
+        Canvas { context, size in
+            context.translateBy(x: size.width / 2, y: size.height / 2)
+            context.scaleBy(x: size.height / 28, y: size.height / 28)
+            let body = BoardView.robberBody(x: 0, y: 1)
+            context.fill(body, with: .color(Color(hex: 0x22272b)))
+            context.stroke(body, with: .color(Color(hex: 0xf4efe2)), lineWidth: 1.5)
+        }
+        .frame(width: 16, height: 24)
+        .accessibilityHidden(true)
     }
 }
 

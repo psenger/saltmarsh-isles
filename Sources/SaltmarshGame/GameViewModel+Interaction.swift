@@ -84,7 +84,13 @@ extension GameViewModel {
     }
     public func bankTrade(give: Resource, get: Resource) { attempt(.bankTrade(give: give, get: get)) }
     public func harbourTrade(_ harbour: Int, give: Resource, get: Resource) { attempt(.harbourTrade(harbour: harbour, give: give, get: get)) }
-    public func buyCard() { attempt(.buyDevCard) }
+    public func buyCard() {
+        let deck = state?.devDeck.count
+        attempt(.buyDevCard)
+        guard let s = state, s.devDeck.count != deck else { return }
+        ui.drawnCard = s.players[s.current].devCards.last?.type
+    }
+    public func dismissDrawnCard() { ui.drawnCard = nil }
     public func steal(from seat: Int) { attempt(.steal(from: seat)) }
 
     /// Plays the current player's held card at `index`; Bumper harvest and Corner the market need their choices.

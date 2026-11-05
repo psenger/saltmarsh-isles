@@ -97,6 +97,7 @@ public final class GameViewModel {
             rollCount += 1
         }
         ui.buildMode = nil
+        ui.drawnCard = nil
         ui.discardPicks = ResourceCounts()
         if let s = state, case .gameOver(let winner) = s.phase, ui.overlay == nil {
             ui.overlay = .victory(winner: winner)

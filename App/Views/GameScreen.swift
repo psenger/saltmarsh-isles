@@ -8,6 +8,7 @@ struct GameScreen: View {
         pacing: RealPacing())
     @State private var showNewGame = false
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         let screen = vm.screen
@@ -33,6 +34,7 @@ struct GameScreen: View {
         .task {
             if vm.state == nil, !vm.resume() { showNewGame = true }
         }
+        .onChange(of: reduceMotion, initial: true) { _, on in vm.reduceMotion = on }
         .onChange(of: scenePhase) { _, phase in
             #if os(macOS)
             if phase == .background { vm.concealHand() }

@@ -200,7 +200,7 @@ Feature: Saltmarsh Isles pass-and-play game
       And the status reads "Crimson rolled 7. Cobalt has more than 7 cards and must give up half."
       And the hold is labelled "Cobalt's hold" and shows Cobalt's cards
       And the discard box is outlined in Cobalt's colour
-      And the discard box reads "Cobalt, pick 4 cards to give up" with a counter "0 / 4"
+      And the discard box reads "Oh NO! Cobalt, the robber needs 4 cards from your deck" with a counter "0 / 4"
       And the discard box lists only resources Cobalt holds, each as "0 of N"
       And the discard box shows "Next: Amber"
 
@@ -233,7 +233,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Then Cobalt loses exactly 3 timber and 1 clay
       And the log reads "Cobalt discarded 3 timber, 1 clay."
       And the header shows "Amber · discarding"
-      And the discard box reads "Amber, pick 5 cards to give up"
+      And the discard box reads "Oh NO! Amber, the robber needs 5 cards from your deck"
 
     Scenario: After the last discard the roller moves the robber
       Given Amber is the last player discarding

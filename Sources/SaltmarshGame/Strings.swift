@@ -54,7 +54,6 @@ public enum Strings {
     public static func piecesLeft(_ n: Int) -> String { "\(n) left" }
     public static let noHarbours = "None yet. Build a settlement on a corner joined to a harbour by a jetty."
     public static let bankTitle = "Trade with bank, 4 for 1"
-    public static func buyCard(_ left: Int) -> String { "Buy a card (\(left) left)" }
     public static func harbourTitle(_ h: Harbour) -> String {
         switch h.kind {
         case .any: "3:1 any"
@@ -64,13 +63,27 @@ public enum Strings {
     public static func harbourTrade(_ ratio: Int) -> String { "Trade \(ratio) for 1" }
 
     // Discard box
-    public static func discardTitle(_ name: String, _ n: Int) -> String { "\(name), pick \(n) cards to give up" }
+    public static func discardTitle(_ name: String, _ n: Int) -> String { "Oh NO! \(name), the robber needs \(n) cards from your deck" }
     public static func discardCounter(_ picked: Int, _ n: Int) -> String { "\(picked) / \(n)" }
     public static func discardRow(_ picked: Int, _ held: Int) -> String { "\(picked) of \(held)" }
     public static func next(_ name: String) -> String { "Next: \(name)" }
 
     // Development card notes
     public static let boughtThisTurn = "bought this turn", oneCardPerTurn = "one card per turn", countsAutomatically = "counts automatically"
+    public static func youDrew(_ card: String) -> String { "You drew: \(card)!" }
+    public static func drawnCardText(_ type: DevCardType) -> String {
+        switch type {
+        case .knight: "Play it on a later turn to move the robber and steal a card. It counts toward largest army."
+        case .victoryPoint: "Worth 1 point straight away, and hidden from everyone else until you win."
+        case .roadCrew: "Play it on a later turn to build 2 roads for free."
+        case .bumperHarvest: "Play it on a later turn to take any 2 cards from the bank."
+        case .cornerMarket: "Play it on a later turn, name a resource, and every other player gives you all of theirs."
+        }
+    }
+
+    // The Cards tab and the card button
+    public static let card = "Card", noCardsYet = "No cards to play.", victoryPoints = "Victory points"
+    public static func pointsOfTen(_ n: Int) -> String { "\(n) / 10" }
 
     // Trade responses
     public static let pending = "pending", accepted = "accepted", declined = "declined"

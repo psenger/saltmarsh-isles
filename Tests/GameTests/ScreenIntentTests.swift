@@ -50,13 +50,13 @@ import SaltmarshTestSupport
     }
     @Test func discardBox() {
         let vm = humans(sevenRolled()); var box = vm.screen.discardBox!
-        #expect(box.title == "Cobalt, pick 4 cards to give up"); #expect(box.counter == "0 / 4"); #expect(box.next == "Next: Amber")
+        #expect(box.title == "Oh NO! Cobalt, the robber needs 4 cards from your deck"); #expect(box.counter == "0 / 4"); #expect(box.next == "Next: Amber")
         #expect(box.confirmLabel == "Discard 4 cards"); #expect(!box.confirmEnabled); #expect(box.outlineSeat == .cobalt)
         #expect(box.rows.map(\.resource) == [.timber, .clay, .wool, .grain, .ore]); #expect(box.rows[0].label == "0 of 2"); #expect(box.rows[4].label == "0 of 1")
         #expect(box.rows.allSatisfy { !$0.minusEnabled && $0.plusEnabled })
         vm.discardAdjust(.timber, by: 2); vm.discardAdjust(.clay, by: 2); box = vm.screen.discardBox!
         #expect(box.counter == "4 / 4"); #expect(box.rows.allSatisfy { !$0.plusEnabled }); #expect(box.rows[0].minusEnabled); #expect(box.confirmEnabled); #expect(box.rows[0].label == "2 of 2")
-        vm.confirmDiscard(); #expect(vm.screen.discardBox?.title == "Amber, pick 5 cards to give up"); #expect(vm.screen.discardBox?.next == nil)
+        vm.confirmDiscard(); #expect(vm.screen.discardBox?.title == "Oh NO! Amber, the robber needs 5 cards from your deck"); #expect(vm.screen.discardBox?.next == nil)
         let s = sevenRolled(cobalt: 7, amber: 3); #expect(humans(s).screen.discardBox == nil)
     }
     @Test func harbourRows() {
@@ -78,7 +78,7 @@ import SaltmarshTestSupport
         let vm = humans(s); var rows = vm.screen.devCards
         #expect(rows.map(\.name) == ["Knight", "Victory point", "Bumper harvest"]); #expect(rows[0].note == "bought this turn"); #expect(!rows[0].playEnabled)
         #expect(rows[1].note == "counts automatically"); #expect(!rows[1].playEnabled); #expect(rows[2].note == nil); #expect(rows[2].playEnabled); #expect(rows[2].needsChoices)
-        #expect(vm.screen.buyLabel == "Buy a card (25 left)")
+        #expect(vm.screen.deckCount == 25)
         vm.playCard(2, bumper: (.ore, .ore)); rows = vm.screen.devCards
         #expect(rows.map(\.name) == ["Knight", "Victory point"]); #expect(rows[0].note == "bought this turn")
         var t = TestGames.afterSetup(); t.players[0].devCards = [DevCard(type: .knight, boughtOnTurn: -1), DevCard(type: .roadCrew, boughtOnTurn: -1)]; vm.load(t); rows = vm.screen.devCards

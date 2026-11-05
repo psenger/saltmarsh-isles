@@ -9,21 +9,23 @@ struct GameButtonStyle: ButtonStyle {
     static let amber = Color(hex: 0xd68910)
 
     var fill = GameButtonStyle.sea
+    var horizontalPadding: CGFloat = 10
 
     func makeBody(configuration: Configuration) -> some View {
-        Face(configuration: configuration, fill: fill)
+        Face(configuration: configuration, fill: fill, horizontalPadding: horizontalPadding)
     }
 
     private struct Face: View {
         let configuration: Configuration
         let fill: Color
+        let horizontalPadding: CGFloat
         @Environment(\.isEnabled) private var enabled
 
         var body: some View {
             let shape = RoundedRectangle(cornerRadius: 8)
             configuration.label
                 .foregroundStyle(enabled ? Color.white : Color.secondary)
-                .padding(.horizontal, 10)
+                .padding(.horizontal, horizontalPadding)
                 .padding(.vertical, 6)
                 .background(enabled ? fill : Color.secondary.opacity(0.15), in: shape)
                 .overlay(shape.stroke(.black.opacity(enabled ? 0.3 : 0.08), lineWidth: 1))
