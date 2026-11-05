@@ -76,6 +76,19 @@ extension ScreenState {
             holdTitle = Strings.hold(name(handOwner))
         }
 
+        // The device passes privately whenever the private view would change to a different human.
+        var handover: Handover?
+        if humans.count >= 2, !aiThinking, !s.players[panelOwner].controller.isAI, !s.phase.skipsHandover, ui.revealedTo != panelOwner {
+            let who = name(panelOwner)
+            let button: String
+            switch s.phase {
+            case .discarding: button = Strings.handoverDiscard(who)
+            case .awaitingRoll: button = Strings.startTurn(who)
+            default: button = responderPending ? Strings.seeOffer(who) : Strings.continueTurn(who)
+            }
+            handover = Handover(player: panelOwner, seat: s.players[panelOwner].seat, message: Strings.passDevice(who), button: button)
+        }
+
         let bankPairs = legal.compactMap { move -> TradeChoice? in
             if case .bankTrade(let give, let get) = move { TradeChoice(give: give, get: get) } else { nil }
         }
@@ -281,7 +294,17 @@ extension ScreenState {
             bankTitle: Strings.bankTitle, bankChoice: bankChoice, bankGiveOptions: TradeChoice.giveOptions(legal: bankPairs, shown: bankChoice),
             bankRowEnabled: !bankPairs.isEmpty,
             devCards: devRows, buyLabel: Strings.buyCard(s.devDeck.count), tradeSection: tradeSection,
-            victory: victory, victoryAnimation: reduceMotion ? .reduced : .full)
+            victory: victory, victoryAnimation: reduceMotion ? .reduced : .full, handover: handover)
+    }
+}
+
+extension Phase {
+    /// The first roll and setup hold nothing secret, and the end of the game has nothing left to hide.
+    var skipsHandover: Bool {
+        switch self {
+        case .rollingForFirst, .setup, .gameOver: true
+        default: false
+        }
     }
 }
 

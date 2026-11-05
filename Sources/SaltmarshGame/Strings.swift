@@ -17,7 +17,7 @@ public enum Strings {
     public static let answersIn = "Answers are in. Trade with someone or withdraw."
     public static let gameOver = "Game over."
     public static func discarding(roller: String, name: String) -> String {
-        "\(roller) rolled 7. \(name) has more than 7 cards and must give up half. Pass the device to \(name)."
+        "\(roller) rolled 7. \(name) has more than 7 cards and must give up half."
     }
     public static func freeRoads(_ left: Int) -> String { "Road crew: tap a dashed edge for a free road (\(left) left)." }
     public static func offer(from proposer: String, _ offer: TradeOffer) -> String { "\(proposer) offers \(offer.description)." }
@@ -37,7 +37,15 @@ public enum Strings {
     public static func stealFrom(_ name: String) -> String { "Steal from \(name)" }
     public static func tradeWith(_ name: String) -> String { "Trade with \(name)" }
 
+    // Handing the device to another human
+    public static func passDevice(_ name: String) -> String { "Pass the device to \(name)" }
+    public static func startTurn(_ name: String) -> String { "Start turn, \(name)" }
+    public static func handoverDiscard(_ name: String) -> String { "Discard, \(name)" }
+    public static func seeOffer(_ name: String) -> String { "See the offer, \(name)" }
+    public static func continueTurn(_ name: String) -> String { "Continue, \(name)" }
+
     // Panel labels
+    public static let offerToPlayers = "Offer a trade to players…", back = "Back"
     public static func hold(_ name: String) -> String { "\(name)'s hold" }
     public static let reverseOrder = "Round 2: reverse order"
     public static let dash = "–"

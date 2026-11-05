@@ -53,6 +53,7 @@ public final class GameViewModel {
         cancelAI()
         state = s
         ui = UIState()
+        noteSetupHolder()
         opponents = Dictionary(uniqueKeysWithValues: s.players.enumerated().compactMap { i, p in
             makeOpponent(p.controller, i).map { (i, $0) }
         })
@@ -77,7 +78,16 @@ public final class GameViewModel {
         if let s = state, case .gameOver(let winner) = s.phase, ui.overlay == nil {
             ui.overlay = .victory(winner: winner)
         }
+        noteSetupHolder()
         save()
+    }
+
+    /// The device passes without a handover during the first roll and setup, so the human who places
+    /// last and takes the first turn is not asked to hand it to themselves.
+    private func noteSetupHolder() {
+        guard let s = state, s.phase.skipsHandover else { return }
+        let acting = Engine.actingPlayer(s)
+        if !s.players[acting].controller.isAI { ui.revealedTo = acting }
     }
 
     private func save() {

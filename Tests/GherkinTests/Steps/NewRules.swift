@@ -69,6 +69,17 @@ func registerNewRules(_ r: StepRegistry) {
     r.given(#"a 3-player game with Crimson human and the others AI"#) { w, _, _ in await aiGame(w, [.human, .ai(.mate), .ai(.mate)]) }
     r.given(#"a 3-player game with Crimson and Cobalt human and Amber AI"#) { w, _, _ in await aiGame(w, [.human, .human, .ai(.mate)]) }
     r.when(#"the AI seats have finished acting"#) { w, _, _ in await w.vm.waitForAI() }
+
+    // Handing the device to another human
+    r.given(#"(\w+) has the device"#) { w, c, _ in w.vm.ui.revealedTo = w.seat(c[0]) }
+    r.then(#"the handover reads "([^"]*)" with the button "([^"]*)""#) { w, c, _ in
+        try expectEqual(w.screen.handover?.message ?? "(none)", c[0], "handover message")
+        try expectEqual(w.screen.handover?.button ?? "(none)", c[1], "handover button")
+    }
+    r.then(#"no handover is shown"#) { w, _, _ in try expectEqual(w.screen.handover?.button ?? "(none)", "(none)", "handover") }
+    r.when(#"the handover button is tapped"#) { w, _, _ in w.vm.revealHand() }
+    r.when(#"the game is reopened"#) { w, _, _ in w.vm.load(w.state) }
+    r.when(#"the app goes to the background"#) { w, _, _ in w.vm.concealHand() }
     r.then(#"it is Crimson who must act"#) { w, _, _ in
         try expectEqual(Engine.actingPlayer(w.state), 0, "acting seat")
         try expectTrue(!w.vm.aiThinking, "an AI is still thinking")

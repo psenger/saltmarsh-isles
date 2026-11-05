@@ -197,7 +197,7 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: The panel belongs to the discarding player
       When Crimson rolls 7
       Then the header shows "Cobalt · discarding" with Cobalt's colour
-      And the status reads "Crimson rolled 7. Cobalt has more than 7 cards and must give up half. Pass the device to Cobalt."
+      And the status reads "Crimson rolled 7. Cobalt has more than 7 cards and must give up half."
       And the hold is labelled "Cobalt's hold" and shows Cobalt's cards
       And the discard box is outlined in Cobalt's colour
       And the discard box reads "Cobalt, pick 4 cards to give up" with a counter "0 / 4"
@@ -898,6 +898,70 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: End turn is locked until the roll
       Given it is Crimson's turn and Crimson has not rolled
       Then "End turn" is disabled
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Handing the device to another human
+
+    Scenario: Ending a turn hides the game until the next human is ready
+      Given setup is complete and Crimson has rolled
+      And Crimson has the device
+      When Crimson taps "End turn"
+      Then the handover reads "Pass the device to Cobalt" with the button "Start turn, Cobalt"
+      When the handover button is tapped
+      Then no handover is shown
+      And the hold is labelled "Cobalt's hold"
+
+    Scenario: The human holding the device sees no handover
+      Given setup is complete and Crimson has rolled
+      And Crimson has the device
+      Then no handover is shown
+
+    Scenario: A human who must discard gets the device privately
+      Given setup is complete and it is Crimson's turn
+      And Crimson holds 3 cards, Cobalt holds 8 cards and Amber holds 3 cards
+      When Crimson rolls 7
+      Then the handover reads "Pass the device to Cobalt" with the button "Discard, Cobalt"
+
+    Scenario: A trade offer goes to each human privately and comes back
+      Given setup is complete and Crimson has rolled
+      And Crimson holds 3 timber, Cobalt holds 1 ore and Amber holds 1 grain
+      When Crimson offers 2 timber for 1 ore
+      Then the handover reads "Pass the device to Cobalt" with the button "See the offer, Cobalt"
+      When the handover button is tapped
+      And Cobalt taps "Decline"
+      Then the handover reads "Pass the device to Amber" with the button "See the offer, Amber"
+      When the handover button is tapped
+      And Amber taps "Decline"
+      Then the handover reads "Pass the device to Crimson" with the button "Continue, Crimson"
+
+    Scenario: With one human no handover ever appears
+      Given a 3-player game with Crimson human and the others AI
+      When the AI seats have finished acting
+      Then no handover is shown
+
+    Scenario: An AI needs no handover
+      Given a 3-player game with Crimson and Cobalt human and Amber AI
+      When Amber is thinking
+      Then no handover is shown
+
+    Scenario: No handover during the first roll
+      Then no handover is shown
+
+    Scenario: No handover at the end of the game
+      When a player wins
+      Then no handover is shown
+
+    Scenario: Reopening the game hides it until someone is ready
+      Given setup is complete and Crimson has rolled
+      And Crimson has the device
+      When the game is reopened
+      Then the handover reads "Pass the device to Crimson" with the button "Continue, Crimson"
+
+    Scenario: Leaving the app hides the game until someone is ready
+      Given setup is complete and Crimson has rolled
+      And Crimson has the device
+      When the app goes to the background
+      Then the handover reads "Pass the device to Crimson" with the button "Continue, Crimson"
 
   # ─────────────────────────────────────────────────────────────
   Rule: Playing against AI seats

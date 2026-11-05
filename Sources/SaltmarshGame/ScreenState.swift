@@ -138,6 +138,16 @@ public struct VictoryCard: Equatable, Sendable {
     public var confetti: ConfettiSchedule?
 }
 
+/// The blank screen shown while the device passes to a different human. Nothing else is drawn with it.
+public struct Handover: Equatable, Sendable {
+    public var player: Int
+    public var seat: Seat
+    /// "Pass the device to Cobalt"
+    public var message: String
+    /// "Start turn, Cobalt"
+    public var button: String
+}
+
 /// The render model: every string and enabled flag the panel shows and every piece of intent the
 /// board draws from. Views only turn this into pixels; the feature file's steps assert on it.
 public struct ScreenState: Equatable, Sendable {
@@ -196,6 +206,8 @@ public struct ScreenState: Equatable, Sendable {
     public var tradeSection: TradeSection
     public var victory: VictoryCard?
     public var victoryAnimation: VictoryAnimation
+    /// When set, the app draws only this. The other fields keep their values so the rules can still read them.
+    public var handover: Handover?
 
     /// Before any game exists.
     static func empty(board: Board) -> ScreenState {
@@ -207,6 +219,6 @@ public struct ScreenState: Equatable, Sendable {
                     stealTargets: [], numberDiscBelowRobber: false, desertLabelBelowRobber: true, harbourRings: [:], championCorners: [],
                     discardBox: nil, harbours: HarboursPanel(emptyText: Strings.noHarbours, rows: []), bankTitle: Strings.bankTitle, bankChoice: TradeChoice.bankFallback, bankGiveOptions: [TradeChoice.bankFallback.give], bankRowEnabled: false,
                     devCards: [], buyLabel: Strings.buyCard(25), tradeSection: TradeSection(offerGive: ResourceCounts(), offerWant: ResourceCounts(), target: nil, targets: [], offerEnabled: false, offerProblem: nil, responses: []),
-                    victory: nil, victoryAnimation: .full)
+                    victory: nil, victoryAnimation: .full, handover: nil)
     }
 }

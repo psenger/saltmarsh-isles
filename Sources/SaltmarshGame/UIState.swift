@@ -30,6 +30,8 @@ public struct UIState: Equatable, Sendable {
     /// What was picked in the bank row, nil until something is.
     public var bankChoice: TradeChoice?
     public var harbourChoice: [Int: TradeChoice] = [:]
+    /// The human who last saw the private view. Not saved, so reopening a game hides it again.
+    public var revealedTo: Int?
 
     public init() {}
 }

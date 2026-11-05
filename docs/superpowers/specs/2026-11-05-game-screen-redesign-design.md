@@ -73,9 +73,9 @@ Items 1 to 5 never scroll. All of them stay on screen in every state; when one c
 
 ### When the game asks for something
 
-Discarding, answering an offer, choosing who to rob and picking from an AI's offer take over the tab area, in the same place and size. Trade, Cards, Players and Log grey out until it is answered, then the previous tab returns.
+Discarding, answering an offer, choosing who to rob and a proposer's list of answers (Trade with X, Withdraw) take over the tab area, in the same place and size. Trade, Cards, Players and Log grey out until it is answered, then the previous tab returns. The proposer's answers take over so that "Answers are in" can never appear with its buttons behind another tab.
 
-While an AI is playing, Roll, End turn and the build buttons are grey and the tabs still work so the human can read the log or the scores. Controls inside the tabs stay disabled by the existing rules.
+While an AI is playing, Roll, End turn and the build buttons are grey. Trade and Cards grey out too, because their content belongs to the current player: showing them would reveal the AI's harbours, and the offer builder's limits would reveal its hand. Players and Log stay available, and the tab area shows Log unless Players is picked.
 
 During the first roll and setup, the order strip sits at the top of the tab area with the log below it, Trade and Cards are grey, and Players stays available.
 
@@ -110,7 +110,7 @@ Victory and preview stay as today's overlay. The new game sheet is unchanged.
 - At game over.
 - In a game with one human.
 
-**Reopening a saved game:** with two or more humans, the game opens on the handover screen for whoever must act, so the app never shows the last player's cards to whoever picks it up. The exceptions above still apply: a game saved during setup or after the end opens normally.
+**Reopening a saved game or returning from the background:** with two or more humans, the game shows the handover screen for whoever must act, so the app never shows the last player's cards to whoever picks it up. This includes locking the phone or switching apps. The exceptions above still apply: a game in setup or after the end opens normally.
 
 ## 5. Consequences for the model and tests
 
@@ -145,6 +145,9 @@ The owner approved the mockups and the handover examples. These were decided whi
 - The "See the offer", "Discard" and "Continue" wording on the handover button. Mockup wording; the owner agreed the moments, not the words.
 - The discard status copy change.
 - A Players tab that stays available during setup; a tab area that returns to the previous tab after a request.
+- Trade and Cards grey during an AI's turn, where the mockup left them looking available, because their content would reveal the AI's harbours and hand.
+- The blank screen after locking the phone or switching apps with two or more humans, which means one extra tap when the same player comes back.
+- A proposer's list of answers taking over the tab area.
 
 ## 8. Left to the builder
 

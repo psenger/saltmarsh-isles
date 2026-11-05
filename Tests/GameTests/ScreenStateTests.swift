@@ -50,7 +50,7 @@ import SaltmarshTestSupport
     @Test func discardingPanelBelongsToTheDiscarder() {
         let vm = humans(sevenRolled()); let sc = vm.screen
         #expect(sc.header == "Cobalt · discarding"); #expect(sc.headerSeat == .cobalt)
-        #expect(sc.status == "Crimson rolled 7. Cobalt has more than 7 cards and must give up half. Pass the device to Cobalt.")
+        #expect(sc.status == "Crimson rolled 7. Cobalt has more than 7 cards and must give up half.")
         #expect(sc.holdTitle == "Cobalt's hold"); #expect(sc.handCounts == vm.state!.players[1].hand)
         #expect(on(turnButtons, sc).isEmpty); #expect(sc.buttons["Discard 4 cards"] == false)
         vm.discardAdjust(.timber, by: 2); vm.discardAdjust(.clay, by: 2); #expect(vm.screen.buttons["Discard 4 cards"] == true)

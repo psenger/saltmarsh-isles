@@ -13,6 +13,18 @@ extension GameViewModel {
         try? apply(move)
     }
 
+    // MARK: Handing the device to another human
+
+    /// The human named on the handover screen is ready.
+    public func revealHand() {
+        if let handover = screen.handover { ui.revealedTo = handover.player }
+    }
+
+    /// The app left the screen: hide the game from whoever picks the device up next.
+    public func concealHand() {
+        if let s = state, !s.phase.skipsHandover { ui.revealedTo = nil }
+    }
+
     // MARK: Board taps (by index; the view does the hit-testing)
 
     public func tapCorner(_ c: Int) {
