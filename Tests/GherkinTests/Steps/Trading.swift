@@ -16,6 +16,12 @@ func registerTrading(_ r: StepRegistry) {
     r.when(#"(\w+) chooses (\w+) to give and (\w+) to get in "Trade with bank, 4 for 1""#) { w, c, _ in
         w.vm.ui.bankChoice = TradeChoice(give: res(c[1]), get: res(c[2]))
     }
+    r.then(#"the bank trade row is (enabled|disabled)"#) { w, c, _ in
+        try expectEqual(w.screen.bankRowEnabled, c[0] == "enabled", "bank trade row")
+    }
+    r.then(#"that harbour's trade row is (enabled|disabled)"#) { w, c, _ in
+        try expectEqual(w.screen.harbours.rows.first?.rowEnabled ?? false, c[0] == "enabled", "harbour trade row")
+    }
     r.when(#"taps "Trade 4 for 1""#) { w, _, _ in
         try expectEqual(w.screen.buttons["Trade 4 for 1"] ?? false, true, "Trade 4 for 1")
         w.rememberedHands = w.state.players.map(\.hand)

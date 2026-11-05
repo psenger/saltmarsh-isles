@@ -176,7 +176,8 @@ extension ScreenState {
             let fixed: String? = { if case .specific(let r) = h.kind { return "\(h.ratio) \(r.rawValue)" } else { return nil } }()
             return HarbourRow(index: ch.index, title: Strings.harbourTitle(h), heldBy: ch.heldByDescription, giveFixed: fixed,
                               give: choice.give, get: choice.get, tradeLabel: Strings.harbourTrade(h.ratio),
-                              tradeEnabled: legal.contains(.harbourTrade(harbour: ch.index, give: choice.give, get: choice.get)))
+                              tradeEnabled: legal.contains(.harbourTrade(harbour: ch.index, give: choice.give, get: choice.get)),
+                              rowEnabled: has { if case .harbourTrade(ch.index, _, _) = $0 { true } else { false } })
         }
         let devRows = aiThinking ? [] : s.players[current].devCards.enumerated().map { i, card -> DevCardRow in
             let note: String?
@@ -267,7 +268,8 @@ extension ScreenState {
             stealTargets: stealTargets, numberDiscBelowRobber: robberTile.number != nil, desertLabelBelowRobber: robberTile.number == nil,
             harbourRings: rings, championCorners: champion,
             discardBox: discardBox, harbours: HarboursPanel(emptyText: captured.isEmpty ? Strings.noHarbours : nil, rows: harbourRows),
-            bankTitle: Strings.bankTitle, devCards: devRows, buyLabel: Strings.buyCard(s.devDeck.count), tradeSection: tradeSection,
+            bankTitle: Strings.bankTitle, bankRowEnabled: has { if case .bankTrade = $0 { true } else { false } },
+            devCards: devRows, buyLabel: Strings.buyCard(s.devDeck.count), tradeSection: tradeSection,
             victory: victory, victoryAnimation: reduceMotion ? .reduced : .full)
     }
 }

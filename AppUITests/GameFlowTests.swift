@@ -211,6 +211,8 @@ final class GameFlowTests: XCTestCase {
         keepScreenshot(app, named: "first roll")
         XCTAssertTrue(app.staticTexts["status"].isHittable, "the status line is off screen")
         XCTAssertTrue(app.staticTexts["header"].isHittable, "the header is off screen")
+        XCTAssertFalse(app.buttons["bank give"].isEnabled, "the bank dropdown is enabled before the roll")
+        XCTAssertFalse(app.buttons["bank get"].isEnabled, "the bank dropdown is enabled before the roll")
         app.buttons["Roll dice"].tap()
         let moved = NSPredicate { _, _ in self.status(app) != self.rollPrompt }
         wait(for: [XCTNSPredicateExpectation(predicate: moved, object: nil)], timeout: 5)

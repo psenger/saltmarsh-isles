@@ -102,6 +102,8 @@ Owner's UI feedback, 2026-11-05 (the owner's instruction is recorded in design s
 - **R17. The hand is pinned above the scrolling panel.** The owner asked for it to be visible on the player's turn. Cost if wrong: less scrolling room on iPhone.
 - **R18. The whole log is kept, newest first, in a 140 point box inside the scrolling panel.** Pinning it too would leave too little room on iPhone. Cost if wrong: one view.
 
+- **R19. A row that can trade keeps every resource in its Give dropdown.** With 4 timber and clay picked, the row is active and only the Trade button is disabled. The owner confirmed the row rule; listing only affordable resources was asked and not separately answered. Cost if wrong: filter one dropdown.
+
 ## Carried forward (proposed plan, awaiting owner confirmation)
 
 | Item | Proposed plan |

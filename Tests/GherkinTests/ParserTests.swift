@@ -13,7 +13,7 @@ import SaltmarshEngine
         #expect(feature.background.map(\.text) == ["a new 3-player game with human seats"])
         #expect(feature.rules.count == 21)
         let scenarios = feature.rules.flatMap(\.scenarios)
-        #expect(scenarios.count == 144, "actual \(scenarios.count)")   // 112 scenarios plus 9 outlines expanded to 32 rows
+        #expect(scenarios.count == 148, "actual \(scenarios.count)")   // 112 scenarios plus 9 outlines expanded to 32 rows
         #expect(scenarios.filter { $0.name.hasSuffix("(row 1)") }.count == 9)
         #expect(scenarios.filter { $0.tags.contains("ui") }.count == 2)
     }

@@ -66,6 +66,8 @@ public struct HarbourRow: Equatable, Sendable {
     /// "Trade 2 for 1"
     public var tradeLabel: String
     public var tradeEnabled: Bool
+    /// False when no trade on this row is legal, whatever is picked.
+    public var rowEnabled: Bool
 }
 
 public struct HarboursPanel: Equatable, Sendable {
@@ -181,6 +183,8 @@ public struct ScreenState: Equatable, Sendable {
     public var discardBox: DiscardBox?
     public var harbours: HarboursPanel
     public var bankTitle: String
+    /// False when no bank trade is legal, whatever is picked.
+    public var bankRowEnabled: Bool
     public var devCards: [DevCardRow]
     public var buyLabel: String
     public var tradeSection: TradeSection
@@ -195,7 +199,7 @@ public struct ScreenState: Equatable, Sendable {
                     scoreboard: [], aiThinking: false, board: board, robberTile: board.desertTile,
                     glowingCorners: [], dashedEdges: [], selectableTiles: [], pulsingSettlements: [], hotNumbers: [6, 8], hitNumber: nil,
                     stealTargets: [], numberDiscBelowRobber: false, desertLabelBelowRobber: true, harbourRings: [:], championCorners: [],
-                    discardBox: nil, harbours: HarboursPanel(emptyText: Strings.noHarbours, rows: []), bankTitle: Strings.bankTitle,
+                    discardBox: nil, harbours: HarboursPanel(emptyText: Strings.noHarbours, rows: []), bankTitle: Strings.bankTitle, bankRowEnabled: false,
                     devCards: [], buyLabel: Strings.buyCard(25), tradeSection: TradeSection(offerGive: ResourceCounts(), offerWant: ResourceCounts(), target: nil, targets: [], offerEnabled: false, offerProblem: nil, responses: []),
                     victory: nil, victoryAnimation: .full)
     }

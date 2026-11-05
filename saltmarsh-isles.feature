@@ -399,6 +399,14 @@ Feature: Saltmarsh Isles pass-and-play game
         | Crimson chooses the same resource to give and get |
         | Crimson has not rolled yet                         |
 
+    Scenario: The whole bank row is disabled without 4 of any resource
+      Given Crimson holds 3 timber and 3 ore
+      Then the bank trade row is disabled
+
+    Scenario: The bank row is enabled with 4 of a resource
+      Given Crimson holds 4 timber
+      Then the bank trade row is enabled
+
     Scenario: The bank rate never changes
       Given Crimson owns a 2:1 wool harbour
       Then the bank box still trades 4 for 1
@@ -441,6 +449,14 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: A harbour trade button is disabled without enough cards
       Given Crimson holds a 2:1 wool harbour and 1 wool
       Then that row's "Trade 2 for 1" is disabled
+
+    Scenario: The whole row of a 2:1 harbour is disabled without 2 of its resource
+      Given Crimson holds a 2:1 wool harbour and 1 wool
+      Then that harbour's trade row is disabled
+
+    Scenario: The row of a 3:1 harbour is enabled with 3 of a resource
+      Given Crimson holds a 3:1 harbour and 3 clay
+      Then that harbour's trade row is enabled
 
     Scenario: Two players sharing a harbour
       Given Crimson holds one corner and Cobalt holds the other corner of a 3:1 harbour
