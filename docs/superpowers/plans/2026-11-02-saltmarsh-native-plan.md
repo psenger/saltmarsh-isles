@@ -70,6 +70,7 @@ Each later plan is written when its predecessor's code exists, so its signatures
 - Change of method on 2026-11-04: Plan 1 Tasks 7 to 18 were executed inline (superpowers:executing-plans) with a self-review at the end, after three implementer subagents in a row hung on unanswered permission prompts and blocked the session. Later plans run inline unless the owner is present to answer subagent prompts.
 - Inserted after Plan 1 at the owner's request to see something on screen early: `App/Views/BoardView.swift` (Canvas drawing of a board in the prototype's style) and `App/Views/BoardPreviewScreen.swift` (generated board plus a "New board" button), built for macOS and the iPhone 15 Pro simulator. Plan 5 extends `BoardView` with pieces, glow and dash intent rather than replacing it.
 - Inserted after Plan 3 at the owner's request: [the minimal playable game screen](2026-11-04-minimal-game-screen.md). It replaces `BoardPreviewScreen`, draws pieces and board intent in `BoardView`, and makes every engine move reachable, with autosave and resume. Plan 5 keeps these views and adds what is left: confetti, animation, effort descriptions, iPad tuning, spec and README rewrite. `FileGameStore` lives in `SaltmarshGame` so it runs under `swift test`. Mac XCUITest needs the owner's authentication, so it does not run unattended.
+- Inserted after that at the owner's request: [the game screen redesign](2026-11-05-game-screen-redesign.md). It replaces the panel layout from the minimal screen with a full-width header, a fixed panel with tabs and real dice, and adds a handover screen between different humans. Plan 5's polish builds on this layout.
 
 ## Rulings (awaiting owner review)
 
@@ -99,11 +100,24 @@ Owner's UI feedback, 2026-11-05 (the owner's instruction is recorded in design s
 - **R14. Resource boxes use the board's terrain colours.** The owner's item 3 said "color position" of item 1, which named no colour. Cost if wrong: one fill colour.
 - **R15. The bank uses the same boxes as the hold, and the discard rows do not.** The bank shares the component; discards were not mentioned. Cost if wrong: one view.
 - **R16. The offer builder became two rows of five boxes (Give, Want), with minus and plus under each box.** Each box has one amount, so the rule applies exactly. It replaces the steppers. Cost if wrong: one view.
-- **R17. The hand is pinned above the scrolling panel.** The owner asked for it to be visible on the player's turn. Cost if wrong: less scrolling room on iPhone.
-- **R18. The whole log is kept, newest first, in a 140 point box inside the scrolling panel.** Pinning it too would leave too little room on iPhone. Cost if wrong: one view.
+- **R17. (Replaced by the 2026-11-05 redesign.) The hand is pinned above the scrolling panel.** The owner asked for it to be visible on the player's turn. Cost if wrong: less scrolling room on iPhone.
+- **R18. (Replaced by the 2026-11-05 redesign: the log is a tab.) The whole log is kept, newest first, in a 140 point box inside the scrolling panel.** Pinning it too would leave too little room on iPhone. Cost if wrong: one view.
 
 - **R19. Answered by the owner, 2026-11-05: Give lists only what the row can trade, and an untouched row starts on a legal trade.** A pick stays while its Give can still be traded; otherwise the row moves to a legal pair and keeps the picked Get if it can.
 - **R20. The Get dropdown still lists every resource, so picking the same resource on both sides, or one the bank has run out of, disables Trade.** Not asked for, and the scenario "Crimson chooses the same resource to give and get" pins it. Cost if wrong: filter a second dropdown and retire that scenario row.
+
+The rest of these came from the 2026-11-05 game screen redesign. The owner approved the mockups and the handover moments; these calls were made during the build and reported to the owner, who has not answered them yet.
+
+- **R21. The status slot holds up to two lines and keeps one fixed height.** The owner was shown one line, but the longest messages cannot fit one legible line beside the chips on Mac. Cost if wrong: shorten the messages.
+- **R22. New game and Preview win live in a menu in the header.** Not in the mockups. Cost if wrong: one view and the UI test helper.
+- **R23. A who line above the hand shows `screen.header` and the hold label.** The mockups show only the hold label; without this, "Cobalt · discarding" and its colour would be nowhere on screen. Cost if wrong: one view.
+- **R24. With two humans during an AI's turn, the five resource boxes stay in place with no numbers.** Keeps the layout fixed while showing no hand. Cost if wrong: one view.
+- **R25. The handover button says "Start turn", "Discard", "See the offer" or "Continue", then the name, and the discard status no longer says "Pass the device to X".** The owner agreed the moments, not the words. Cost if wrong: `Strings` and the scenarios.
+- **R26. Trade and Cards grey out during an AI's turn and during setup.** The mockup left them looking available, but they would show the AI's harbours and the offer limits would reveal its hand. Cost if wrong: splitting "whose private data" from `current` in `derive`.
+- **R27. With two or more humans, leaving the app shows the handover screen on return.** Closes the case of a locked phone being passed on, at the cost of one tap when the same player returns. Cost if wrong: one line in `GameScreen`.
+- **R28. A proposer's list of answers takes over the tab area.** Otherwise "Answers are in" could show with Trade and Withdraw behind another tab. Cost if wrong: one view and a tab rule.
+- **R29. "Discard N cards" and "Offer" sit above their rows, not below.** On iPhone the tab area scrolls and the buttons fell out of view. Cost if wrong: one view.
+- **R30. The "Saltmarsh Isles" footer text is gone from the game screen.** The redesign has no place for it; the title remains on the Mac window and the new game sheet. Cost if wrong: one line.
 
 ## Carried forward (proposed plan, awaiting owner confirmation)
 

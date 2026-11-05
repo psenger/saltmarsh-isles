@@ -299,6 +299,8 @@ AI actions apply one at a time with a short pause (about half a second) so the h
 
 ## 7. Screens
 
+The layout of the game screen, including where the items below sit, is set by `2026-11-05-game-screen-redesign-design.md`, which replaces any placement described here. That document also defines the handover screen between humans.
+
 Everything from the spec's section 5 panel list, plus:
 
 **New game sheet.** Player count (2 to 4). One row per seat: colour dot, fixed name, a Human/AI segmented control, and for AI an effort picker with the five names and a one-line description each. "Start game". Defaults: 3 players, Crimson human, the rest Mate.
@@ -345,6 +347,8 @@ Everything from the spec's section 5 panel list, plus:
 - Human trade responders: Accept/Decline only, no on-screen counter (owner confirmed).
 - AI seats may propose trades to humans (owner confirmed).
 - A human trade responder sees their own hand; an AI's hand is never shown (owner, 2026-11-05).
+- Between two different humans the game hides until the next person taps a button, and an AI needs no such screen (owner, 2026-11-05).
+- The game screen has a full-width header, a fixed panel with tabs and real dice, and nothing moves when the state changes (owner, 2026-11-05).
 - The feature file is executed directly by the tests (owner).
 - HTML prototype untouched; spec and feature file updated (owner).
 
