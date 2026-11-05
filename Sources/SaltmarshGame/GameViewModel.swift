@@ -1,3 +1,4 @@
+import Foundation
 import Observation
 import SaltmarshEngine
 import SaltmarshAI
@@ -18,19 +19,21 @@ public final class GameViewModel {
 
     private let store: GameStore
     private let pacing: Pacing
+    private let saves: SaveSlots
     private let makeOpponent: (Controller, Int) -> (any Opponent)?
     private var opponents: [Int: any Opponent] = [:]
     private var aiTask: Task<Void, Never>?
     /// Guard against an AI loop that never hands control back (for example two stubborn bots trading forever).
     static let aiMoveCap = 20_000
 
-    public init(store: GameStore, pacing: Pacing,
+    public init(store: GameStore, pacing: Pacing, saves: SaveSlots = InMemorySaveSlots(),
                 opponents: @escaping (Controller, Int) -> (any Opponent)? = { controller, seat in
                     if case .ai(let level) = controller { return OpponentFactory.make(level: level, seed: UInt64(seat)) }
                     return nil
                 }) {
         self.store = store
         self.pacing = pacing
+        self.saves = saves
         self.makeOpponent = opponents
     }
 
@@ -57,12 +60,36 @@ public final class GameViewModel {
         cancelAI()
         state = s
         ui = UIState()
+        payingTiles = []
         noteSetupHolder()
         opponents = Dictionary(uniqueKeysWithValues: s.players.enumerated().compactMap { i, p in
             makeOpponent(p.controller, i).map { (i, $0) }
         })
         save()
         runAI()
+    }
+
+    // MARK: Named saves
+
+    public func savedGames() -> [SavedGameSummary] { saves.list() }
+
+    public var suggestedSaveName: String { Strings.suggestedSaveName(turn: (state?.turn ?? 0) + 1) }
+
+    /// Keeps a copy of the current game. The game carries on unchanged.
+    @discardableResult
+    public func saveGame(named name: String, replacing: UUID? = nil) throws -> SavedGameSummary {
+        guard let s = state, !Self.isOver(s) else { throw SaveError.noGame }
+        return try saves.write(name: name, state: s, replacing: replacing)
+    }
+
+    /// Removes a named save. The game in progress and the automatic save are untouched.
+    public func deleteSavedGame(id: UUID) throws {
+        try saves.remove(id: id)
+    }
+
+    /// Replaces the current game with a save, as if the app had just reopened on it.
+    public func loadGame(id: UUID) throws {
+        install(try saves.load(id: id).state)
     }
 
     // MARK: Moves

@@ -138,7 +138,6 @@ Deferred from the final review of the redesign, not fixed:
 | `HarbourRow.defaultChoice` reads the current player's hand, so an AI's 3:1 row hints at what it holds in the game layer; the panel hides it during AI turns | Plan 2 |
 | At game over, the panel can show an AI winner's development cards (the hand is fixed) | Plan 5 |
 | With no game, the board behind the new game sheet shows every tile as DUNES, and stays that way after Cancel | Plan 5 |
-| A second Mac window has its own view model and both write the same save | Plan 5 |
 | The soak test adds about 3.5 minutes to every `AppUITests` run | Plan 5 |
 | Effort descriptions on the new game sheet, confetti, animation, iPad tuning | Plan 5 |
 

@@ -10,9 +10,11 @@ struct GameHeader: View {
     let compactChips: Bool
     /// Narrow screens give the status line its own row.
     let statusOnOwnRow: Bool
-    let onNewGame: () -> Void
+    let actions: GameActions
 
+    #if !os(macOS)
     @State private var showHelp = false
+    #endif
 
     var body: some View {
         VStack(spacing: 2) {
@@ -20,7 +22,9 @@ struct GameHeader: View {
                 ForEach(screen.scoreboard, id: \.name) { chip($0) }
                 if statusOnOwnRow { Spacer(minLength: 0) } else { status }
                 dice
+                #if !os(macOS)
                 menu
+                #endif
             }
             if statusOnOwnRow { status }
         }
@@ -69,32 +73,26 @@ struct GameHeader: View {
         }
     }
 
+    #if !os(macOS)
+    /// These devices have no menu bar, so this holds what the File and Help menus hold on a Mac.
     private var menu: some View {
         Menu {
-            Button(Strings.newGame, action: onNewGame)
-            #if !os(macOS)
-            // These devices have no menu bar. On Mac this lives in the Help menu.
-            Button(Strings.help) { showHelp = true }
-            #endif
+            Button(Strings.newGameMenu, action: actions.newGame)
+            Button(Strings.loadGame, action: actions.loadGame)
+            Button(Strings.saveGame, action: actions.saveGame).disabled(!actions.canSave)
+            Button(Strings.howToPlay) { showHelp = true }
             #if DEBUG
-            Button(Strings.previewWin) { vm.showPreviewWin() }
-                .disabled(screen.buttons[Strings.previewWin] != true)
-            Button(Strings.previewLose) { vm.showPreviewLose() }
-                .disabled(screen.buttons[Strings.previewLose] != true)
+            Button(Strings.previewWin, action: actions.previewWin).disabled(!actions.canPreview)
+            Button(Strings.previewLose, action: actions.previewLose).disabled(!actions.canPreview)
             #endif
         } label: {
-            Image(systemName: "ellipsis.circle").accessibilityLabel("Menu")
+            Text(Strings.gameMenu).font(.callout.weight(.semibold))
         }
-        #if os(macOS)
-        .menuStyle(.borderlessButton)
-        .menuIndicator(.hidden)
-        #endif
         .fixedSize()
         .accessibilityIdentifier("menu")
-        #if !os(macOS)
         .sheet(isPresented: $showHelp) { HelpSheet() }
-        #endif
     }
+    #endif
 }
 
 #if !os(macOS)

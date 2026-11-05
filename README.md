@@ -28,8 +28,10 @@ game deals a new island of 19 tiles and nine harbours, and any seat can be a per
 - **Picks up where you left off.** Your game saves after every move and reopens when you return.
 - **Rolls you can feel.** The dice tumble, paying hexes celebrate, resources pulse as they arrive,
   and a win ends in confetti. Reduce Motion turns the animation off.
-- **Rules at hand.** Searchable help is in the **Help** menu on Mac and the **⋯** menu on iPhone and
-  iPad.
+- **Up to five named saves.** Save, load and start games from the **File** menu on Mac and the
+  **Game** button on iPhone and iPad.
+- **Rules at hand.** Searchable help is in the **Help** menu on Mac and the **Game** button on
+  iPhone and iPad.
 
 ## Quick start
 
@@ -82,7 +84,7 @@ In development.
 | Rules engine | Done |
 | Game screen, animation and in-app help | Done |
 | Pass and play for 2 to 4 people | Done |
-| Resuming the game in progress | Done |
+| Resuming the game in progress, and five named saves | Done |
 | AI opponents | **Not built yet.** Computer seats play random legal moves at every effort level |
 | `ai-bench` benchmark tool | Placeholder only |
 

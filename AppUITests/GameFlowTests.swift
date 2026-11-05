@@ -13,8 +13,8 @@ final class GameFlowTests: XCTestCase {
         let handover = app.buttons["handover"]
         if handover.exists { handover.tap() }
         #if os(macOS)
-        app.menuButtons["menu"].tap()
-        app.menuItems[item].tap()
+        app.menuBarItems[item.hasPrefix("Preview") ? "Debug" : "File"].click()
+        app.menuItems[item].click()
         #else
         app.buttons["menu"].tap()
         app.buttons[item].tap()
@@ -24,7 +24,7 @@ final class GameFlowTests: XCTestCase {
     private func openNewGameSheet(_ app: XCUIApplication) {
         let start = app.buttons["Start game"]
         if !start.waitForExistence(timeout: 5) {
-            chooseFromMenu(app, "New game")
+            chooseFromMenu(app, "New Game…")
             XCTAssertTrue(start.waitForExistence(timeout: 5))
         }
     }
@@ -118,10 +118,68 @@ final class GameFlowTests: XCTestCase {
         startNewGame(app)
         XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["help"].exists, "the help belongs in a menu, not beside the dice")
-        chooseFromMenu(app, "Help")
+        chooseFromMenu(app, "How to Play")
         XCTAssertTrue(app.staticTexts["The goal"].waitForExistence(timeout: 5), "the help did not open")
         app.buttons["help done"].tap()
         XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5), "the help did not close")
+    }
+
+    func testSavedGameComesBackAndSurvivesARelaunch() {
+        let app = XCUIApplication()
+        app.launch()
+        startNewGame(app)
+        let rolled = app.scrollViews["log"].staticTexts.matching(NSPredicate(format: "label CONTAINS 'for first player' AND label CONTAINS 'rolled'")).firstMatch
+        let rollFirst = app.buttons["Roll for first"]
+        XCTAssertTrue(rollFirst.waitForExistence(timeout: 5))
+        rollFirst.tap()
+        XCTAssertTrue(rolled.waitForExistence(timeout: 5), "the roll is not in the log")
+
+        // The simulator keeps saves between runs, so this name is new and the slots may already be full.
+        let name = "UI \(Int(Date().timeIntervalSince1970) % 1_000_000)"
+        chooseFromMenu(app, "Save Game…")
+        let field = app.textFields["save name"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        XCTAssertFalse((field.value as? String ?? "").isEmpty, "the name is not prefilled")
+        field.tap()
+        field.press(forDuration: 1.2)
+        if app.menuItems["Select All"].waitForExistence(timeout: 2) { app.menuItems["Select All"].tap() }
+        field.typeText(name)
+        let save = app.buttons["save confirm"]
+        if save.isEnabled {
+            save.tap()
+        } else {
+            app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'save slot'")).firstMatch.tap()
+            app.alerts.buttons["Replace"].tap()
+        }
+        XCTAssertFalse(field.waitForExistence(timeout: 2), "the save sheet did not close")
+
+        chooseFromMenu(app, "New Game…")
+        XCTAssertTrue(app.buttons["Start game"].waitForExistence(timeout: 5))
+        app.buttons["Start game"].tap()
+        XCTAssertTrue(rollFirst.waitForExistence(timeout: 5))
+        XCTAssertFalse(rolled.exists, "the new game still shows the old roll")
+
+        chooseFromMenu(app, "Load Game…")
+        let row = app.buttons["load slot \(name)"]
+        XCTAssertTrue(row.waitForExistence(timeout: 5), "the save is not listed")
+        row.tap()
+        app.alerts.buttons["Load"].tap()
+        XCTAssertTrue(rolled.waitForExistence(timeout: 5), "loading did not bring the game back")
+
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.buttons["menu"].waitForExistence(timeout: 5))
+        chooseFromMenu(app, "Load Game…")
+        XCTAssertTrue(app.buttons["load slot \(name)"].waitForExistence(timeout: 5), "the save did not survive a relaunch")
+        XCTAssertFalse(app.buttons["delete slot \(name)"].exists, "the load sheet should not offer delete")
+        app.buttons["Cancel"].tap()
+
+        chooseFromMenu(app, "Save Game…")
+        let trash = app.buttons["delete slot \(name)"]
+        XCTAssertTrue(trash.waitForExistence(timeout: 5), "no trash can on the save")
+        trash.tap()
+        app.alerts.buttons["Delete"].tap()
+        XCTAssertFalse(trash.waitForExistence(timeout: 2), "the save was not deleted")
     }
 
     func testPreviewLoseShowsDefeat() {

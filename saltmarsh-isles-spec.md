@@ -2,7 +2,7 @@
 
 This document describes the web prototype `prototype/saltmarsh.html` in enough detail to rebuild it in Swift and SwiftUI, then add AI opponents. Read it alongside the HTML file; every rule and number here matches that file.
 
-Every player interaction is also written as executable behaviour in **`saltmarsh-isles.feature`** (Gherkin, 22 rules, 139 scenarios). This spec explains *how* the game works; the feature file states *what the screen must do* in testable Given/When/Then form. When the two disagree, fix whichever is wrong and update both. Section 7 explains how to run the feature file.
+Every player interaction is also written as executable behaviour in **`saltmarsh-isles.feature`** (Gherkin, 23 rules, 146 scenarios). This spec explains *how* the game works; the feature file states *what the screen must do* in testable Given/When/Then form. When the two disagree, fix whichever is wrong and update both. Section 7 explains how to run the feature file.
 
 > **Naming and art.** Game mechanics are free to reuse, but the name and artwork of the commercial game this is modelled on are trademarked. Keep the original name ("Saltmarsh Isles" or your own), original card names and original art if you ship to the App Store.
 
@@ -156,7 +156,18 @@ The UI shows trading in two separate parts.
 
 Trading is only allowed on your own turn, after rolling, and can be repeated.
 
-### 1.9 Left out of the prototype
+### 1.9 Saving and loading games
+
+The game saves itself after every move and reopens where it left off. That automatic save is separate from the player's saves.
+
+- **Named saves:** up to 5, each with a name of up to 30 characters and the date it was saved. They stay on the device they were made on.
+- **When all 5 are used:** the player picks one to replace, or deletes one. Nothing is deleted automatically.
+- **Deleting:** a trash can on each save in the Save Game window, after a confirmation. It isn't in any menu.
+- **Saving** is not offered once a game has ended, and doesn't change the game in progress.
+- **Loading** asks for confirmation, because it replaces the game in progress.
+- **Where:** the File menu on Mac, with Command-N, Command-O and Command-S. The Game button on iPhone and iPad.
+
+### 1.10 Left out of the prototype
 
 These are the main gaps against the full game, in rough priority order:
 
@@ -445,7 +456,7 @@ SaltmarshIsles/
 9. Your harbours.
 10. Points: each player with their card count, dev card count, a "Road N" badge and a "Knights N" badge. A badge is highlighted when that player holds the award. Score is shown as "N / 10", with "+N" hidden victory points shown for the current player only.
 11. Log.
-12. Player count, New game and Preview win. Preview win plays the victory screen for the current player without ending the game; it's for testing and can be removed from release builds.
+12. Player count, New Game, Load Game, Save Game and, in debug builds, Preview win and Preview lose. The previews play the win or defeat screen without ending the game; they're for testing.
 
 ### Victory screen
 
@@ -549,7 +560,7 @@ A good setup uses both: on-device for quick moves, and cloud for a "hard" diffic
 
 - **Table talk:** a one-line comment from each AI after its move, using the `reason` field.
 - **Coach mode:** ask the model to explain the best move for the human player without making it.
-- **Player trading:** once section 1.9 item 1 exists, the model proposes and answers trades, chosen from engine-generated legal offers.
+- **Player trading:** once section 1.10 item 1 exists, the model proposes and answers trades, chosen from engine-generated legal offers.
 
 ---
 

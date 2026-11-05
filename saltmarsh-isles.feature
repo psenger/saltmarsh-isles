@@ -1018,3 +1018,54 @@ Feature: Saltmarsh Isles pass-and-play game
       Then the header shows "Crimson · trade offer"
       And the hold is labelled "Crimson's hold" and shows Crimson's cards
       And "Accept" and "Decline" are offered
+
+  Rule: Saving and loading games
+    Up to 5 named saves. The automatic game that reopens with the app is separate and does not count.
+
+    Scenario: Saving keeps a copy under its name
+      Given setup is complete and Crimson has rolled
+      When I save the game as "Before the robber"
+      Then the saves list "Before the robber"
+      And the game on the board is the one that was saved
+
+    Scenario: Loading brings a saved game back
+      Given setup is complete and Crimson has rolled
+      When I save the game as "Good position"
+      And the game moves on a turn
+      And I load the save called "Good position"
+      Then the game on the board is the one that was saved
+
+    Scenario: A sixth save is refused rather than deleting one
+      Given setup is complete and Crimson has rolled
+      And all 5 saves are used
+      When I save the game as "Sixth"
+      Then the save is refused
+      And there are 5 saves
+      And the saves do not list "Sixth"
+
+    Scenario: With all 5 used, the player picks which save to replace
+      Given setup is complete and Crimson has rolled
+      And all 5 saves are used
+      When I save the game as "Newest" over "Save 2"
+      Then there are 5 saves
+      And the saves list "Newest"
+      And the saves do not list "Save 2"
+
+    Scenario: Deleting a save makes room
+      Given setup is complete and Crimson has rolled
+      And all 5 saves are used
+      When I delete the save called "Save 3"
+      And I save the game as "Room at last"
+      Then there are 5 saves
+      And the saves list "Room at last"
+      And the saves do not list "Save 3"
+
+    Scenario: A blank name is refused
+      Given setup is complete and Crimson has rolled
+      When I save the game as "   "
+      Then the save is refused
+      And there are 0 saves
+
+    Scenario: A finished game cannot be saved
+      Given the game has ended
+      Then saving is not offered

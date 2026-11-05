@@ -40,6 +40,9 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: "-"
+        # A real iPhone will not run an app signed with "-". Kept here because `make project` rewrites the project.
+        "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "Apple Development"
+        DEVELOPMENT_TEAM: F728VX3G8A
         ENABLE_PREVIEWS: YES
   AppUITests:
     type: bundle.ui-testing

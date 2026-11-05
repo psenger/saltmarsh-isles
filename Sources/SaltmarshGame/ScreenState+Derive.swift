@@ -112,6 +112,7 @@ extension ScreenState {
             Strings.accept: responderPending && legal.contains(.respondToTrade(seat: acting, .accepted)),
             Strings.decline: responderPending && legal.contains(.respondToTrade(seat: acting, .declined)),
             Strings.newGame: true,
+            Strings.saveGame: !over,
             Strings.previewWin: canPreview,
             Strings.previewLose: canPreview,
             Strings.seeTheBoard: { if case .victory = ui.overlay { return true } else { return false } }(),

@@ -1,12 +1,37 @@
 import SwiftUI
 import SaltmarshGame
 
+/// What the game menu can do, from the File menu on Mac or the Game button on iPhone and iPad.
+struct GameActions {
+    var newGame: () -> Void, loadGame: () -> Void, saveGame: () -> Void
+    var previewWin: () -> Void, previewLose: () -> Void
+    var canSave: Bool, canPreview: Bool
+}
+
+struct GameActionsKey: FocusedValueKey {
+    typealias Value = GameActions
+}
+
+extension FocusedValues {
+    var gameActions: GameActions? {
+        get { self[GameActionsKey.self] }
+        set { self[GameActionsKey.self] = newValue }
+    }
+}
+
+private enum GameSheet: String, Identifiable {
+    case newGame, load, save
+    var id: String { rawValue }
+}
+
 /// The whole game: owns the view model, resumes on launch, and lays out header, board and panel.
 struct GameScreen: View {
-    @State private var vm = GameViewModel(
-        store: FileGameStore(directory: URL.applicationSupportDirectory.appending(path: "SaltmarshIsles")),
-        pacing: RealPacing())
-    @State private var showNewGame = false
+    @State private var vm: GameViewModel = {
+        let folder = URL.applicationSupportDirectory.appending(path: "SaltmarshIsles")
+        return GameViewModel(store: FileGameStore(directory: folder), pacing: RealPacing(),
+                             saves: FileSaveSlots(directory: folder.appending(path: "saves")))
+    }()
+    @State private var sheet: GameSheet?
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -20,19 +45,25 @@ struct GameScreen: View {
                 game(screen)
                     .overlay {
                         if let card = screen.victory {
-                            VictoryOverlay(card: card, onClose: vm.dismissOverlay) { showNewGame = true }
+                            VictoryOverlay(card: card, onClose: vm.dismissOverlay) { sheet = .newGame }
                         }
                     }
             }
         }
-        .sheet(isPresented: $showNewGame) {
-            NewGameSheet { config in
-                vm.newGame(config)
-                showNewGame = false
+        .sheet(item: $sheet) { kind in
+            switch kind {
+            case .newGame:
+                NewGameSheet { config in
+                    vm.newGame(config)
+                    sheet = nil
+                }
+            case .load: LoadGameSheet(vm: vm)
+            case .save: SaveGameSheet(vm: vm)
             }
         }
+        .focusedSceneValue(\.gameActions, actions(screen))
         .task {
-            if vm.state == nil, !vm.resume() { showNewGame = true }
+            if vm.state == nil, !vm.resume() { sheet = .newGame }
         }
         .onChange(of: reduceMotion, initial: true) { _, on in vm.reduceMotion = on }
         .onChange(of: scenePhase) { _, phase in
@@ -48,13 +79,20 @@ struct GameScreen: View {
         #endif
     }
 
+    private func actions(_ screen: ScreenState) -> GameActions {
+        GameActions(newGame: { sheet = .newGame }, loadGame: { sheet = .load }, saveGame: { sheet = .save },
+                    previewWin: { vm.showPreviewWin() }, previewLose: { vm.showPreviewLose() },
+                    canSave: vm.state != nil && screen.buttons[Strings.saveGame] == true,
+                    canPreview: screen.buttons[Strings.previewWin] == true)
+    }
+
     private func game(_ screen: ScreenState) -> some View {
         GeometryReader { geometry in
             let size = geometry.size
             let board = BoardView(screen: screen, payingTiles: vm.payingTiles, rolls: vm.rollCount) { x, y in vm.tapBoard(x: x, y: y) }.padding(6)
             let panel = GamePanel(vm: vm, screen: screen)
             VStack(spacing: 0) {
-                GameHeader(vm: vm, screen: screen, compactChips: size.width < 600 || size.height < 500, statusOnOwnRow: size.width < 600) { showNewGame = true }
+                GameHeader(vm: vm, screen: screen, compactChips: size.width < 600 || size.height < 500, statusOnOwnRow: size.width < 600, actions: actions(screen))
                 Divider()
                 if size.width > size.height {
                     HStack(spacing: 0) {

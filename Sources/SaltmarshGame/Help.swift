@@ -86,6 +86,12 @@ public enum Help {
             "\(DevCardType.victoryPoint.displayName) cards are never played, so they don't use up your 1 card.",
             "If a Play button is grey, the note beside the card usually says why.",
         ]),
+        HelpSection(title: "Saving games", lines: [
+            "Your game saves itself after every move and reopens where you left off.",
+            "You can also keep up to \(SaveLimit.maxSaves) named games. On a Mac, use the File menu. On iPhone and iPad, use the Game button.",
+            "When all \(SaveLimit.maxSaves) are used, pick one to replace, or use its trash can in the Save Game window to delete it. Nothing is deleted on its own.",
+            "Loading a game replaces the one you're playing, so save it first if you want to keep it.",
+        ]),
         HelpSection(title: "Awards", lines: [
             "Longest road: the first connected road of 5 or more earns 2 points. Someone else has to beat it, not tie it, to take the award.",
             "A branch only counts one path, and a road stops counting at an opponent's building.",

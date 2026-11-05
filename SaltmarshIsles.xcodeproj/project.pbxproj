@@ -11,6 +11,7 @@
 		1423C35FA64CD1F619C46D31 /* GamePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161290410D3F23E29D6B7BEA /* GamePanel.swift */; };
 		17D36040D771367C61C15202 /* VictoryOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDB0D55A20F738780116C1F /* VictoryOverlay.swift */; };
 		18017778EF5F51C560E96272 /* GameHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6BBDDDDD27BFC16282A60A /* GameHeader.swift */; };
+		1F201BAFFCF027701FCBC060 /* SavedGamesSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 691C638C1971E77F9C71174C /* SavedGamesSheets.swift */; };
 		2630FC068C77E0CE33C04001 /* SaltmarshIsles.help in Resources */ = {isa = PBXBuildFile; fileRef = A391B28B76380787387DDE4B /* SaltmarshIsles.help */; platformFilters = (macos, ); };
 		303EFAC5D1D492C882B2E701 /* LaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */; };
 		38DD71A4A5741DD92D6CE525 /* GameFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D0AF059581137B37B89706 /* GameFlowTests.swift */; };
@@ -42,6 +43,7 @@
 		287CAAF4C38B11129BA66303 /* saltmarsh-isles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "saltmarsh-isles"; path = .; sourceTree = SOURCE_ROOT; };
 		4A3BA7A66E1A9C181A578BE9 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 		57B5684E51B694A9C11FBA2A /* GameButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButtonStyle.swift; sourceTree = "<group>"; };
+		691C638C1971E77F9C71174C /* SavedGamesSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedGamesSheets.swift; sourceTree = "<group>"; };
 		7A6BBDDDDD27BFC16282A60A /* GameHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHeader.swift; sourceTree = "<group>"; };
 		8CDB0D55A20F738780116C1F /* VictoryOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VictoryOverlay.swift; sourceTree = "<group>"; };
 		9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				B2EF33FE7D2A84C73A586145 /* GameScreen.swift */,
 				DF498E839E40DDB1D16DEE0B /* HandoverView.swift */,
 				DFF9A39044BC641253934ECE /* NewGameSheet.swift */,
+				691C638C1971E77F9C71174C /* SavedGamesSheets.swift */,
 				C5BD1A45A05AF221C1EF48B7 /* TradeAndCards.swift */,
 				8CDB0D55A20F738780116C1F /* VictoryOverlay.swift */,
 			);
@@ -192,6 +195,7 @@
 						TestTargetID = F543C124BF8C320F4E28CC40;
 					};
 					F543C124BF8C320F4E28CC40 = {
+						DevelopmentTeam = F728VX3G8A;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -254,6 +258,7 @@
 				4040479094B7559071F6F248 /* HandoverView.swift in Sources */,
 				6EB9B43E4C9370C0E4B8409E /* NewGameSheet.swift in Sources */,
 				1395FA2CC2E2AC65DEA7D067 /* SaltmarshIslesApp.swift in Sources */,
+				1F201BAFFCF027701FCBC060 /* SavedGamesSheets.swift in Sources */,
 				A6AFBFE150AE119D6B36C4B1 /* TradeAndCards.swift in Sources */,
 				17D36040D771367C61C15202 /* VictoryOverlay.swift in Sources */,
 			);
@@ -298,7 +303,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = F728VX3G8A;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -350,7 +357,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = F728VX3G8A;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;

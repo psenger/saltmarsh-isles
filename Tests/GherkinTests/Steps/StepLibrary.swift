@@ -11,6 +11,6 @@ enum StepLibrary {
     static let groups: [@MainActor (StepRegistry) -> Void] = [
         registerCommon, registerStarting, registerFirstRoll, registerBoard, registerSetup,
         registerTurn, registerSevens, registerRobber, registerBuilding,
-        registerTrading, registerDevCards, registerAwards, registerWinning, registerNewRules,
+        registerTrading, registerDevCards, registerAwards, registerWinning, registerNewRules, registerSaving,
     ]
 }

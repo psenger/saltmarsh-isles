@@ -11,9 +11,9 @@ import SaltmarshEngine
         let feature = try GherkinParser.parse(try String(contentsOfFile: Self.featurePath, encoding: .utf8))
         #expect(feature.name == "Saltmarsh Isles pass-and-play game")
         #expect(feature.background.map(\.text) == ["a new 3-player game with human seats"])
-        #expect(feature.rules.count == 22)
+        #expect(feature.rules.count == 23)
         let scenarios = feature.rules.flatMap(\.scenarios)
-        #expect(scenarios.count == 162, "actual \(scenarios.count)")   // 130 scenarios plus 9 outlines expanded to 32 rows
+        #expect(scenarios.count == 169, "actual \(scenarios.count)")   // 130 scenarios plus 9 outlines expanded to 32 rows
         #expect(scenarios.filter { $0.name.hasSuffix("(row 1)") }.count == 9)
         #expect(scenarios.filter { $0.tags.contains("ui") }.count == 2)
     }

@@ -31,7 +31,18 @@ public enum Strings {
     // Buttons
     public static let rollForFirstButton = "Roll for first", rollDice = "Roll dice", road = "Road", settlement = "Settlement", city = "City"
     public static let endTurn = "End turn", buyCard = "Buy a card", bankTrade = "Trade 4 for 1", offerButton = "Offer", withdraw = "Withdraw"
-    public static let accept = "Accept", decline = "Decline", newGame = "New game", previewWin = "Preview win", previewLose = "Preview lose", help = "Help"
+    public static let accept = "Accept", decline = "Decline", newGame = "New game", previewWin = "Preview win", previewLose = "Preview lose"
+    // The game menu, which is the File menu on Mac and the Game button on iPhone and iPad.
+    public static let gameMenu = "Game", newGameMenu = "New Game…", loadGame = "Load Game…", saveGame = "Save Game…", howToPlay = "How to Play"
+    // Saved games
+    public static let saveTitle = "Save Game", loadTitle = "Load Game", saveName = "Name", saveButton = "Save", loadButton = "Load", replaceButton = "Replace", deleteButton = "Delete", cancel = "Cancel"
+    public static let noSavedGames = "No saved games yet.", savesFull = "All 5 saves are used. Tap one to replace it, or delete one to make room."
+    public static let savedGamesHeading = "Saved games", tapToReplace = "Tap a save to replace it."
+    public static let loadWarning = "This replaces the game you're playing.", replaceWarning = "The saved game will be overwritten.", deleteWarning = "This can't be undone."
+    public static func replacePrompt(_ name: String) -> String { "Replace \"\(name)\"?" }
+    public static func deletePrompt(_ name: String) -> String { "Delete \"\(name)\"?" }
+    public static func loadPrompt(_ name: String) -> String { "Load \"\(name)\"?" }
+    public static func suggestedSaveName(turn: Int) -> String { "Turn \(turn)" }
     public static let seeTheBoard = "See the board", backToTheGame = "Back to the game"
     public static func discard(_ n: Int) -> String { "Discard \(n) cards" }
     public static func stealFrom(_ name: String) -> String { "Steal from \(name)" }

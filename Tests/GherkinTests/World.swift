@@ -9,6 +9,8 @@ import SaltmarshTestSupport
 @MainActor
 final class World {
     let store = InMemoryGameStore()
+    let saves = InMemorySaveSlots()
+    var saveRefused = false
     private(set) var vm: GameViewModel
     /// A screen captured by a step ("When Cobalt is thinking") that later steps read instead of the live one.
     var frozenScreen: ScreenState?
@@ -27,7 +29,7 @@ final class World {
     var boards: [Board] = []
 
     init() {
-        vm = GameViewModel(store: store, pacing: NoPacing())
+        vm = GameViewModel(store: store, pacing: NoPacing(), saves: saves)
         vm.newGame(GameConfig(controllers: [.human, .human, .human], seed: 1))
     }
 
@@ -39,7 +41,7 @@ final class World {
     /// A fresh view model for a game with the given seats.
     func newGame(_ controllers: [Controller], seed: UInt64 = 1) {
         frozenScreen = nil
-        vm = GameViewModel(store: store, pacing: NoPacing())
+        vm = GameViewModel(store: store, pacing: NoPacing(), saves: saves)
         vm.newGame(GameConfig(controllers: controllers, seed: seed))
     }
 

@@ -43,7 +43,7 @@ Left to right, on one row:
 - A chip for each player: seat dot, name, "N / 10". The current player's chip is outlined. On iPhone a chip shrinks to the dot and the score number.
 - The status line.
 - Two dice.
-- A menu button holding "New game", and "Preview win" in debug builds. It is not in the mockups; see section 7.
+- On iPhone and iPad, a labelled "Game" button opening a standard menu: New Game, Load Game, Save Game and How to Play, plus the win and lose previews in debug builds. A Mac has no button here: the same actions are in the File menu, with Command-N, Command-O and Command-S, and the previews are in a Debug menu in debug builds.
 
 On iPhone the status line drops to its own row directly under the chips and dice.
 
@@ -139,7 +139,7 @@ The feature file's background is a three-human game, so most scenarios cross han
 
 The owner approved the mockups and the handover examples. These were decided while writing this up and are not in the mockups; the owner sees this list on handover:
 
-- The menu button in the header for "New game" and "Preview win".
+- The Game button on iPhone and iPad, and the File menu on Mac, for New, Load and Save.
 - The who line showing `screen.header` as well as the hold label. The mockups show only the hold label. Without it, "Cobalt · discarding" and its colour would be in the model but nowhere on screen.
 - A two-line status slot, rather than the single line shown to the owner, because the longest messages cannot fit one legible line beside the chips on Mac.
 - Empty resource boxes during an AI turn with two humans.
