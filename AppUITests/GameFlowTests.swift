@@ -286,6 +286,7 @@ final class GameFlowTests: XCTestCase {
                 ("road", app.buttons["Road"]),
                 ("tabs", app.buttons["tab Trade"]),
                 ("log tab", app.buttons["tab Log"]),
+                ("last chip", app.descendants(matching: .any)["chip Amber"].firstMatch),
             ]
             for (name, element) in fixed {
                 XCTAssertTrue(element.exists, "\(name) is gone at: \(moment)")

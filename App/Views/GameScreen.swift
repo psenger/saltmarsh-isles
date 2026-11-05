@@ -34,7 +34,12 @@ struct GameScreen: View {
             if vm.state == nil, !vm.resume() { showNewGame = true }
         }
         .onChange(of: scenePhase) { _, phase in
+            #if os(macOS)
             if phase == .background { vm.concealHand() }
+            #else
+            // Inactive comes before the app switcher takes its snapshot.
+            if phase != .active { vm.concealHand() }
+            #endif
         }
         #if os(macOS)
         .frame(minWidth: 760, minHeight: 520)
@@ -47,7 +52,7 @@ struct GameScreen: View {
             let board = BoardView(screen: screen) { x, y in vm.tapBoard(x: x, y: y) }.padding(6)
             let panel = GamePanel(vm: vm, screen: screen)
             VStack(spacing: 0) {
-                GameHeader(vm: vm, screen: screen, compact: size.width < 600) { showNewGame = true }
+                GameHeader(vm: vm, screen: screen, compactChips: size.width < 600 || size.height < 500, statusOnOwnRow: size.width < 600) { showNewGame = true }
                 Divider()
                 if size.width > size.height {
                     HStack(spacing: 0) {

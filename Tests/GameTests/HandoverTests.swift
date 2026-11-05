@@ -139,4 +139,69 @@ import SaltmarshTestSupport
         vm.concealHand()
         #expect(vm.screen.handover == nil)
     }
+
+    // Nothing private of one player may reach another, whoever holds the device.
+
+    func withHiddenPoint(_ s: GameState, for seat: Int) -> GameState {
+        var s = s
+        s.players[seat].devCards.append(DevCard(type: .victoryPoint, boughtOnTurn: 0))
+        return s
+    }
+    @Test func hiddenPointsShowToTheirOwnerOnTheirTurn() {
+        let vm = model(withHiddenPoint(TestGames.rolled(8), for: 0))
+        vm.revealHand()
+        #expect(vm.screen.scoreboard[0].hidden == "+1")
+    }
+    @Test func aResponderDoesNotSeeTheProposersHiddenPoints() {
+        var s = withHiddenPoint(TestGames.rolled(8), for: 0)
+        s.clearHands()
+        s.set(hand: [.timber: 2], for: 0)
+        s.set(hand: [.ore: 1], for: 1)
+        let vm = model(s)
+        vm.ui.offerGive = [.timber: 2]
+        vm.ui.offerWant = [.ore: 1]
+        vm.proposeOffer()
+        vm.revealHand()
+        #expect(vm.screen.holdTitle == "Cobalt's hold")
+        #expect(vm.screen.scoreboard[0].hidden == nil)
+    }
+    @Test func hiddenPointsStayHiddenWhileAnAIActs() {
+        var s = seats(withHiddenPoint(TestGames.rolled(8), for: 0), [.human, .human, .ai(.mate)])
+        s.phase = .tradeOffered(offer: TradeOffer(proposer: 0, give: [.timber: 1], want: [.ore: 1], to: nil), responses: [1: .declined, 2: .pending])
+        let sc = ScreenState.derive(state: s, ui: UIState(), aiThinking: true, reduceMotion: false)
+        #expect(sc.scoreboard[0].hidden == nil)
+    }
+    @Test func previewWinIsOffWhileAnotherPlayerHoldsTheDevice() {
+        var s = TestGames.rolled(8)
+        s.clearHands()
+        s.set(hand: [.timber: 2], for: 0)
+        s.set(hand: [.ore: 1], for: 1)
+        let vm = model(s)
+        vm.revealHand()
+        #expect(vm.screen.buttons[Strings.previewWin] == true)
+        vm.ui.offerGive = [.timber: 2]
+        vm.ui.offerWant = [.ore: 1]
+        vm.proposeOffer()
+        vm.revealHand()
+        #expect(vm.screen.buttons[Strings.previewWin] == false)
+    }
+    @Test func aHalfBuiltTradeDoesNotCarryToTheNextPlayer() {
+        var s = TestGames.rolled(8)
+        s.clearHands()
+        s.set(hand: [.ore: 4], for: 0)
+        s.set(hand: [.ore: 4], for: 1)
+        let vm = model(s)
+        vm.revealHand()
+        vm.ui.offerGive = [.ore: 2]
+        vm.ui.offerWant = [.clay: 1]
+        vm.ui.offerTarget = 1
+        vm.ui.bankChoice = TradeChoice(give: .ore, get: .wool)
+        vm.ui.harbourChoice[0] = TradeChoice(give: .ore, get: .wool)
+        vm.endTurn()
+        #expect(vm.ui.offerGive.isEmpty)
+        #expect(vm.ui.offerWant.isEmpty)
+        #expect(vm.ui.offerTarget == nil)
+        #expect(vm.ui.bankChoice == nil)
+        #expect(vm.ui.harbourChoice.isEmpty)
+    }
 }

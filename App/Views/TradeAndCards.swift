@@ -8,6 +8,8 @@ struct TradeTab: View {
     let screen: ScreenState
 
     @State private var buildingOffer = false
+    /// One width for every resource name, so the Trade button beside it stays put whatever is picked.
+    private static let pickerWidth: CGFloat = 96
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -49,7 +51,7 @@ struct TradeTab: View {
         }
         .pickerStyle(.menu)
         .labelsHidden()
-        .fixedSize()
+        .frame(width: Self.pickerWidth, alignment: .leading)
         .accessibilityIdentifier(id)
     }
 
@@ -93,6 +95,7 @@ struct TradeTab: View {
                     HStack {
                         if let fixed = row.giveFixed {
                             Text(fixed).font(.callout).foregroundStyle(row.rowEnabled ? .primary : .secondary)
+                                .frame(width: Self.pickerWidth, alignment: .leading)
                         } else {
                             resourcePicker("Give", id: "harbour \(row.index) give", options: row.giveOptions, Binding(get: { row.give }, set: { vm.ui.harbourChoice[row.index] = TradeChoice(give: $0, get: row.get) }))
                         }

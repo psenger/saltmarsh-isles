@@ -73,7 +73,15 @@ extension GameViewModel {
 
     public func rollForFirst() { attempt(.rollForFirst) }
     public func rollDice() { attempt(.roll) }
-    public func endTurn() { attempt(.endTurn) }
+    /// Half-built trades go with the turn: the next player must not see what this one was working out.
+    public func endTurn() {
+        attempt(.endTurn)
+        ui.offerGive = ResourceCounts()
+        ui.offerWant = ResourceCounts()
+        ui.offerTarget = nil
+        ui.bankChoice = nil
+        ui.harbourChoice = [:]
+    }
     public func bankTrade(give: Resource, get: Resource) { attempt(.bankTrade(give: give, get: get)) }
     public func harbourTrade(_ harbour: Int, give: Resource, get: Resource) { attempt(.harbourTrade(harbour: harbour, give: give, get: get)) }
     public func buyCard() { attempt(.buyDevCard) }

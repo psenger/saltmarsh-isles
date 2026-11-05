@@ -111,7 +111,7 @@ extension ScreenState {
             Strings.accept: responderPending && legal.contains(.respondToTrade(seat: acting, .accepted)),
             Strings.decline: responderPending && legal.contains(.respondToTrade(seat: acting, .declined)),
             Strings.newGame: true,
-            Strings.previewWin: !over && !aiThinking,
+            Strings.previewWin: !over && !aiThinking && panelOwner == current && !s.players[current].controller.isAI,
             Strings.seeTheBoard: { if case .victory = ui.overlay { return true } else { return false } }(),
             Strings.backToTheGame: { if case .preview = ui.overlay { return true } else { return false } }(),
         ]
@@ -278,7 +278,7 @@ extension ScreenState {
                             road: Engine.roadLength(s, player: i), roadHighlighted: s.longestRoadHolder == i,
                             knights: p.knightsPlayed, knightsHighlighted: s.largestArmyHolder == i,
                             score: "\(Engine.publicPoints(s, player: i)) / 10", points: Engine.publicPoints(s, player: i),
-                            hidden: i == current && !p.controller.isAI && hidden > 0 ? "+\(hidden)" : nil,
+                            hidden: i == panelOwner && !aiThinking && !p.controller.isAI && hidden > 0 ? "+\(hidden)" : nil,
                             isCurrent: i == current)
         }
 

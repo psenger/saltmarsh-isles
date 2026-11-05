@@ -6,19 +6,21 @@ import SaltmarshGame
 struct GameHeader: View {
     let vm: GameViewModel
     let screen: ScreenState
-    /// Narrow screens shrink each chip to its dot and score, and give the status line its own row.
-    let compact: Bool
+    /// Short or narrow screens shrink each chip to its dot and score.
+    let compactChips: Bool
+    /// Narrow screens give the status line its own row.
+    let statusOnOwnRow: Bool
     let onNewGame: () -> Void
 
     var body: some View {
         VStack(spacing: 2) {
             HStack(spacing: 6) {
                 ForEach(screen.scoreboard, id: \.name) { chip($0) }
-                if compact { Spacer(minLength: 0) } else { status }
+                if statusOnOwnRow { Spacer(minLength: 0) } else { status }
                 dice
                 menu
             }
-            if compact { status }
+            if statusOnOwnRow { status }
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -27,9 +29,15 @@ struct GameHeader: View {
     private func chip(_ row: ScoreRow) -> some View {
         HStack(spacing: 4) {
             SeatDot(seat: row.seat)
-            Text(compact ? "\(row.points)" : "\(row.name) \(row.score)")
+            // Sized for bold in every state, so the turn passing does not change any chip's width.
+            let label = compactChips ? "\(row.points)" : "\(row.name) \(row.score)"
+            Text(label)
+                .fontWeight(.bold)
+                .opacity(0)
+                .overlay(alignment: .leading) {
+                    Text(label).fontWeight(row.isCurrent ? .bold : .regular)
+                }
                 .font(.callout.monospacedDigit())
-                .fontWeight(row.isCurrent ? .bold : .regular)
         }
         .padding(.horizontal, 7)
         .padding(.vertical, 3)
@@ -38,6 +46,7 @@ struct GameHeader: View {
         .fixedSize()
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(row.name), \(row.score)")
+        .accessibilityIdentifier("chip \(row.name)")
     }
 
     /// A fixed-height slot: long text wraps and shrinks inside it and never pushes anything.
