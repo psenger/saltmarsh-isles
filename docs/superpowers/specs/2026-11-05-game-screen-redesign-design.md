@@ -67,7 +67,7 @@ Items 1 to 5 never scroll. All of them stay on screen in every state; when one c
 ### Tab contents
 
 - **Trade.** A one-line bank supply (five small coloured counts, no names), the bank trade row, one row per captured harbour (or the "None yet" text), and "Offer a trade to players…". That button replaces the tab's content with the offer builder and a way back. After an offer is made, the tab shows the responses with Trade and Withdraw until it closes.
-- **Cards.** "Buy a card" and the development card rows.
+- **Cards.** "Buy a card", the development card rows, and below them a pill for each award the player holds, such as "Longest road 8 +2".
 - **Players.** The full scoreboard, including cards, development cards, road and army, and the "+N" hidden points for the current human.
 - **Log.** The whole log, newest first.
 
@@ -75,7 +75,7 @@ Items 1 to 5 never scroll. All of them stay on screen in every state; when one c
 
 Discarding, answering an offer, choosing who to rob and a proposer's list of answers (Trade with X, Withdraw) take over the tab area, in the same place and size. Trade, Cards, Players and Log grey out until it is answered, then the previous tab returns. The proposer's answers take over so that "Answers are in" can never appear with its buttons behind another tab.
 
-While an AI is playing, Roll, End turn and the build buttons are grey. Trade and Cards grey out too, because their content belongs to the current player: showing them would reveal the AI's harbours, and the offer builder's limits would reveal its hand. Players and Log stay available, and the tab area shows Log unless Players is picked.
+While an AI is playing, Roll, End turn and the build buttons are grey. Trade and Cards grey out too, because their content belongs to the current player: showing them would reveal the AI's harbours, and the offer builder's limits would reveal its hand. Players and Log stay available, and the tab area shows Players unless Log is picked.
 
 During the first roll and setup, the order strip sits at the top of the tab area with the log below it, Trade and Cards are grey, and Players stays available.
 

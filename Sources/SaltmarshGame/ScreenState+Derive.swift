@@ -234,7 +234,7 @@ extension ScreenState {
         }
         let tradeSection = TradeSection(offerGive: ui.offerGive, offerWant: ui.offerWant, target: ui.offerTarget,
                                         targets: s.players.indices.filter { $0 != current }.map { s.players[$0].seat },
-                                        offerEnabled: buttons[Strings.offerButton] == true, offerProblem: offerProblem, responses: responses)
+                                        offerEnabled: buttons[Strings.offerButton] == true, offerProblem: legal.contains(.roll) ? Strings.rollBeforeOffering : offerProblem, responses: responses)
 
         // Trade and Cards belong to the current player, so they close while an AI is that player.
         let hasRequest = responderPending || discardBox != nil || !stealTargets.isEmpty || buttons[Strings.withdraw] == true

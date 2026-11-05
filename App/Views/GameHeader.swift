@@ -63,7 +63,7 @@ struct GameHeader: View {
 
     private var dice: some View {
         HStack(spacing: 4) {
-            ForEach(Array(screen.dice.enumerated()), id: \.offset) { _, face in DieView(face: face) }
+            ForEach(Array(screen.dice.enumerated()), id: \.offset) { i, face in RollingDie(face: face, index: i, rolls: vm.rollCount) }
         }
     }
 

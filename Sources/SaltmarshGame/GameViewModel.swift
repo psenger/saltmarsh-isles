@@ -11,6 +11,10 @@ public final class GameViewModel {
     public private(set) var aiThinking = false
     /// Set by the app from the accessibility environment; drives the victory animation mode.
     public var reduceMotion = false
+    /// Goes up once per dice roll, human or AI, so the dice can tumble. Loading or resuming a game leaves it alone.
+    public private(set) var rollCount = 0
+    /// The tiles the latest roll paid out from, so the board can celebrate them. Empty after a roll for first.
+    public private(set) var payingTiles: [Int] = []
 
     private let store: GameStore
     private let pacing: Pacing
@@ -66,13 +70,32 @@ public final class GameViewModel {
     /// A human move. Ignored while an AI is acting or the game is over; throws for an illegal move.
     public func apply(_ move: Move) throws {
         guard var s = state, !aiThinking, !Self.isOver(s) else { return }
+        let previous = s
         try Engine.apply(move, to: &s)
         state = s
-        afterMove()
+        afterMove(move, from: previous)
         runAI()
     }
 
-    private func afterMove() {
+    private static func rollsDice(_ move: Move) -> Bool {
+        move == .roll || move == .rollForFirst
+    }
+
+    /// Tiles numbered with the roll that hold a building, are free of the robber, and whose resource left the bank.
+    private static func payingTiles(before: GameState, after: GameState) -> [Int] {
+        let total = after.dice?.reduce(0, +)
+        return after.board.tiles.indices.filter { index in
+            let tile = after.board.tiles[index]
+            guard tile.number == total, index != after.robberTile, let resource = tile.resource else { return false }
+            return after.bank[resource] < before.bank[resource] && tile.corners.contains { after.board.corners[$0].owner != nil }
+        }
+    }
+
+    private func afterMove(_ move: Move, from previous: GameState) {
+        if Self.rollsDice(move), let s = state {
+            payingTiles = move == .roll ? Self.payingTiles(before: previous, after: s) : []
+            rollCount += 1
+        }
         ui.buildMode = nil
         ui.discardPicks = ResourceCounts()
         if let s = state, case .gameOver(let winner) = s.phase, ui.overlay == nil {
@@ -114,9 +137,14 @@ public final class GameViewModel {
                 var next = current
                 do { try Engine.apply(move, to: &next) } catch { break }
                 self.state = next
-                self.afterMove()
+                self.afterMove(move, from: current)
                 moves += 1
                 await self.pacing.pause()
+                // The dice tumble for most of one pause; these two let them land and be read before the seat moves on.
+                if Self.rollsDice(move) {
+                    await self.pacing.pause()
+                    await self.pacing.pause()
+                }
             }
             // These flags now belong to whatever replaced a cancelled turn.
             if Task.isCancelled { return }

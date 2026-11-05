@@ -218,6 +218,8 @@ public struct ScreenState: Equatable, Sendable {
     public var victoryAnimation: VictoryAnimation
     /// Empty while the game asks the player for something; that request takes the tab area.
     public var enabledTabs: Set<PanelTab>
+    /// The tab on show when the picked one is grey: the log under the order strip, otherwise the players.
+    public var fallbackTab: PanelTab { orderStrip == nil ? .players : .log }
     /// When set, the app draws only this. The other fields keep their values so the rules can still read them.
     public var handover: Handover?
 

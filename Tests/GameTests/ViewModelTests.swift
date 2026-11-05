@@ -23,6 +23,16 @@ private struct GatedOpponent: Opponent {
     func respondToTrade(_ o: TradeOffer, view: PlayerView) async -> TradeResponse { .declined }
 }
 
+private actor CountingPacing: Pacing {
+    private(set) var count = 0
+    func pause() async { count += 1 }
+}
+
+private struct RollThenEnd: Opponent {
+    func chooseMove(view: PlayerView, legal: [Move]) async -> Move { legal.contains(.roll) ? .roll : .endTurn }
+    func respondToTrade(_ o: TradeOffer, view: PlayerView) async -> TradeResponse { .declined }
+}
+
 @MainActor @Suite struct ViewModelTests {
     @Test func aCancelledAITurnDoesNotOverwriteTheNewGame() async throws {
         let gate = Gate()
@@ -53,6 +63,84 @@ private struct GatedOpponent: Opponent {
         vm.newGame(GameConfig(controllers: controllers, seed: seed)); return vm
     }
     func isOver(_ s: GameState) -> Bool { if case .gameOver = s.phase { return true } else { return false } }
+
+    @Test func everyRollIsCounted() throws {
+        let vm = GameViewModel(store: InMemoryGameStore(), pacing: NoPacing()) { _, _ in nil }
+        vm.load(TestGames.fresh())
+        #expect(vm.rollCount == 0)
+        try vm.apply(.rollForFirst)
+        #expect(vm.rollCount == 1)
+        vm.load(TestGames.afterSetup())
+        try vm.apply(.roll)
+        #expect(vm.rollCount == 2)
+        try vm.apply(.endTurn)
+        #expect(vm.rollCount == 2)
+    }
+    @Test func reopeningASavedRollDoesNotCountAsARoll() throws {
+        let store = InMemoryGameStore()
+        try store.save(TestGames.rolled(8))
+        let vm = GameViewModel(store: store, pacing: NoPacing()) { _, _ in nil }
+        #expect(vm.resume())
+        #expect(vm.state?.dice != nil)
+        #expect(vm.rollCount == 0)
+    }
+    @Test func anAISeatWaitsForItsDiceToLandBeforeMovingOn() async {
+        var s = TestGames.afterSetup()
+        s.players[0].controller = .ai(.mate)
+        s.forcedRolls = [[2, 3]]
+        let pacing = CountingPacing()
+        let vm = GameViewModel(store: InMemoryGameStore(), pacing: pacing) { c, _ in c.isAI ? RollThenEnd() : nil }
+        vm.load(s)
+        await vm.waitForAI()
+        #expect(vm.rollCount == 1)
+        #expect(await pacing.count == 4)                                   // three after the roll, one after ending the turn
+    }
+
+    /// A game after setup, with the first tile that has a building and a number, ready to roll that number.
+    func readyToPay() -> (state: GameState, tile: Int, resource: Resource) {
+        var s = TestGames.afterSetup()
+        let tile = s.board.tiles.indices.first { i in
+            s.board.tiles[i].number != nil && s.board.tiles[i].corners.contains { s.board.corners[$0].owner != nil }
+        }!
+        s.force(roll: s.board.tiles[tile].number!)
+        return (s, tile, s.board.tiles[tile].resource!)
+    }
+    func payingTiles(after s: GameState) throws -> [Int] {
+        let vm = GameViewModel(store: InMemoryGameStore(), pacing: NoPacing()) { _, _ in nil }
+        vm.load(s)
+        try vm.apply(.roll)
+        return vm.payingTiles
+    }
+
+    @Test func aTileWithABuildingPaysWhenItsNumberIsRolled() throws {
+        let (s, tile, _) = readyToPay()
+        #expect(try payingTiles(after: s).contains(tile))
+    }
+    @Test func aTileWithNoBuildingDoesNotPay() throws {
+        var (s, tile, _) = readyToPay()
+        for corner in s.board.tiles[tile].corners { s.board.corners[corner].owner = nil }
+        #expect(try !payingTiles(after: s).contains(tile))
+    }
+    @Test func theRobbersTileDoesNotPay() throws {
+        var (s, tile, _) = readyToPay()
+        s.robberTile = tile
+        #expect(try !payingTiles(after: s).contains(tile))
+    }
+    @Test func aTileDoesNotPayWhenTheBankCannotCoverIt() throws {
+        var (s, tile, resource) = readyToPay()
+        s.bank[resource] = 0
+        #expect(try !payingTiles(after: s).contains(tile))
+    }
+    @Test func rollingForFirstClearsTheLastPayout() throws {
+        let (s, tile, _) = readyToPay()
+        let vm = GameViewModel(store: InMemoryGameStore(), pacing: NoPacing()) { _, _ in nil }
+        vm.load(s)
+        try vm.apply(.roll)
+        #expect(vm.payingTiles.contains(tile))
+        vm.load(TestGames.fresh())
+        try vm.apply(.rollForFirst)
+        #expect(vm.payingTiles.isEmpty)
+    }
 
     @Test func aiOnlyGameRunsToTheEnd() async {
         let vm = model([.ai(.mate), .ai(.mate), .ai(.mate)], seed: 3); await vm.waitForAI()

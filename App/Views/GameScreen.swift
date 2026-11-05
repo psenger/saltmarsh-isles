@@ -49,7 +49,7 @@ struct GameScreen: View {
     private func game(_ screen: ScreenState) -> some View {
         GeometryReader { geometry in
             let size = geometry.size
-            let board = BoardView(screen: screen) { x, y in vm.tapBoard(x: x, y: y) }.padding(6)
+            let board = BoardView(screen: screen, payingTiles: vm.payingTiles, rolls: vm.rollCount) { x, y in vm.tapBoard(x: x, y: y) }.padding(6)
             let panel = GamePanel(vm: vm, screen: screen)
             VStack(spacing: 0) {
                 GameHeader(vm: vm, screen: screen, compactChips: size.width < 600 || size.height < 500, statusOnOwnRow: size.width < 600) { showNewGame = true }

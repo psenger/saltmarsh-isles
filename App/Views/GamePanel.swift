@@ -15,7 +15,7 @@ struct GamePanel: View {
     private var hasRequest: Bool { screen.enabledTabs.isEmpty }
     private var shownTab: PanelTab? {
         if hasRequest { return nil }
-        return screen.enabledTabs.contains(picked) ? picked : .log
+        return screen.enabledTabs.contains(picked) ? picked : screen.fallbackTab
     }
 
     var body: some View {
@@ -51,7 +51,7 @@ struct GamePanel: View {
     private var hand: some View {
         HStack(spacing: 6) {
             ForEach(Resource.allCases, id: \.self) { resource in
-                ResourceBox(resource: resource, amount: screen.holdTitle.isEmpty ? nil : screen.handCounts[resource], id: "hold")
+                PulsingResourceBox(resource: resource, amount: screen.holdTitle.isEmpty ? nil : screen.handCounts[resource], holder: screen.holdTitle, rolls: vm.rollCount)
             }
         }
         .fixedSize(horizontal: false, vertical: true)
@@ -277,6 +277,41 @@ struct SeatDot: View {
 }
 
 /// A square box in the resource's board colour: the amount above its name, centred both ways.
+/// A box of the hand on show that swells when its count goes up. A change of holder is not an increase.
+/// A payout from a roll waits for the dice to land; any other increase pulses at once.
+struct PulsingResourceBox: View {
+    let resource: Resource
+    let amount: Int?
+    let holder: String
+    let rolls: Int
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var pulses = 0
+    @State private var hold = 0.0
+
+    private struct Seen: Equatable {
+        var amount: Int?, holder: String, rolls: Int
+    }
+
+    var body: some View {
+        ResourceBox(resource: resource, amount: amount, id: "hold")
+            .keyframeAnimator(initialValue: 1.0, trigger: pulses) { box, scale in
+                box.scaleEffect(scale)
+            } keyframes: { _ in
+                KeyframeTrack {
+                    LinearKeyframe(1, duration: hold)
+                    CubicKeyframe(1.2, duration: 0.2)
+                    CubicKeyframe(1, duration: 0.3)
+                }
+            }
+            .onChange(of: Seen(amount: amount, holder: holder, rolls: rolls)) { old, new in
+                guard !reduceMotion, old.holder == new.holder, let before = old.amount, let after = new.amount, after > before else { return }
+                hold = old.rolls == new.rolls ? 0 : RollingDie.landingTime
+                pulses += 1
+            }
+    }
+}
+
 struct ResourceBox: View {
     let resource: Resource
     /// Nil keeps the box in place with no number, when no hand may be shown.

@@ -46,6 +46,7 @@ public enum Strings {
 
     // Panel labels
     public static let offerToPlayers = "Offer a trade to players…", back = "Back"
+    public static let rollBeforeOffering = "Roll the dice before offering a trade."
     public static func hold(_ name: String) -> String { "\(name)'s hold" }
     public static let reverseOrder = "Round 2: reverse order"
     public static let dash = "–"

@@ -7,7 +7,12 @@ import SaltmarshGame
 /// 680 × 600 board space to fit and reports taps in board space (origin at the centre).
 struct BoardView: View {
     let screen: ScreenState
+    /// The tiles that celebrate each time `rolls` changes.
+    let payingTiles: [Int]
+    let rolls: Int
     let onTap: (Double, Double) -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var board: Board { screen.board }
     private var robberTile: Int { screen.robberTile }
@@ -16,20 +21,64 @@ struct BoardView: View {
         min(size.width / Board.size.width, size.height / Board.size.height)
     }
 
+    /// Animate.css's "tada": a one second shrink and tilt, then a wobble at full swell.
+    private struct Tada {
+        var scale = 1.0, angle = 0.0
+        var isResting: Bool { scale == 1 && angle == 0 }
+    }
+
+    /// True when `edge` is one of the sides of `tile`.
+    private func isSide(_ edge: Int, of tile: Int) -> Bool {
+        let corners = board.tiles[tile].corners
+        return corners.contains(board.edges[edge].a) && corners.contains(board.edges[edge].b)
+    }
+
     var body: some View {
         GeometryReader { geometry in
-            Canvas { context, size in
-                let scale = Self.scale(for: size)
-                context.translateBy(x: size.width / 2, y: size.height / 2)
-                context.scaleBy(x: scale, y: scale)
-                drawSea(&context)
-                drawHarbours(&context)
-                drawTiles(&context)
-                drawSelectableTiles(&context)
-                drawRoads(&context)
-                drawBuildings(&context)
-                drawCornerIntent(&context)
-                drawRobber(&context)
+            KeyframeAnimator(initialValue: Tada(), trigger: reduceMotion ? 0 : rolls) { tada in
+                Canvas { context, size in
+                    let scale = Self.scale(for: size)
+                    context.translateBy(x: size.width / 2, y: size.height / 2)
+                    context.scaleBy(x: scale, y: scale)
+                    // A celebrating tile lifts out of the board with its roads and buildings, leaving sea beneath it.
+                    let lifted = tada.isResting ? [] : payingTiles
+                    drawSea(&context)
+                    drawHarbours(&context)
+                    drawTiles(&context, skipping: lifted)
+                    drawSelectableTiles(&context)
+                    drawRoads(&context) { edge in !lifted.contains { isSide(edge, of: $0) } }
+                    drawBuildings(&context) { corner in !lifted.contains { board.tiles[$0].corners.contains(corner) } }
+                    drawCornerIntent(&context)
+                    drawRobber(&context)
+                    for index in lifted {
+                        let centre = board.tiles[index].center
+                        var hex = context
+                        hex.translateBy(x: centre.x, y: centre.y)
+                        hex.rotate(by: .degrees(tada.angle))
+                        hex.scaleBy(x: tada.scale, y: tada.scale)
+                        hex.translateBy(x: -centre.x, y: -centre.y)
+                        drawTile(&hex, index)
+                        drawRoads(&hex) { isSide($0, of: index) }
+                        drawBuildings(&hex) { board.tiles[index].corners.contains($0) }
+                    }
+                }
+            } keyframes: { _ in
+                KeyframeTrack(\.scale) {
+                    LinearKeyframe(1, duration: RollingDie.landingTime)
+                    CubicKeyframe(0.9, duration: 0.1)
+                    LinearKeyframe(0.9, duration: 0.1)
+                    CubicKeyframe(1.1, duration: 0.1)
+                    LinearKeyframe(1.1, duration: 0.6)
+                    CubicKeyframe(1, duration: 0.1)
+                }
+                KeyframeTrack(\.angle) {
+                    LinearKeyframe(0, duration: RollingDie.landingTime)
+                    CubicKeyframe(-3, duration: 0.1)
+                    LinearKeyframe(-3, duration: 0.1)
+                    for angle in [3.0, -3, 3, -3, 3, -3, 3, 0] {
+                        CubicKeyframe(angle, duration: 0.1)
+                    }
+                }
             }
             .contentShape(Rectangle())
             .gesture(SpatialTapGesture().onEnded { tap in
@@ -118,38 +167,43 @@ struct BoardView: View {
         }
     }
 
-    private func drawTiles(_ context: inout GraphicsContext) {
-        for (index, tile) in board.tiles.enumerated() {
-            var hex = Path()
-            for (i, corner) in tile.corners.enumerated() {
-                if i == 0 { hex.move(to: point(corner)) } else { hex.addLine(to: point(corner)) }
-            }
-            hex.closeSubpath()
-            context.fill(hex, with: .color(Self.fill(for: tile.terrain)))
-            context.stroke(hex, with: .color(Self.seaDeep), lineWidth: 2)
+    private func drawTiles(_ context: inout GraphicsContext, skipping skipped: [Int]) {
+        for index in board.tiles.indices where !skipped.contains(index) {
+            drawTile(&context, index)
+        }
+    }
 
-            let centre = CGPoint(x: tile.center.x, y: tile.center.y)
-            let hasRobber = index == robberTile
-            if let number = tile.number {
-                // The robber takes the centre, so the disc shrinks and slides down out of its way.
-                var disc = context
-                disc.translateBy(x: centre.x, y: hasRobber ? centre.y + 31 : centre.y)
-                if hasRobber { disc.scaleBy(x: 0.72, y: 0.72); disc.opacity = 0.85 }
-                let hot = number == 6 || number == 8
-                let circle = Path(ellipseIn: CGRect(x: -19, y: -19, width: 38, height: 38))
-                disc.fill(circle, with: .color(Self.token))
-                disc.stroke(circle, with: number == screen.hitNumber ? .color(Self.gold) : .color(.black.opacity(0.25)), lineWidth: number == screen.hitNumber ? 3 : 1)
-                let colour = hot ? Self.hot : Self.ink
-                disc.draw(Text("\(number)").font(.system(size: 17, weight: .heavy, design: .serif)).foregroundStyle(colour), at: CGPoint(x: 0, y: -1))
-                let pips = Board.pips(number)
-                for i in 0..<pips {
-                    let x = (Double(i) - Double(pips - 1) / 2) * 4
-                    disc.fill(Path(ellipseIn: CGRect(x: x - 1.4, y: 12 - 1.4, width: 2.8, height: 2.8)), with: .color(colour))
-                }
-            } else {
-                let label = Text("DUNES").font(.system(size: 11, weight: .semibold)).foregroundStyle(Self.dunes)
-                context.draw(label, at: CGPoint(x: centre.x, y: centre.y + (hasRobber ? 28 : 0)))
+    private func drawTile(_ context: inout GraphicsContext, _ index: Int) {
+        let tile = board.tiles[index]
+        var hex = Path()
+        for (i, corner) in tile.corners.enumerated() {
+            if i == 0 { hex.move(to: point(corner)) } else { hex.addLine(to: point(corner)) }
+        }
+        hex.closeSubpath()
+        context.fill(hex, with: .color(Self.fill(for: tile.terrain)))
+        context.stroke(hex, with: .color(Self.seaDeep), lineWidth: 2)
+
+        let centre = CGPoint(x: tile.center.x, y: tile.center.y)
+        let hasRobber = index == robberTile
+        if let number = tile.number {
+            // The robber takes the centre, so the disc shrinks and slides down out of its way.
+            var disc = context
+            disc.translateBy(x: centre.x, y: hasRobber ? centre.y + 31 : centre.y)
+            if hasRobber { disc.scaleBy(x: 0.72, y: 0.72); disc.opacity = 0.85 }
+            let hot = number == 6 || number == 8
+            let circle = Path(ellipseIn: CGRect(x: -19, y: -19, width: 38, height: 38))
+            disc.fill(circle, with: .color(Self.token))
+            disc.stroke(circle, with: number == screen.hitNumber ? .color(Self.gold) : .color(.black.opacity(0.25)), lineWidth: number == screen.hitNumber ? 3 : 1)
+            let colour = hot ? Self.hot : Self.ink
+            disc.draw(Text("\(number)").font(.system(size: 17, weight: .heavy, design: .serif)).foregroundStyle(colour), at: CGPoint(x: 0, y: -1))
+            let pips = Board.pips(number)
+            for i in 0..<pips {
+                let x = (Double(i) - Double(pips - 1) / 2) * 4
+                disc.fill(Path(ellipseIn: CGRect(x: x - 1.4, y: 12 - 1.4, width: 2.8, height: 2.8)), with: .color(colour))
             }
+        } else {
+            let label = Text("DUNES").font(.system(size: 11, weight: .semibold)).foregroundStyle(Self.dunes)
+            context.draw(label, at: CGPoint(x: centre.x, y: centre.y + (hasRobber ? 28 : 0)))
         }
     }
 
@@ -164,8 +218,8 @@ struct BoardView: View {
         }
     }
 
-    private func drawRoads(_ context: inout GraphicsContext) {
-        for (index, edge) in board.edges.enumerated() {
+    private func drawRoads(_ context: inout GraphicsContext, where included: (Int) -> Bool) {
+        for (index, edge) in board.edges.enumerated() where included(index) {
             var line = Path()
             line.move(to: point(edge.a))
             line.addLine(to: point(edge.b))
@@ -178,8 +232,8 @@ struct BoardView: View {
         }
     }
 
-    private func drawBuildings(_ context: inout GraphicsContext) {
-        for corner in board.corners {
+    private func drawBuildings(_ context: inout GraphicsContext, where included: (Int) -> Bool) {
+        for (index, corner) in board.corners.enumerated() where included(index) {
             guard let owner = corner.owner, let seat = Seat(rawValue: owner) else { continue }
             let outline: [(Double, Double)] = corner.isCity
                 ? [(-13, 9), (-13, -3), (-5, -11), (3, -3), (13, -3), (13, 9)]

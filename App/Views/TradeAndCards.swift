@@ -186,8 +186,19 @@ struct CardsTab: View {
                     if row.note != Strings.countsAutomatically { play(row) }
                 }
             }
+            awards
         }
         .buttonStyle(GameButtonStyle())
+    }
+
+    /// The awards this player holds. Last, so that winning one moves nothing above it.
+    @ViewBuilder private var awards: some View {
+        if let me = screen.scoreboard.first(where: \.isCurrent) {
+            HStack(spacing: 6) {
+                if me.roadHighlighted { AwardPill(name: Strings.longestRoad, count: me.road) }
+                if me.knightsHighlighted { AwardPill(name: Strings.largestArmy, count: me.knights) }
+            }
+        }
     }
 
     @ViewBuilder private func play(_ row: DevCardRow) -> some View {
@@ -223,6 +234,26 @@ struct CardsTab: View {
                 return (all[i] == other ? "2 \(other.rawValue)" : "\(all[i].rawValue) and \(other.rawValue)", (all[i], other))
             }
         }
+    }
+}
+
+/// An award the player holds, with its road length or knight count and the 2 points it is worth.
+struct AwardPill: View {
+    let name: String
+    let count: Int
+
+    var body: some View {
+        Text("\(name) \(count) +2")
+            .font(.caption.monospacedDigit().bold())
+            .foregroundStyle(GameButtonStyle.ink)
+            .lineLimit(1)
+            .fixedSize()
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(GameButtonStyle.amber, in: Capsule())
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("\(name), \(count), 2 points")
+            .accessibilityIdentifier("award \(name)")
     }
 }
 
