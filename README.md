@@ -9,22 +9,40 @@
 ![Platforms: iOS 17+ and macOS 14+](https://img.shields.io/badge/platforms-iOS%2017%2B%20%7C%20macOS%2014%2B-3f6472)
 ![Swift 6](https://img.shields.io/badge/Swift-6-d68910)
 ![Status: in development](https://img.shields.io/badge/status-in%20development-b5643c)
+[![License: MIT](https://img.shields.io/badge/license-MIT-3f6b3a)](LICENSE)
 
-[The game](#the-game) • [Status](#status) • [Getting started](#getting-started) • [Testing](#testing) • [Architecture](#architecture)
+[Quick start](#quick-start) • [How to play](#how-to-play) • [Status](#status) • [Testing](#testing) • [Architecture](#architecture)
 
 <img src="docs/images/ipad-game.png" height="520" alt="A game in progress on iPad, with the board above the player's hand and trade panel">
 &nbsp;&nbsp;
-<img src="docs/images/iphone-game.png" height="520" alt="The same game screen on iPhone">
+<img src="docs/images/iphone-game.png" height="520" alt="The same game on iPhone">
 
 </div>
 
 ---
 
 Saltmarsh Isles is a native SwiftUI board game for two to four players sharing one device. Every
-game deals a new board of 19 tiles, nine harbours and a robber. Any seat can be a person or the
-computer, and a game in progress survives closing the app.
+game deals a new island of 19 tiles and nine harbours, and any seat can be a person or the computer.
 
-## The game
+- **Pass and play.** A handover screen sits between human players, so nobody sees the next hand.
+- **Picks up where you left off.** Your game saves after every move and reopens when you return.
+- **Rolls you can feel.** The dice tumble, paying hexes celebrate, resources pulse as they arrive,
+  and a win ends in confetti. Reduce Motion turns the animation off.
+- **Rules at hand.** The full rules are in the **Help** menu on Mac and the **⋯** menu on iPhone and
+  iPad.
+
+## Quick start
+
+You need a Mac with Xcode 26 or later, because the app icon uses the `.icon` format. The project is
+tested with Xcode 27.2.
+
+```bash
+open SaltmarshIsles.xcodeproj
+```
+
+Choose the `SaltmarshIsles` scheme and a destination, then press **Cmd-R**.
+
+## How to play
 
 Roll two dice each turn. Every settlement and city next to a tile with that number collects its
 resource: timber, clay, wool, grain or ore. Spend them on these:
@@ -36,47 +54,34 @@ resource: timber, clay, wool, grain or ore. Spend them on these:
 | City (upgrades a settlement) | 2 grain, 3 ore | 2 |
 | Development card | 1 wool, 1 grain, 1 ore | Depends on the card |
 
-The longest road and the largest army are worth 2 points each. The first player to reach 10 points
-on their own turn wins.
+The longest road (5 or more) and the largest army (3 or more Knights) are worth 2 points each. The
+first player to reach 10 points on their own turn wins.
 
 - **Trading:** deal with the bank at 4 for 1, at better rates through the harbours you hold, or
   directly with other players.
-- **The robber:** a rolled 7 makes anyone holding more than 7 cards discard half. The roller then
+- **The robber:** a rolled 7 makes anyone holding more than 7 cards give up half. The roller then
   moves the robber to block a tile and steals a card.
-- **Development cards:** a deck of 25 holds Knights, hidden victory points, Road Crew, Bumper
-  Harvest and Corner the Market.
-- **Passing the device:** a handover screen sits between human players, so nobody sees the next
-  player's hand.
-- **Accessibility:** animations respect the system's Reduce Motion setting.
+- **Development cards:** a deck of 25 holds Knight, Victory point, Road crew, Bumper harvest and
+  Corner the market cards.
 
-The full rules are in the [build spec](saltmarsh-isles-spec.md).
+The app's help covers all of this, and the [build spec](saltmarsh-isles-spec.md) has the exact rules.
 
 ## Status
 
-In development, on the `plan-1-engine` branch.
+In development.
 
 | Area | State |
 |---|---|
 | Rules engine | Done |
-| Game screen, animation and saved games | Done |
-| Pass-and-play for 2 to 4 people | Done |
-| AI opponents | **Not built yet.** Computer seats use a random stand-in at every effort level |
+| Game screen, animation and in-app help | Done |
+| Pass and play for 2 to 4 people | Done |
+| Resuming the game in progress | Done |
+| AI opponents | **Not built yet.** Computer seats play random legal moves at every effort level |
 | `ai-bench` benchmark tool | Placeholder only |
 
 The [master plan](docs/superpowers/plans/2026-11-02-saltmarsh-native-plan.md) holds the roadmap.
 
-## Getting started
-
-You need macOS with Xcode 26 or later, because the app icon uses the `.icon` format. The project
-is tested with Xcode 27.2. The app runs on iOS 17 and macOS 14 or later.
-
-```bash
-open SaltmarshIsles.xcodeproj
-```
-
-Choose the `SaltmarshIsles` scheme and a destination in Xcode, then run it.
-
-To build from the command line:
+## Building from the command line
 
 ```bash
 make mac    # build for Mac
@@ -119,7 +124,7 @@ and an opponent receives a `PlayerView` that holds only what that seat is allowe
 
 ```mermaid
 flowchart TD
-    App["App: SwiftUI screens"] --> Game["SaltmarshGame: game layer and saved games"]
+    App["App: SwiftUI screens"] --> Game["SaltmarshGame: game layer and autosave"]
     App --> AI
     App --> Engine
     Game --> AI["SaltmarshAI: opponents"]
@@ -133,15 +138,12 @@ flowchart TD
 | `AppUITests/` | UI tests that drive the real screen. |
 | `Sources/SaltmarshEngine/` | The rules engine. |
 | `Sources/SaltmarshAI/` | The opponent interface and the random stand-in. |
-| `Sources/SaltmarshGame/` | The game layer between the engine and the screen. |
+| `Sources/SaltmarshGame/` | The game layer between the engine and the screen, including the help text. |
 | `Sources/SaltmarshTestSupport/` | State helpers and seeded game builders shared by the tests. |
-| `Sources/ai-bench/` | Placeholder for an AI benchmark tool. |
 | `Tests/` | Engine, AI, game and Gherkin tests. |
 | `saltmarsh-isles-spec.md` | The build spec: rules, data model, UI, AI plan and test checklist. |
 | `saltmarsh-isles.feature` | Gherkin scenarios for every player interaction. |
 | `docs/superpowers/` | Design documents and implementation plans. |
-| `project.yml` | The XcodeGen definition of the Xcode project. |
-| `prototype/` | The original web prototype. |
 
 The [native app design](docs/superpowers/specs/2026-11-02-saltmarsh-native-design.md) explains the
 reasoning behind this structure.
@@ -171,6 +173,10 @@ running them, update these paths to match yours:
 Run the full game with `python3 playgame.py <output-folder>`.
 
 </details>
+
+## License
+
+[MIT](LICENSE) © 2026 Philip A. Senger
 
 ---
 
