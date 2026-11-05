@@ -118,6 +118,15 @@ The rest of these came from the 2026-11-05 game screen redesign. The owner appro
 - **R28. A proposer's list of answers takes over the tab area.** Otherwise "Answers are in" could show with Trade and Withdraw behind another tab. Cost if wrong: one view and a tab rule.
 - **R29. "Discard N cards" and "Offer" sit above their rows, not below.** On iPhone the tab area scrolls and the buttons fell out of view. Cost if wrong: one view.
 - **R30. The "Saltmarsh Isles" footer text is gone from the game screen.** The redesign has no place for it; the title remains on the Mac window and the new game sheet. Cost if wrong: one line.
+- **R31. Costs are small squares in the resource's board colour with the number inside, and stay in full colour on a greyed button.** The owner asked for costs on Road, Settlement, City and the card, and for buttons that are not plain. The values come from the engine's `Cost`. Solid sea blue, dark for Roll and End turn, amber for the active build mode, and icons were my choice. Cost if wrong: `GameButtonStyle` and `CostChips`.
+- **R32. On Mac the handover returns only when the app is hidden or minimised; on iPhone as soon as the app stops being active.** Blanking on every click into another Mac window would get in the way. Not yet tried on a real iPhone. Cost if wrong: one line in `GameScreen`.
+- **R33. "+N" hidden points show only to the human holding the device, on their own row, and Preview win is off when someone other than the current human holds it.** Both leaked in the first build. The final review found them.
+
+Deferred from the final review of the redesign, not fixed:
+
+- iPhone landscape leaves a tab area of about 75 points, so Accept and Withdraw can start partly out of view. They scroll into view.
+- A kept pick whose Get side has become illegal greys Trade with no reason given. Related to R20.
+- An offer nobody can answer clears the builder, and "Nobody can answer that offer." appears only in the Log tab.
 
 ## Carried forward (proposed plan, awaiting owner confirmation)
 

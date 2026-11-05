@@ -58,7 +58,7 @@ Real dice: a rounded square with pips, faces 1 to 6. Before a roll, an empty das
 1. **Who line.** A dot in `headerSeat`'s colour, then `screen.header` ("Cobalt · discarding"), then `holdTitle` ("Cobalt's hold"). This replaces the large coloured bar and takes over its job of showing who the panel belongs to. The mockups show only the hold label; see section 7. Always one line, always present.
 2. **Hand.** Five resource boxes, the existing `ResourceBox`. When no hand may be shown (two or more humans during an AI turn), the same five boxes stay in place with no numbers, so nothing shifts.
 3. **Turn buttons.** "Roll dice" and "End turn". "Roll for first" takes the Roll dice position during the first roll.
-4. **Build buttons.** Road, Settlement, City, each with "N left" as today.
+4. **Build buttons.** Road, Settlement, City, each with "N left" as today and its cost. The Buy a card button in the Cards tab shows its cost too.
 5. **Tabs.** Trade, Cards, Players, Log, always in this order.
 6. **Tab area.** Takes all remaining height at a size that does not depend on its content. Content that does not fit scrolls inside the area. This is the only scrolling in the panel.
 
@@ -110,7 +110,7 @@ Victory and preview stay as today's overlay. The new game sheet is unchanged.
 - At game over.
 - In a game with one human.
 
-**Reopening a saved game or returning from the background:** with two or more humans, the game shows the handover screen for whoever must act, so the app never shows the last player's cards to whoever picks it up. This includes locking the phone or switching apps. The exceptions above still apply: a game in setup or after the end opens normally.
+**Reopening a saved game or returning from the background:** with two or more humans, the game shows the handover screen for whoever must act, so the app never shows the last player's cards to whoever picks it up. On iPhone this includes locking the phone or switching apps; on Mac, hiding or minimising the app. The exceptions above still apply: a game in setup or after the end opens normally.
 
 ## 5. Consequences for the model and tests
 
