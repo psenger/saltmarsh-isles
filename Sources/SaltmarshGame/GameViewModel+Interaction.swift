@@ -176,5 +176,11 @@ extension GameViewModel {
         ui.overlay = .preview(seat: s.current)
     }
 
+    /// Shows the defeat card with the next seat as the winner. The game itself does not change.
+    public func showPreviewLose() {
+        guard let s = state else { return }
+        ui.overlay = .previewDefeat(winner: (s.current + 1) % s.playerCount)
+    }
+
     public func dismissOverlay() { ui.overlay = nil }
 }

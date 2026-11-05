@@ -7,6 +7,7 @@ public enum BuildMode: Hashable, Sendable {
 public enum Overlay: Equatable, Sendable {
     case victory(winner: Int)
     case preview(seat: Int)
+    case previewDefeat(winner: Int)
 }
 
 /// A give/get pair chosen in a bank or harbour trade row.

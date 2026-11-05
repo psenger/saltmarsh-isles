@@ -97,6 +97,7 @@ extension ScreenState {
         // Buttons.
         let builtOffer = TradeOffer(proposer: current, give: ui.offerGive, want: ui.offerWant, to: ui.offerTarget)
         let offerProblem = Engine.validate(builtOffer, in: s)
+        let canPreview = !over && !aiThinking && panelOwner == current && !s.players[current].controller.isAI
         var buttons: [String: Bool] = [
             Strings.rollForFirstButton: legal.contains(.rollForFirst),
             Strings.rollDice: legal.contains(.roll),
@@ -111,9 +112,15 @@ extension ScreenState {
             Strings.accept: responderPending && legal.contains(.respondToTrade(seat: acting, .accepted)),
             Strings.decline: responderPending && legal.contains(.respondToTrade(seat: acting, .declined)),
             Strings.newGame: true,
-            Strings.previewWin: !over && !aiThinking && panelOwner == current && !s.players[current].controller.isAI,
+            Strings.previewWin: canPreview,
+            Strings.previewLose: canPreview,
             Strings.seeTheBoard: { if case .victory = ui.overlay { return true } else { return false } }(),
-            Strings.backToTheGame: { if case .preview = ui.overlay { return true } else { return false } }(),
+            Strings.backToTheGame: {
+                switch ui.overlay {
+                case .preview, .previewDefeat: true
+                default: false
+                }
+            }(),
         ]
         var acceptProblem: String?
         if case .tradeOffered(let offer, _) = s.phase, responderPending, buttons[Strings.accept] == false {
@@ -270,6 +277,10 @@ extension ScreenState {
             victory = VictoryCard(title: Strings.preview, winner: Strings.wins(name(p)), seat: s.players[p].seat,
                                   subtitle: Strings.previewNote, breakdown: breakdown(p), total: total,
                                   banner: Strings.banner(name(p), total), buttons: [Strings.backToTheGame], confetti: confetti)
+        case .previewDefeat(let w):
+            victory = VictoryCard(title: Strings.defeat, winner: Strings.wins(name(w)), seat: s.players[w].seat,
+                                  subtitle: Strings.previewDefeatNote, breakdown: breakdown(w), total: Engine.totalPoints(s, player: w),
+                                  banner: Strings.betterLuck, buttons: [Strings.backToTheGame], confetti: nil)
         case nil:
             break
         }

@@ -1,12 +1,29 @@
+import Foundation
 import SaltmarshEngine
 
 public struct HelpSection: Equatable, Sendable {
     public var title: String
     public var lines: [String]
+
+    /// The topic's file name in the Mac help book.
+    public var slug: String {
+        String(title.lowercased().map { $0.isLetter || $0.isNumber ? $0 : "-" }).replacing("--", with: "-")
+    }
 }
 
 /// The rules as the help screen tells them. Costs, limits and card names come from the engine.
 public enum Help {
+    public static let bookTitle = "Saltmarsh Isles Help", bookIdentifier = "dev.psenger.SaltmarshIsles.help"
+
+    /// The topics that mention `query`, in their usual order. An empty query keeps them all.
+    public static func search(_ query: String) -> [HelpSection] {
+        let term = query.trimmingCharacters(in: .whitespaces)
+        guard !term.isEmpty else { return sections }
+        return sections.filter { section in
+            section.title.localizedCaseInsensitiveContains(term) || section.lines.contains { $0.localizedCaseInsensitiveContains(term) }
+        }
+    }
+
     /// "14 Knight, 5 Victory point, ...", in the order the cards are listed everywhere else.
     private static var deckList: String {
         DevCardType.allCases.map { "\(DevCardType.deckComposition[$0] ?? 0) \($0.displayName)" }.joined(separator: ", ")

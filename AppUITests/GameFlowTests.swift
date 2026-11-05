@@ -116,11 +116,24 @@ final class GameFlowTests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
         startNewGame(app)
-        XCTAssertTrue(app.buttons["help"].waitForExistence(timeout: 5))
-        app.buttons["help"].tap()
+        XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["help"].exists, "the help belongs in a menu, not beside the dice")
+        chooseFromMenu(app, "Help")
         XCTAssertTrue(app.staticTexts["The goal"].waitForExistence(timeout: 5), "the help did not open")
         app.buttons["help done"].tap()
         XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5), "the help did not close")
+    }
+
+    func testPreviewLoseShowsDefeat() {
+        let app = XCUIApplication()
+        app.launch()
+        startNewGame(app)
+        XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5))
+        chooseFromMenu(app, "Preview lose")
+        XCTAssertTrue(app.staticTexts["Defeat"].waitForExistence(timeout: 5), "the defeat card did not open")
+        XCTAssertTrue(app.staticTexts["Better luck next time, captain."].exists)
+        app.buttons["Back to the game"].tap()
+        XCTAssertFalse(app.staticTexts["Defeat"].waitForExistence(timeout: 2), "the defeat card did not close")
     }
 
     func testPreviewWinClosesWithBackToTheGame() {

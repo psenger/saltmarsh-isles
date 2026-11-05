@@ -101,6 +101,22 @@ import SaltmarshTestSupport
         #expect(card?.title == Strings.victory)
         #expect(card?.confetti != nil)
     }
+    @Test func previewingALossShowsDefeatWithoutEndingTheGame() {
+        let vm = GameViewModel(store: InMemoryGameStore(), pacing: NoPacing()) { _, _ in nil }
+        vm.load(TestGames.rolled(8))
+        #expect(vm.screen.buttons[Strings.previewLose] == true)
+        vm.showPreviewLose()
+        let card = vm.screen.victory
+        #expect(card?.title == Strings.defeat)
+        #expect(card?.winner == "Cobalt wins")
+        #expect(card?.banner == Strings.betterLuck)
+        #expect(card?.confetti == nil)
+        #expect(card?.buttons == [Strings.backToTheGame])
+        #expect(vm.screen.buttons[Strings.backToTheGame] == true)
+        vm.dismissOverlay()
+        #expect(vm.screen.victory == nil)
+        #expect(vm.state?.phase == .main)
+    }
     @Test func aCardOtherThanAKnightSaysToRollFirst() {
         var s = TestGames.afterSetup()
         s.players[0].devCards = [DevCard(type: .roadCrew, boughtOnTurn: -1), DevCard(type: .knight, boughtOnTurn: -1)]

@@ -67,7 +67,7 @@ Items 1 to 5 never scroll. All of them stay on screen in every state; when one c
 ### Tab contents
 
 - **Trade.** A one-line bank supply (five small coloured counts, no names), the bank trade row, one row per captured harbour (or the "None yet" text), and "Offer a trade to players…". That button replaces the tab's content with the offer builder and a way back. After an offer is made, the tab shows the responses with Trade and Withdraw until it closes.
-- **Help.** A question mark in the header, beside the menu, opens the rules over anything, including a discard.
+- **Help.** On Mac, the menu bar's Help menu opens a real Apple help book, with Command-?, in the system's help window with its index and search. `make help` builds the book from `Help.sections`. Its pages stay blank unless the app runs from an Applications folder, so `make run` runs it from `~/Applications`. iPhone and iPad have no help window, so a Help item in the header's menu opens the same topics as a searchable list.
 - **Cards.** The cards still to play and, once any are played, how many Knights the player has played, then a "Victory points" section: the total out of 10, a row per source worth more than 0, including hidden victory point cards, and a pill for each award held, such as "Longest road 8 +2". Buying a card shows "You drew: <card>!" over the panel for a few seconds, to the buyer only.
 - **Players.** The full scoreboard, including cards, development cards, road and army, and the "+N" hidden points for the current human.
 - **Log.** The whole log, newest first.

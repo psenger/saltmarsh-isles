@@ -20,7 +20,6 @@ struct GameHeader: View {
                 ForEach(screen.scoreboard, id: \.name) { chip($0) }
                 if statusOnOwnRow { Spacer(minLength: 0) } else { status }
                 dice
-                help
                 menu
             }
             if statusOnOwnRow { status }
@@ -70,22 +69,18 @@ struct GameHeader: View {
         }
     }
 
-    private var help: some View {
-        Button { showHelp = true } label: {
-            Image(systemName: "questionmark.circle").accessibilityLabel("Help")
-        }
-        .buttonStyle(.borderless)
-        .fixedSize()
-        .accessibilityIdentifier("help")
-        .sheet(isPresented: $showHelp) { HelpSheet() }
-    }
-
     private var menu: some View {
         Menu {
             Button(Strings.newGame, action: onNewGame)
+            #if !os(macOS)
+            // These devices have no menu bar. On Mac this lives in the Help menu.
+            Button(Strings.help) { showHelp = true }
+            #endif
             #if DEBUG
             Button(Strings.previewWin) { vm.showPreviewWin() }
                 .disabled(screen.buttons[Strings.previewWin] != true)
+            Button(Strings.previewLose) { vm.showPreviewLose() }
+                .disabled(screen.buttons[Strings.previewLose] != true)
             #endif
         } label: {
             Image(systemName: "ellipsis.circle").accessibilityLabel("Menu")
@@ -96,40 +91,41 @@ struct GameHeader: View {
         #endif
         .fixedSize()
         .accessibilityIdentifier("menu")
+        #if !os(macOS)
+        .sheet(isPresented: $showHelp) { HelpSheet() }
+        #endif
     }
 }
 
-/// The rules. It opens over anything, so a player can look something up in the middle of a discard.
+#if !os(macOS)
+/// The rules on devices without Apple's Help Viewer: an index of topics with a search box.
 private struct HelpSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var query = ""
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(Help.sections, id: \.title) { section in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(section.title).font(.headline)
-                            ForEach(section.lines, id: \.self) { line in
-                                Text(line).font(.callout).fixedSize(horizontal: false, vertical: true)
-                            }
+            List(Help.search(query), id: \.title) { section in
+                NavigationLink(section.title) {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 10) {
+                            ForEach(section.lines, id: \.self) { Text($0).fixedSize(horizontal: false, vertical: true) }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
                     }
+                    .navigationTitle(section.title)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
             }
+            .searchable(text: $query, prompt: "Search help")
             .navigationTitle("How to play")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { dismiss() }
-                        .keyboardShortcut(.cancelAction)
                         .accessibilityIdentifier("help done")
                 }
             }
         }
-        #if os(macOS)
-        .frame(minWidth: 460, minHeight: 520)
-        #endif
     }
 }
+#endif

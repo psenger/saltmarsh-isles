@@ -12,7 +12,13 @@ targets:
   SaltmarshIsles:
     type: application
     supportedDestinations: [iOS, macOS]
-    sources: [App]
+    sources:
+      - path: App
+        excludes: [Info.plist, SaltmarshIsles.help]
+      - path: App/SaltmarshIsles.help
+        type: folder
+        buildPhase: resources
+        destinationFilters: [macOS]
     dependencies:
       - package: SaltmarshCore
         product: SaltmarshEngine
@@ -26,6 +32,7 @@ targets:
         SWIFT_VERSION: "6.0"
         SWIFT_STRICT_CONCURRENCY: complete
         GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: App/Info.plist
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"

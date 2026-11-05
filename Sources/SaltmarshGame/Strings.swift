@@ -31,7 +31,7 @@ public enum Strings {
     // Buttons
     public static let rollForFirstButton = "Roll for first", rollDice = "Roll dice", road = "Road", settlement = "Settlement", city = "City"
     public static let endTurn = "End turn", buyCard = "Buy a card", bankTrade = "Trade 4 for 1", offerButton = "Offer", withdraw = "Withdraw"
-    public static let accept = "Accept", decline = "Decline", newGame = "New game", previewWin = "Preview win"
+    public static let accept = "Accept", decline = "Decline", newGame = "New game", previewWin = "Preview win", previewLose = "Preview lose", help = "Help"
     public static let seeTheBoard = "See the board", backToTheGame = "Back to the game"
     public static func discard(_ n: Int) -> String { "Discard \(n) cards" }
     public static func stealFrom(_ name: String) -> String { "Steal from \(name)" }
@@ -94,6 +94,7 @@ public enum Strings {
     public static let victory = "Victory", preview = "Preview", defeat = "Defeat"
     public static func defeated(_ name: String, rounds n: Int) -> String { "\(name) takes the isles after \(n) rounds." }
     public static let betterLuck = "Better luck next time, captain."
+    public static let previewDefeatNote = "This is what losing looks like. The game carries on."
     public static func wins(_ name: String) -> String { "\(name) wins" }
     public static func rounds(_ n: Int) -> String { "Rules the isles after \(n) rounds." }
     public static let previewNote = "This is what the win screen looks like. The game carries on."

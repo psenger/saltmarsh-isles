@@ -47,7 +47,7 @@ struct VictoryOverlay: View {
             }
             .padding(20)
             .frame(maxWidth: 340)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+            .background(.background, in: RoundedRectangle(cornerRadius: 12))
             .padding(16)
             if let schedule = card.confetti {
                 Confetti(schedule: schedule, seat: card.seat)

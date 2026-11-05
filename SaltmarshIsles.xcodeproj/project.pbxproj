@@ -11,6 +11,7 @@
 		1423C35FA64CD1F619C46D31 /* GamePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161290410D3F23E29D6B7BEA /* GamePanel.swift */; };
 		17D36040D771367C61C15202 /* VictoryOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDB0D55A20F738780116C1F /* VictoryOverlay.swift */; };
 		18017778EF5F51C560E96272 /* GameHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6BBDDDDD27BFC16282A60A /* GameHeader.swift */; };
+		2630FC068C77E0CE33C04001 /* SaltmarshIsles.help in Resources */ = {isa = PBXBuildFile; fileRef = A391B28B76380787387DDE4B /* SaltmarshIsles.help */; platformFilters = (macos, ); };
 		303EFAC5D1D492C882B2E701 /* LaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */; };
 		38DD71A4A5741DD92D6CE525 /* GameFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D0AF059581137B37B89706 /* GameFlowTests.swift */; };
 		4040479094B7559071F6F248 /* HandoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF498E839E40DDB1D16DEE0B /* HandoverView.swift */; };
@@ -44,6 +45,7 @@
 		7A6BBDDDDD27BFC16282A60A /* GameHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHeader.swift; sourceTree = "<group>"; };
 		8CDB0D55A20F738780116C1F /* VictoryOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VictoryOverlay.swift; sourceTree = "<group>"; };
 		9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
+		A391B28B76380787387DDE4B /* SaltmarshIsles.help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SaltmarshIsles.help; path = App/SaltmarshIsles.help; sourceTree = SOURCE_ROOT; };
 		B2EF33FE7D2A84C73A586145 /* GameScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScreen.swift; sourceTree = "<group>"; };
 		C5BD1A45A05AF221C1EF48B7 /* TradeAndCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAndCards.swift; sourceTree = "<group>"; };
 		CC143C89C8A2667A1D68F679 /* SaltmarshIslesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaltmarshIslesApp.swift; sourceTree = "<group>"; };
@@ -74,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				DB2CBDF30F2CEB9BA4BBFB19 /* AppIcon.icon */,
+				A391B28B76380787387DDE4B /* SaltmarshIsles.help */,
 				CC143C89C8A2667A1D68F679 /* SaltmarshIslesApp.swift */,
 				DA9C181F7ADAE6E38BA74D25 /* Views */,
 			);
@@ -222,6 +225,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C5D1410A5762935036005EE1 /* AppIcon.icon in Resources */,
+				2630FC068C77E0CE33C04001 /* SaltmarshIsles.help in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,6 +301,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -348,6 +353,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

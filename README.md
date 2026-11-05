@@ -28,7 +28,7 @@ game deals a new island of 19 tiles and nine harbours, and any seat can be a per
 - **Picks up where you left off.** Your game saves after every move and reopens when you return.
 - **Rolls you can feel.** The dice tumble, paying hexes celebrate, resources pulse as they arrive,
   and a win ends in confetti. Reduce Motion turns the animation off.
-- **Rules at hand.** The full rules are in the **Help** menu on Mac and the **⋯** menu on iPhone and
+- **Rules at hand.** Searchable help is in the **Help** menu on Mac and the **⋯** menu on iPhone and
   iPad.
 
 ## Quick start
@@ -41,6 +41,13 @@ open SaltmarshIsles.xcodeproj
 ```
 
 Choose the `SaltmarshIsles` scheme and a destination, then press **Cmd-R**.
+
+macOS only loads help pages for an app in an Applications folder, so the Help window is blank under
+**Cmd-R**. To check it on a Mac, build and run from `~/Applications`:
+
+```bash
+make run
+```
 
 ## How to play
 
@@ -95,6 +102,9 @@ The Xcode project is generated from `project.yml`. After adding or removing file
 brew install xcodegen
 make project
 ```
+
+After changing the rules text in `Sources/SaltmarshGame/Help.swift`, rebuild the Mac help book and
+its search index with `make help`.
 
 ## Testing
 

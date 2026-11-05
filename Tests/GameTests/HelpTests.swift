@@ -1,4 +1,5 @@
 import Testing
+import Foundation
 import SaltmarshEngine
 @testable import SaltmarshGame
 
@@ -6,6 +7,22 @@ import SaltmarshEngine
 @Suite struct HelpTests {
     var text: String { Help.sections.flatMap { [$0.title] + $0.lines }.joined(separator: "\n") }
 
+    @Test func searchFindsTopicsByTitleOrText() {
+        #expect(Help.search("").count == Help.sections.count)
+        #expect(Help.search("awards").map(\.title) == ["Awards"])
+        #expect(Help.search("ROBBER").contains { $0.title == "Oh NO! A 7" })
+        #expect(Help.search("zzzz").isEmpty)
+    }
+    /// `make help` writes the Mac book from this text, so a page that differs means someone forgot to run it.
+    @Test func theMacHelpBookMatchesTheText() throws {
+        let pages = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appending(path: "App/SaltmarshIsles.help/Contents/Resources/en.lproj")
+        for section in Help.sections {
+            let html = try String(contentsOf: pages.appending(path: "\(section.slug).html"), encoding: .utf8)
+            for line in section.lines { #expect(html.contains(line), "run make help: \(section.title)") }
+        }
+        #expect(FileManager.default.fileExists(atPath: pages.appending(path: "SaltmarshIsles.helpindex").path))
+    }
     @Test func everySectionSaysSomething() {
         #expect(!Help.sections.isEmpty)
         #expect(Help.sections.allSatisfy { !$0.title.isEmpty && !$0.lines.isEmpty })

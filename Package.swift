@@ -9,6 +9,7 @@ let package = Package(
         .library(name: "SaltmarshAI", targets: ["SaltmarshAI"]),
         .library(name: "SaltmarshGame", targets: ["SaltmarshGame"]),
         .executable(name: "ai-bench", targets: ["ai-bench"]),
+        .executable(name: "help-book", targets: ["help-book"]),
     ],
     targets: [
         .target(name: "SaltmarshEngine"),
@@ -17,6 +18,7 @@ let package = Package(
         // Test-only state mutators and seeded game builders, shared by every test target; not an app product.
         .target(name: "SaltmarshTestSupport", dependencies: ["SaltmarshEngine"]),
         .executableTarget(name: "ai-bench", dependencies: ["SaltmarshEngine", "SaltmarshAI"]),
+        .executableTarget(name: "help-book", dependencies: ["SaltmarshGame"]),
         .testTarget(name: "EngineTests", dependencies: ["SaltmarshEngine", "SaltmarshTestSupport"]),
         .testTarget(name: "AITests", dependencies: ["SaltmarshEngine", "SaltmarshAI", "SaltmarshTestSupport"]),
         .testTarget(name: "GameTests", dependencies: ["SaltmarshEngine", "SaltmarshAI", "SaltmarshGame", "SaltmarshTestSupport"]),
