@@ -1,0 +1,186 @@
+<style>
+  .stage { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; align-items: flex-start; background: var(--bg-tertiary); border-radius: 10px; padding: 16px; margin-bottom: 1.5rem; }
+  .dev { background: #fff; color: #1d2a30; border: 2px solid #1d2a30; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; font: 11px -apple-system, system-ui, sans-serif; }
+  .dev.mac { width: 700px; height: 440px; }
+  .dev.phone { width: 200px; height: 440px; border-radius: 20px; }
+  .dev.panel { width: 270px; height: 340px; }
+  .col { display: flex; flex-direction: column; min-width: 0; }
+  .row { display: flex; align-items: center; gap: 4px; }
+  .top { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-bottom: 1px solid #ddd; flex: none; }
+  .board { flex: 1; min-width: 0; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 4px; }
+  .board svg { width: 100%; height: 100%; }
+  .line { height: 16px; line-height: 16px; white-space: nowrap; overflow: hidden; flex: 1; text-align: center; }
+  .hand { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; }
+  .box { aspect-ratio: 1; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; font-size: 8px; line-height: 1.15; }
+  .box b { font-size: 12px; }
+  
+  .btn { background: #ececec; border-radius: 4px; padding: 4px 6px; text-align: center; white-space: nowrap; flex: 1; }
+  .col > .btn, .slot > .btn { flex: none; }
+  .btn.off { color: #a8a8a8; background: #f5f5f5; }
+  .btn.go { background: #1d2a30; color: #fff; font-weight: 600; }
+  .tabs { display: flex; border-bottom: 1px solid #ccc; flex: none; }
+  .tab { flex: 1; text-align: center; padding: 4px 0; color: #666; }
+  .tab.on { color: #1d2a30; font-weight: 700; border-bottom: 2px solid #1d2a30; }
+  .tab.off { color: #bbb; }
+  .sec { font-weight: 700; margin-top: 4px; }
+  .pill { background: #ececec; border-radius: 3px; padding: 2px 5px; white-space: nowrap; }
+  .chip { display: flex; align-items: center; gap: 3px; background: #f1f1f1; border-radius: 12px; padding: 2px 8px 2px 4px; white-space: nowrap; flex: none; }
+  .chip.now { outline: 2px solid #1d2a30; font-weight: 700; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .who { display: flex; align-items: center; gap: 3px; color: #555; font-size: 10px; }
+  .bankline { display: flex; gap: 6px; color: #555; font-size: 10px; }
+  .slot { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 4px; padding-top: 4px; }
+  .die { width: 24px; height: 24px; flex: none; }
+  .dicebig { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; align-items: flex-end; }
+  .dicebig figure { margin: 0; text-align: center; font-size: .8rem; color: var(--text-secondary); }
+  .dicebig svg { width: 56px; height: 56px; display: block; margin-bottom: 4px; }
+  .cap { width: 270px; font-size: .85rem; margin-bottom: 6px; font-weight: 600; }
+  .note { color: #666; font-size: 10px; }
+  .step { display: flex; align-items: center; gap: 4px; }
+  .step span.n { width: 18px; text-align: center; font-weight: 700; }
+  .step span.l { flex: 1; }
+  .mini { background: #ececec; border-radius: 3px; width: 18px; text-align: center; padding: 1px 0; }
+  .t { background: #4a6a3f; color: #fff; } .c { background: #a96a45; color: #fff; } .w { background: #a3c477; color: #1d2a30; } .g { background: #dcb85a; color: #1d2a30; } .o { background: #7d8694; color: #fff; }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <polygon id="hx" points="0,-20 17.32,-10 17.32,10 0,20 -17.32,10 -17.32,-10" stroke="#47636f" stroke-width="1"/>
+    <g id="isle">
+      <polygon points="87,-12 186,80 87,172 -12,80" fill="#5b7c8d"/>
+      <use href="#hx" x="51.96" y="20" fill="#dcb85a"/><use href="#hx" x="86.6" y="20" fill="#4a6a3f"/><use href="#hx" x="121.24" y="20" fill="#a96a45"/>
+      <use href="#hx" x="34.64" y="50" fill="#a96a45"/><use href="#hx" x="69.28" y="50" fill="#a3c477"/><use href="#hx" x="103.92" y="50" fill="#7d8694"/><use href="#hx" x="138.56" y="50" fill="#4a6a3f"/>
+      <use href="#hx" x="17.32" y="80" fill="#dcb85a"/><use href="#hx" x="51.96" y="80" fill="#7d8694"/><use href="#hx" x="86.6" y="80" fill="#d6c9a0"/><use href="#hx" x="121.24" y="80" fill="#a3c477"/><use href="#hx" x="155.88" y="80" fill="#a96a45"/>
+      <use href="#hx" x="34.64" y="110" fill="#4a6a3f"/><use href="#hx" x="69.28" y="110" fill="#dcb85a"/><use href="#hx" x="103.92" y="110" fill="#7d8694"/><use href="#hx" x="138.56" y="110" fill="#dcb85a"/>
+      <use href="#hx" x="51.96" y="140" fill="#a3c477"/><use href="#hx" x="86.6" y="140" fill="#4a6a3f"/><use href="#hx" x="121.24" y="140" fill="#a3c477"/>
+    </g>
+    <rect id="face" x="1.5" y="1.5" width="21" height="21" rx="4.5" fill="#fbf8f0" stroke="#1d2a30" stroke-width="1.5"/>
+    <g id="p" fill="#1d2a30"><circle r="2.2"/></g>
+    <symbol id="d0" viewBox="0 0 24 24"><rect x="1.5" y="1.5" width="21" height="21" rx="4.5" fill="#f1f1f1" stroke="#b5b5b5" stroke-width="1.5" stroke-dasharray="3 2"/></symbol>
+    <symbol id="d1" viewBox="0 0 24 24"><use href="#face"/><use href="#p" x="12" y="12"/></symbol>
+    <symbol id="d2" viewBox="0 0 24 24"><use href="#face"/><use href="#p" x="7.5" y="7.5"/><use href="#p" x="16.5" y="16.5"/></symbol>
+    <symbol id="d3" viewBox="0 0 24 24"><use href="#face"/><use href="#p" x="7.5" y="7.5"/><use href="#p" x="12" y="12"/><use href="#p" x="16.5" y="16.5"/></symbol>
+    <symbol id="d4" viewBox="0 0 24 24"><use href="#face"/><use href="#p" x="7.5" y="7.5"/><use href="#p" x="16.5" y="7.5"/><use href="#p" x="7.5" y="16.5"/><use href="#p" x="16.5" y="16.5"/></symbol>
+    <symbol id="d5" viewBox="0 0 24 24"><use href="#face"/><use href="#p" x="7.5" y="7.5"/><use href="#p" x="16.5" y="7.5"/><use href="#p" x="12" y="12"/><use href="#p" x="7.5" y="16.5"/><use href="#p" x="16.5" y="16.5"/></symbol>
+    <symbol id="d6" viewBox="0 0 24 24"><use href="#face"/><use href="#p" x="7.5" y="6.5"/><use href="#p" x="16.5" y="6.5"/><use href="#p" x="7.5" y="12"/><use href="#p" x="16.5" y="12"/><use href="#p" x="7.5" y="17.5"/><use href="#p" x="16.5" y="17.5"/></symbol>
+  </defs>
+</svg>
+
+<h2>Option B's header on Option A's panel</h2>
+<p class="subtitle">A normal turn on Mac and iPhone. Rough layout, not finished artwork.</p>
+
+<div class="stage">
+  <div class="dev mac">
+    <div class="top">
+      <div class="chip now"><span class="dot" style="background:#b34435"></span>Crimson 4/10</div>
+      <div class="chip"><span class="dot" style="background:#3457a6"></span>Cobalt 3/10</div>
+      <div class="chip"><span class="dot" style="background:#d68910"></span>Amber 2/10</div>
+      <div class="line">Build, trade, or end your turn.</div>
+      <svg class="die"><use href="#d1"/></svg><svg class="die"><use href="#d2"/></svg>
+    </div>
+    <div class="row" style="flex:1;min-height:0;align-items:stretch;gap:0">
+      <div class="board"><svg viewBox="-14 -14 202 188"><use href="#isle"/></svg></div>
+      <div class="col" style="width:270px;padding:8px;gap:5px;border-left:1px solid #ddd">
+        <div class="who"><span class="dot" style="background:#b34435"></span>Crimson's hold</div>
+        <div class="hand"><div class="box t"><b>2</b>timber</div><div class="box c"><b>3</b>clay</div><div class="box w"><b>0</b>wool</div><div class="box g"><b>5</b>grain</div><div class="box o"><b>0</b>ore</div></div>
+        <div class="row"><div class="btn off">Roll dice</div><div class="btn go">End turn</div></div>
+        <div class="row"><div class="btn">Road</div><div class="btn off">Settlement</div><div class="btn off">City</div></div>
+        <div class="tabs"><div class="tab on">Trade</div><div class="tab">Cards</div><div class="tab">Players</div><div class="tab">Log</div></div>
+        <div class="slot">
+          <div class="bankline" style="align-items:center"><b>Bank</b><span class="pill t" style="flex:1;text-align:center">17</span><span class="pill c" style="flex:1;text-align:center">16</span><span class="pill w" style="flex:1;text-align:center">16</span><span class="pill g" style="flex:1;text-align:center">13</span><span class="pill o" style="flex:1;text-align:center">19</span></div>
+          <div class="sec">Bank, 4 for 1</div>
+          <div class="row"><span class="pill">grain</span>→<span class="pill">timber</span><div class="btn">Trade</div></div>
+          <div class="sec">3:1 harbour</div>
+          <div class="row"><span class="pill">clay</span>→<span class="pill">timber</span><div class="btn">Trade</div></div>
+          <div class="sec">2:1 grain harbour</div>
+          <div class="row"><span class="pill">2 grain</span>→<span class="pill">timber</span><div class="btn">Trade</div></div>
+          <div class="btn" style="margin-top:2px">Offer a trade to players…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dev phone">
+    <div class="top" style="padding:5px;gap:3px">
+      <div class="chip now" style="padding:1px 5px 1px 3px"><span class="dot" style="background:#b34435"></span>4</div>
+      <div class="chip" style="padding:1px 5px 1px 3px"><span class="dot" style="background:#3457a6"></span>3</div>
+      <div class="chip" style="padding:1px 5px 1px 3px"><span class="dot" style="background:#d68910"></span>2</div>
+      <div style="flex:1"></div>
+      <svg class="die"><use href="#d1"/></svg><svg class="die"><use href="#d2"/></svg>
+    </div>
+    <div class="line" style="flex:none;padding:2px 6px;height:20px">Build, trade, or end turn.</div>
+    <div class="board" style="flex:none;height:124px"><svg viewBox="-14 -14 202 188"><use href="#isle"/></svg></div>
+    <div class="col" style="padding:5px;gap:4px;flex:1;min-height:0">
+      <div class="hand"><div class="box t"><b>2</b>timber</div><div class="box c"><b>3</b>clay</div><div class="box w"><b>0</b>wool</div><div class="box g"><b>5</b>grain</div><div class="box o"><b>0</b>ore</div></div>
+      <div class="row"><div class="btn off">Roll</div><div class="btn go">End turn</div></div>
+      <div class="row"><div class="btn">Road</div><div class="btn off">Settle</div><div class="btn off">City</div></div>
+      <div class="tabs"><div class="tab on">Trade</div><div class="tab">Cards</div><div class="tab">Players</div><div class="tab">Log</div></div>
+      <div class="slot">
+        <div class="row"><span class="pill">grain</span>→<span class="pill">timber</span><div class="btn">Trade</div></div>
+        <div class="row"><span class="pill">clay</span>→<span class="pill">timber</span><div class="btn">Trade</div></div>
+        <div class="row"><span class="pill">2 grain</span>→<span class="pill">timber</span><div class="btn">Trade</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>Dice</h3>
+<p class="subtitle">Real dice with pips, in place of the number boxes. Before a roll they show as empty outlines.</p>
+<div class="stage">
+  <div class="dicebig">
+    <figure><svg><use href="#d0"/></svg>Not rolled</figure>
+    <figure><svg><use href="#d1"/></svg>1</figure>
+    <figure><svg><use href="#d2"/></svg>2</figure>
+    <figure><svg><use href="#d3"/></svg>3</figure>
+    <figure><svg><use href="#d4"/></svg>4</figure>
+    <figure><svg><use href="#d5"/></svg>5</figure>
+    <figure><svg><use href="#d6"/></svg>6</figure>
+  </div>
+</div>
+
+<h3>When the game needs something else from you</h3>
+<p class="subtitle">The panel keeps its shape. Your hand and buttons stay put, and the request appears in the tab area.</p>
+<div class="stage">
+  <div>
+    <div class="cap">An AI is playing</div>
+    <div class="dev panel"><div class="col" style="padding:8px;gap:5px;flex:1;min-height:0">
+      <div class="who"><span class="dot" style="background:#b34435"></span>Crimson's hold</div>
+      <div class="hand"><div class="box t"><b>2</b>timber</div><div class="box c"><b>3</b>clay</div><div class="box w"><b>0</b>wool</div><div class="box g"><b>5</b>grain</div><div class="box o"><b>0</b>ore</div></div>
+      <div class="row"><div class="btn off">Roll dice</div><div class="btn off">End turn</div></div>
+      <div class="row"><div class="btn off">Road</div><div class="btn off">Settlement</div><div class="btn off">City</div></div>
+      <div class="tabs"><div class="tab">Trade</div><div class="tab">Cards</div><div class="tab">Players</div><div class="tab on">Log</div></div>
+      <div class="slot note"><div>Cobalt rolled 8.</div><div>Cobalt built a road.</div><div>Amber collected 1 wool.</div></div>
+    </div></div>
+  </div>
+  <div>
+    <div class="cap">You must discard</div>
+    <div class="dev panel"><div class="col" style="padding:8px;gap:5px;flex:1;min-height:0">
+      <div class="who"><span class="dot" style="background:#b34435"></span>Crimson's hold</div>
+      <div class="hand"><div class="box t"><b>2</b>timber</div><div class="box c"><b>3</b>clay</div><div class="box w"><b>0</b>wool</div><div class="box g"><b>5</b>grain</div><div class="box o"><b>0</b>ore</div></div>
+      <div class="row"><div class="btn off">Roll dice</div><div class="btn off">End turn</div></div>
+      <div class="row"><div class="btn off">Road</div><div class="btn off">Settlement</div><div class="btn off">City</div></div>
+      <div class="tabs"><div class="tab off">Trade</div><div class="tab off">Cards</div><div class="tab off">Players</div><div class="tab off">Log</div></div>
+      <div class="slot">
+        <div class="row" style="justify-content:space-between"><b>Pick 5 cards to give up</b><span>2 / 5</span></div>
+        <div class="step"><span class="l">timber</span><span class="mini">−</span><span class="n">0</span><span class="mini">+</span></div>
+        <div class="step"><span class="l">clay</span><span class="mini">−</span><span class="n">1</span><span class="mini">+</span></div>
+        <div class="step"><span class="l">grain</span><span class="mini">−</span><span class="n">1</span><span class="mini">+</span></div>
+        <div class="btn off">Discard 5 cards</div>
+      </div>
+    </div></div>
+  </div>
+  <div>
+    <div class="cap">Someone offers you a trade</div>
+    <div class="dev panel"><div class="col" style="padding:8px;gap:5px;flex:1;min-height:0">
+      <div class="who"><span class="dot" style="background:#3457a6"></span>Cobalt's hold</div>
+      <div class="hand"><div class="box t"><b>1</b>timber</div><div class="box c"><b>0</b>clay</div><div class="box w"><b>4</b>wool</div><div class="box g"><b>2</b>grain</div><div class="box o"><b>1</b>ore</div></div>
+      <div class="row"><div class="btn off">Roll dice</div><div class="btn off">End turn</div></div>
+      <div class="row"><div class="btn off">Road</div><div class="btn off">Settlement</div><div class="btn off">City</div></div>
+      <div class="tabs"><div class="tab off">Trade</div><div class="tab off">Cards</div><div class="tab off">Players</div><div class="tab off">Log</div></div>
+      <div class="slot">
+        <b>Crimson offers 2 grain for 1 wool</b>
+        <div class="row" style="margin-top:6px"><div class="btn go">Accept</div><div class="btn">Decline</div></div>
+      </div>
+    </div></div>
+  </div>
+</div>

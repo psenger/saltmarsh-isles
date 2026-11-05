@@ -1,0 +1,29 @@
+<style>
+  .stage { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; align-items: flex-start; background: var(--bg-tertiary); border-radius: 10px; padding: 16px; margin-bottom: 1.5rem; }
+  .dev { background: #1d2a30; color: #fff; border: 2px solid #1d2a30; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; font: 13px -apple-system, system-ui, sans-serif; text-align: center; }
+  .dev.mac { width: 560px; height: 340px; }
+  .dev.phone { width: 180px; height: 340px; border-radius: 20px; }
+  .dev.small { width: 240px; height: 160px; gap: 10px; }
+  .pass { color: #c9d2d6; }
+  .start { background: #3457a6; color: #fff; font-weight: 700; font-size: 15px; padding: 10px 18px; border-radius: 8px; white-space: nowrap; }
+  .start.crimson { background: #b34435; }
+  .small .start { font-size: 13px; padding: 8px 12px; }
+  .small .pass { font-size: 11px; }
+  .cap { font-size: .85rem; font-weight: 600; margin-bottom: 6px; max-width: 240px; }
+</style>
+
+<h2>Handing the device to another human</h2>
+<p class="subtitle">Crimson taps End turn. Nothing of the game shows until Cobalt taps the button.</p>
+
+<div class="stage">
+  <div class="dev mac"><div class="pass">Pass the device to Cobalt</div><div class="start">Start turn, Cobalt</div></div>
+  <div class="dev phone"><div class="pass">Pass the device to Cobalt</div><div class="start">Start turn, Cobalt</div></div>
+</div>
+
+<h3>The other moments that would reveal a hand</h3>
+<p class="subtitle">The same blank screen, with the button naming the person and what they are there to do.</p>
+<div class="stage">
+  <div><div class="cap">A 7 is rolled and Cobalt must discard</div><div class="dev small"><div class="pass">Pass the device to Cobalt</div><div class="start">Discard, Cobalt</div></div></div>
+  <div><div class="cap">Crimson offers Cobalt a trade</div><div class="dev small"><div class="pass">Pass the device to Cobalt</div><div class="start">See the offer, Cobalt</div></div></div>
+  <div><div class="cap">Cobalt has answered, back to Crimson</div><div class="dev small"><div class="pass">Pass the device to Crimson</div><div class="start crimson">Continue, Crimson</div></div></div>
+</div>
