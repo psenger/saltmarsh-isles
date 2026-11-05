@@ -42,7 +42,7 @@ struct GameHeader: View {
         .padding(.horizontal, 7)
         .padding(.vertical, 3)
         .background(.quaternary.opacity(0.5), in: Capsule())
-        .overlay(Capsule().stroke(row.isCurrent ? Color.primary : Color.clear, lineWidth: 2))
+        .overlay(Capsule().strokeBorder(row.isCurrent ? Color.primary : Color.clear, lineWidth: 2))
         .fixedSize()
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(row.name), \(row.score)")
