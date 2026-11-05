@@ -17,9 +17,9 @@ struct TradeAndCards: View {
         .buttonStyle(.bordered)
     }
 
-    private func resourcePicker(_ title: String, id: String, enabled: Bool, _ selection: Binding<Resource>) -> some View {
+    private func resourcePicker(_ title: String, id: String, enabled: Bool, options: [Resource] = Resource.allCases, _ selection: Binding<Resource>) -> some View {
         Picker(selection: selection) {
-            ForEach(Resource.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+            ForEach(options, id: \.self) { Text($0.rawValue).tag($0) }
         } label: {
             Text(title).foregroundStyle(enabled ? .primary : .secondary)
         }
@@ -99,10 +99,10 @@ struct TradeAndCards: View {
         VStack(alignment: .leading, spacing: 6) {
             sectionTitle(screen.bankTitle)
             HStack {
-                resourcePicker("Give", id: "bank give", enabled: screen.bankRowEnabled, $vm.ui.bankChoice.give)
+                resourcePicker("Give", id: "bank give", enabled: screen.bankRowEnabled, options: screen.bankGiveOptions, Binding(get: { screen.bankChoice.give }, set: { vm.ui.bankChoice = TradeChoice(give: $0, get: screen.bankChoice.get) }))
                 arrow(enabled: screen.bankRowEnabled)
-                resourcePicker("Get", id: "bank get", enabled: screen.bankRowEnabled, $vm.ui.bankChoice.get)
-                Button(Strings.bankTrade) { vm.bankTrade(give: vm.ui.bankChoice.give, get: vm.ui.bankChoice.get) }
+                resourcePicker("Get", id: "bank get", enabled: screen.bankRowEnabled, Binding(get: { screen.bankChoice.get }, set: { vm.ui.bankChoice = TradeChoice(give: screen.bankChoice.give, get: $0) }))
+                Button(Strings.bankTrade) { vm.bankTrade(give: screen.bankChoice.give, get: screen.bankChoice.get) }
                     .disabled(screen.buttons[Strings.bankTrade] != true)
                     .accessibilityIdentifier(Strings.bankTrade)
             }
@@ -123,7 +123,7 @@ struct TradeAndCards: View {
                         if let fixed = row.giveFixed {
                             Text(fixed).font(.callout).foregroundStyle(row.rowEnabled ? .primary : .secondary)
                         } else {
-                            resourcePicker("Give", id: "harbour \(row.index) give", enabled: row.rowEnabled, Binding(get: { row.give }, set: { vm.ui.harbourChoice[row.index] = TradeChoice(give: $0, get: row.get) }))
+                            resourcePicker("Give", id: "harbour \(row.index) give", enabled: row.rowEnabled, options: row.giveOptions, Binding(get: { row.give }, set: { vm.ui.harbourChoice[row.index] = TradeChoice(give: $0, get: row.get) }))
                         }
                         arrow(enabled: row.rowEnabled)
                         resourcePicker("Get", id: "harbour \(row.index) get", enabled: row.rowEnabled, Binding(get: { row.get }, set: { vm.ui.harbourChoice[row.index] = TradeChoice(give: row.give, get: $0) }))

@@ -27,7 +27,8 @@ public struct UIState: Equatable, Sendable {
     public var offerWant = ResourceCounts()
     public var offerTarget: Int?
     public var overlay: Overlay?
-    public var bankChoice = TradeChoice(give: .timber, get: .ore)
+    /// What was picked in the bank row, nil until something is.
+    public var bankChoice: TradeChoice?
     public var harbourChoice: [Int: TradeChoice] = [:]
 
     public init() {}

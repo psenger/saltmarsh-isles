@@ -63,6 +63,8 @@ public struct HarbourRow: Equatable, Sendable {
     public var giveFixed: String?
     public var give: Resource
     public var get: Resource
+    /// What the Give dropdown lists: the resources this row can trade, or only `give` when it can trade none.
+    public var giveOptions: [Resource]
     /// "Trade 2 for 1"
     public var tradeLabel: String
     public var tradeEnabled: Bool
@@ -183,6 +185,10 @@ public struct ScreenState: Equatable, Sendable {
     public var discardBox: DiscardBox?
     public var harbours: HarboursPanel
     public var bankTitle: String
+    /// The give and get the bank row shows.
+    public var bankChoice: TradeChoice
+    /// What the bank's Give dropdown lists: the resources it can trade, or only the one shown when it can trade none.
+    public var bankGiveOptions: [Resource]
     /// False when no bank trade is legal, whatever is picked.
     public var bankRowEnabled: Bool
     public var devCards: [DevCardRow]
@@ -199,7 +205,7 @@ public struct ScreenState: Equatable, Sendable {
                     scoreboard: [], aiThinking: false, board: board, robberTile: board.desertTile,
                     glowingCorners: [], dashedEdges: [], selectableTiles: [], pulsingSettlements: [], hotNumbers: [6, 8], hitNumber: nil,
                     stealTargets: [], numberDiscBelowRobber: false, desertLabelBelowRobber: true, harbourRings: [:], championCorners: [],
-                    discardBox: nil, harbours: HarboursPanel(emptyText: Strings.noHarbours, rows: []), bankTitle: Strings.bankTitle, bankRowEnabled: false,
+                    discardBox: nil, harbours: HarboursPanel(emptyText: Strings.noHarbours, rows: []), bankTitle: Strings.bankTitle, bankChoice: TradeChoice.bankFallback, bankGiveOptions: [TradeChoice.bankFallback.give], bankRowEnabled: false,
                     devCards: [], buyLabel: Strings.buyCard(25), tradeSection: TradeSection(offerGive: ResourceCounts(), offerWant: ResourceCounts(), target: nil, targets: [], offerEnabled: false, offerProblem: nil, responses: []),
                     victory: nil, victoryAnimation: .full)
     }

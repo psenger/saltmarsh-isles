@@ -307,7 +307,7 @@ Everything from the spec's section 5 panel list, plus:
 
 **Bank row**: five resource counts, placed above the trade sections.
 
-**Bank and harbour trade rows** are disabled as a whole, dropdowns and button together, when no trade on the row is legal: too few cards for the ratio, nothing the bank can give, or a moment when trading is not allowed (owner, 2026-11-05).
+**Bank and harbour trade rows** are disabled as a whole, dropdowns and button together, when no trade on the row is legal: too few cards for the ratio, nothing the bank can give, or a moment when trading is not allowed (owner, 2026-11-05). A row that can trade lists only the resources it can trade under Give and starts on a legal trade, so its button works without changing anything (owner, 2026-11-05).
 
 **Trade with players** section, below "Trade with bank": offer builder, target picker, Offer button; after an offer, the responses list and Trade/Withdraw buttons. The human responder prompt takes over the panel like the discard box does.
 

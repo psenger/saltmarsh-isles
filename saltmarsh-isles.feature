@@ -407,6 +407,15 @@ Feature: Saltmarsh Isles pass-and-play game
       Given Crimson holds 4 timber
       Then the bank trade row is enabled
 
+    Scenario: The bank Give list holds only what can be traded
+      Given Crimson holds 3 clay, 5 grain and 4 ore
+      Then the bank Give list reads "grain, ore"
+
+    Scenario: The bank row starts ready to trade
+      Given Crimson holds 3 clay and 5 grain
+      Then the bank row shows grain to give and timber to get
+      And "Trade 4 for 1" is enabled
+
     Scenario: The bank rate never changes
       Given Crimson owns a 2:1 wool harbour
       Then the bank box still trades 4 for 1
@@ -457,6 +466,11 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: The row of a 3:1 harbour is enabled with 3 of a resource
       Given Crimson holds a 3:1 harbour and 3 clay
       Then that harbour's trade row is enabled
+
+    Scenario: A 3:1 harbour's Give list holds only what can be traded
+      Given Crimson holds a 3:1 harbour and 3 clay
+      Then that harbour's Give list reads "clay"
+      And that row's "Trade 3 for 1" is enabled
 
     Scenario: Two players sharing a harbour
       Given Crimson holds one corner and Cobalt holds the other corner of a 3:1 harbour

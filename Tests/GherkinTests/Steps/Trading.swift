@@ -22,10 +22,23 @@ func registerTrading(_ r: StepRegistry) {
     r.then(#"that harbour's trade row is (enabled|disabled)"#) { w, c, _ in
         try expectEqual(w.screen.harbours.rows.first?.rowEnabled ?? false, c[0] == "enabled", "harbour trade row")
     }
+    r.then(#"the bank Give list reads "([^"]*)""#) { w, c, _ in
+        try expectEqual(w.screen.bankGiveOptions.map(\.rawValue).joined(separator: ", "), c[0], "bank Give list")
+    }
+    r.then(#"the bank row shows (\w+) to give and (\w+) to get"#) { w, c, _ in
+        try expectEqual(w.screen.bankChoice, TradeChoice(give: res(c[0]), get: res(c[1])), "bank row")
+    }
+    r.then(#"that harbour's Give list reads "([^"]*)""#) { w, c, _ in
+        let options = w.screen.harbours.rows.first?.giveOptions ?? []
+        try expectEqual(options.map(\.rawValue).joined(separator: ", "), c[0], "harbour Give list")
+    }
+    r.then(#"that row's "Trade 3 for 1" is enabled"#) { w, _, _ in
+        try expectEqual(w.screen.harbours.rows.first?.tradeEnabled, true, "Trade 3 for 1")
+    }
     r.when(#"taps "Trade 4 for 1""#) { w, _, _ in
         try expectEqual(w.screen.buttons["Trade 4 for 1"] ?? false, true, "Trade 4 for 1")
         w.rememberedHands = w.state.players.map(\.hand)
-        w.vm.bankTrade(give: w.vm.ui.bankChoice.give, get: w.vm.ui.bankChoice.get)
+        w.vm.bankTrade(give: w.screen.bankChoice.give, get: w.screen.bankChoice.get)
     }
     r.given(#"(\w+) holds 3 timber and chooses to give timber"#) { w, c, _ in
         w.set(hand: [.timber: 3], for: w.seat(c[0]))
@@ -44,7 +57,7 @@ func registerTrading(_ r: StepRegistry) {
     r.then(#"the bank box still trades 4 for 1"#) { w, _, _ in
         try expectEqual(w.screen.bankTitle, "Trade with bank, 4 for 1", "bank title")
         try expectEqual(w.screen.buttons["Trade 4 for 1"] ?? false, true, "Trade 4 for 1 with 4 cards")
-        try expectTrue(Engine.bestRate(w.state, player: 0, giving: w.vm.ui.bankChoice.give) == 2, "harbour rate not 2")
+        try expectTrue(Engine.bestRate(w.state, player: 0, giving: w.screen.bankChoice.give) == 2, "harbour rate not 2")
     }
 
     // Harbours

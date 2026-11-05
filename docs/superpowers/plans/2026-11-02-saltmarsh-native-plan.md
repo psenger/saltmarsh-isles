@@ -102,7 +102,8 @@ Owner's UI feedback, 2026-11-05 (the owner's instruction is recorded in design s
 - **R17. The hand is pinned above the scrolling panel.** The owner asked for it to be visible on the player's turn. Cost if wrong: less scrolling room on iPhone.
 - **R18. The whole log is kept, newest first, in a 140 point box inside the scrolling panel.** Pinning it too would leave too little room on iPhone. Cost if wrong: one view.
 
-- **R19. A row that can trade keeps every resource in its Give dropdown.** With 4 timber and clay picked, the row is active and only the Trade button is disabled. The owner confirmed the row rule; listing only affordable resources was asked and not separately answered. Cost if wrong: filter one dropdown.
+- **R19. Answered by the owner, 2026-11-05: Give lists only what the row can trade, and an untouched row starts on a legal trade.** A pick stays while its Give can still be traded; otherwise the row moves to a legal pair and keeps the picked Get if it can.
+- **R20. The Get dropdown still lists every resource, so picking the same resource on both sides, or one the bank has run out of, disables Trade.** Not asked for, and the scenario "Crimson chooses the same resource to give and get" pins it. Cost if wrong: filter a second dropdown and retire that scenario row.
 
 ## Carried forward (proposed plan, awaiting owner confirmation)
 

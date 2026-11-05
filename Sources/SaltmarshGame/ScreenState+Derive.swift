@@ -76,6 +76,11 @@ extension ScreenState {
             holdTitle = Strings.hold(name(handOwner))
         }
 
+        let bankPairs = legal.compactMap { move -> TradeChoice? in
+            if case .bankTrade(let give, let get) = move { TradeChoice(give: give, get: get) } else { nil }
+        }
+        let bankChoice = TradeChoice.shown(picked: ui.bankChoice, legal: bankPairs, fallback: .bankFallback)
+
         // Buttons.
         let builtOffer = TradeOffer(proposer: current, give: ui.offerGive, want: ui.offerWant, to: ui.offerTarget)
         let offerProblem = Engine.validate(builtOffer, in: s)
@@ -87,7 +92,7 @@ extension ScreenState {
             Strings.city: inMain && !cityCorners.isEmpty,
             Strings.endTurn: legal.contains(.endTurn),
             Strings.buyCard: legal.contains(.buyDevCard),
-            Strings.bankTrade: legal.contains(.bankTrade(give: ui.bankChoice.give, get: ui.bankChoice.get)),
+            Strings.bankTrade: legal.contains(.bankTrade(give: bankChoice.give, get: bankChoice.get)),
             Strings.offerButton: inMain && !aiThinking && offerProblem == nil,
             Strings.withdraw: acting == current && legal.contains(.withdrawTrade),
             Strings.accept: responderPending && legal.contains(.respondToTrade(seat: acting, .accepted)),
@@ -172,12 +177,17 @@ extension ScreenState {
         let hand = s.players[current].hand
         let harbourRows = captured.map { ch -> HarbourRow in
             let h = ch.harbour
-            let choice = ui.harbourChoice[ch.index] ?? HarbourRow.defaultChoice(for: h, hand: hand, bank: s.bank)
+            let pairs = legal.compactMap { move -> TradeChoice? in
+                if case .harbourTrade(ch.index, let give, let get) = move { TradeChoice(give: give, get: get) } else { nil }
+            }
+            let choice = TradeChoice.shown(picked: ui.harbourChoice[ch.index], legal: pairs,
+                                           fallback: HarbourRow.defaultChoice(for: h, hand: hand, bank: s.bank))
             let fixed: String? = { if case .specific(let r) = h.kind { return "\(h.ratio) \(r.rawValue)" } else { return nil } }()
             return HarbourRow(index: ch.index, title: Strings.harbourTitle(h), heldBy: ch.heldByDescription, giveFixed: fixed,
-                              give: choice.give, get: choice.get, tradeLabel: Strings.harbourTrade(h.ratio),
+                              give: choice.give, get: choice.get, giveOptions: TradeChoice.giveOptions(legal: pairs, shown: choice),
+                              tradeLabel: Strings.harbourTrade(h.ratio),
                               tradeEnabled: legal.contains(.harbourTrade(harbour: ch.index, give: choice.give, get: choice.get)),
-                              rowEnabled: has { if case .harbourTrade(ch.index, _, _) = $0 { true } else { false } })
+                              rowEnabled: !pairs.isEmpty)
         }
         let devRows = aiThinking ? [] : s.players[current].devCards.enumerated().map { i, card -> DevCardRow in
             let note: String?
@@ -268,9 +278,29 @@ extension ScreenState {
             stealTargets: stealTargets, numberDiscBelowRobber: robberTile.number != nil, desertLabelBelowRobber: robberTile.number == nil,
             harbourRings: rings, championCorners: champion,
             discardBox: discardBox, harbours: HarboursPanel(emptyText: captured.isEmpty ? Strings.noHarbours : nil, rows: harbourRows),
-            bankTitle: Strings.bankTitle, bankRowEnabled: has { if case .bankTrade = $0 { true } else { false } },
+            bankTitle: Strings.bankTitle, bankChoice: bankChoice, bankGiveOptions: TradeChoice.giveOptions(legal: bankPairs, shown: bankChoice),
+            bankRowEnabled: !bankPairs.isEmpty,
             devCards: devRows, buyLabel: Strings.buyCard(s.devDeck.count), tradeSection: tradeSection,
             victory: victory, victoryAnimation: reduceMotion ? .reduced : .full)
+    }
+}
+
+extension TradeChoice {
+    /// What the bank row shows when it has no pick and no legal trade.
+    static let bankFallback = TradeChoice(give: .timber, get: .ore)
+
+    /// The pair a row shows: the pick while its give side can still be traded, otherwise the first
+    /// legal pair, keeping the picked get side if it can. With nothing legal, the pick or the fallback.
+    static func shown(picked: TradeChoice?, legal: [TradeChoice], fallback: TradeChoice) -> TradeChoice {
+        if let picked, legal.contains(where: { $0.give == picked.give }) { return picked }
+        return legal.first { $0.get == picked?.get } ?? legal.first ?? picked ?? fallback
+    }
+
+    /// The resources a row's Give dropdown lists. A row with no legal trade lists only what it shows,
+    /// so the disabled dropdown still has a valid selection.
+    static func giveOptions(legal: [TradeChoice], shown: TradeChoice) -> [Resource] {
+        let gives = Resource.allCases.filter { give in legal.contains { $0.give == give } }
+        return gives.isEmpty ? [shown.give] : gives
     }
 }
 
