@@ -16,10 +16,10 @@ struct HandoverView: View {
                     Text(handover.button)
                         .bold()
                         .foregroundStyle(handover.seat == .ivory ? Color(hex: 0x1d2a30) : .white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .tint(Color(seat: handover.seat))
+                .buttonStyle(GameButtonStyle(fill: Color(seat: handover.seat)))
                 .accessibilityIdentifier("handover")
             }
         }

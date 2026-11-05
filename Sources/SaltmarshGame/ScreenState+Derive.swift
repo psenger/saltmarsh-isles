@@ -288,6 +288,7 @@ extension ScreenState {
             handCounts: handCounts, holdTitle: holdTitle, bank: s.bank, log: s.log,
             orderStrip: orderStrip, orderStripNote: orderStripNote, buttons: buttons,
             buildLeft: [.road: left.roads, .settlement: left.settlements, .city: left.cities],
+            buildCost: ScreenState.buildCosts, cardCost: Cost.devCard,
             activeBuildMode: ui.buildMode, deckCount: s.devDeck.count, acceptProblem: acceptProblem,
             scoreboard: scoreboard, aiThinking: aiThinking, board: s.board, robberTile: s.robberTile,
             glowingCorners: glowing, dashedEdges: dashed, selectableTiles: selectable, pulsingSettlements: pulsing,

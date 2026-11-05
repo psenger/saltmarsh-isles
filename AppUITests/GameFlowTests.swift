@@ -179,6 +179,9 @@ final class GameFlowTests: XCTestCase {
                     assertSquareBox(app, "want ore")
                     keepScreenshot(app, named: "offer builder")
                     app.buttons["Back"].tap()
+                    app.buttons["tab Cards"].tap()
+                    keepScreenshot(app, named: "cards tab")
+                    app.buttons["tab Trade"].tap()
                 }
                 XCTAssertTrue(app.descendants(matching: .any)["hold timber"].firstMatch.isHittable, "the hand is off screen")
                 app.buttons["End turn"].tap()

@@ -605,6 +605,12 @@ Feature: Saltmarsh Isles pass-and-play game
     Background:
       Given setup is complete and Crimson has rolled
 
+    Scenario: The build and card buttons show what they cost
+      Then the "Road" button costs 1 timber and 1 clay
+      And the "Settlement" button costs 1 timber, 1 clay, 1 wool and 1 grain
+      And the "City" button costs 2 grain and 3 ore
+      And the "Buy a card" button costs 1 wool, 1 grain and 1 ore
+
     Scenario: Build buttons show how many pieces are left
       Given Crimson has the 2 settlements and 2 roads from setup on the board
       Then the "Settlement" button shows "3 left"

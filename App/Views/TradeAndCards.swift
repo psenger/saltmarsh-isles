@@ -25,7 +25,7 @@ struct TradeTab: View {
                 .accessibilityIdentifier(Strings.offerToPlayers)
             }
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(GameButtonStyle())
     }
 
     private var bankSupply: some View {
@@ -123,6 +123,7 @@ struct TradeTab: View {
                             Button("−") { adjust(resource, -1) }.accessibilityLabel("\(title) one less \(resource.rawValue)")
                             Button("+") { adjust(resource, 1) }.accessibilityLabel("\(title) one more \(resource.rawValue)")
                         }
+                        .buttonStyle(.bordered)
                         .controlSize(.small)
                     }
                     .frame(maxWidth: 64)
@@ -136,6 +137,7 @@ struct TradeTab: View {
             // Above the boxes, so sending the offer stays in view when they need scrolling.
             HStack {
                 Button(Strings.back) { buildingOffer = false }
+                    .buttonStyle(.bordered)
                     .accessibilityIdentifier(Strings.back)
                 Spacer(minLength: 0)
                 Picker("To", selection: Binding(get: { section.target }, set: { vm.offerTarget($0) })) {
@@ -164,9 +166,18 @@ struct CardsTab: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Button(screen.buyLabel) { vm.buyCard() }
-                .disabled(screen.buttons[Strings.buyCard] != true)
-                .accessibilityIdentifier(Strings.buyCard)
+            Button { vm.buyCard() } label: {
+                VStack(spacing: 3) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "rectangle.stack.fill").font(.caption).accessibilityHidden(true)
+                        Text(screen.buyLabel).fontWeight(.semibold)
+                    }
+                    CostChips(cost: screen.cardCost)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .disabled(screen.buttons[Strings.buyCard] != true)
+            .accessibilityIdentifier(Strings.buyCard)
             ForEach(screen.devCards, id: \.index) { row in
                 HStack {
                     Text(row.name)
@@ -176,7 +187,7 @@ struct CardsTab: View {
                 }
             }
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(GameButtonStyle())
     }
 
     @ViewBuilder private func play(_ row: DevCardRow) -> some View {
@@ -235,6 +246,6 @@ struct OfferAnswers: View {
             Button(Strings.withdraw) { vm.withdrawOffer() }
                 .disabled(screen.buttons[Strings.withdraw] != true)
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(GameButtonStyle())
     }
 }

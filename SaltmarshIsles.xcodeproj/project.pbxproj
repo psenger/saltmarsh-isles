@@ -19,6 +19,7 @@
 		6EB9B43E4C9370C0E4B8409E /* NewGameSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFF9A39044BC641253934ECE /* NewGameSheet.swift */; };
 		A0BBF1378BC6867BA490F2E7 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3BA7A66E1A9C181A578BE9 /* BoardView.swift */; };
 		A6AFBFE150AE119D6B36C4B1 /* TradeAndCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BD1A45A05AF221C1EF48B7 /* TradeAndCards.swift */; };
+		BEC8AD7E9D4FC26ED5153ACE /* GameButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B5684E51B694A9C11FBA2A /* GameButtonStyle.swift */; };
 		E0F9B049B06566265E67D1F7 /* GameScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2EF33FE7D2A84C73A586145 /* GameScreen.swift */; };
 		EC7EA1E583E167C0B15F24E3 /* SaltmarshGame in Frameworks */ = {isa = PBXBuildFile; productRef = 7CB29321CD030244D8728963 /* SaltmarshGame */; };
 		F1313749CC9030724E9D77C6 /* DieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56A80A23973F3A466F79827 /* DieView.swift */; };
@@ -38,6 +39,7 @@
 		161290410D3F23E29D6B7BEA /* GamePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePanel.swift; sourceTree = "<group>"; };
 		287CAAF4C38B11129BA66303 /* saltmarsh-isles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "saltmarsh-isles"; path = .; sourceTree = SOURCE_ROOT; };
 		4A3BA7A66E1A9C181A578BE9 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
+		57B5684E51B694A9C11FBA2A /* GameButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButtonStyle.swift; sourceTree = "<group>"; };
 		7A6BBDDDDD27BFC16282A60A /* GameHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHeader.swift; sourceTree = "<group>"; };
 		8CDB0D55A20F738780116C1F /* VictoryOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VictoryOverlay.swift; sourceTree = "<group>"; };
 		9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 			children = (
 				4A3BA7A66E1A9C181A578BE9 /* BoardView.swift */,
 				D56A80A23973F3A466F79827 /* DieView.swift */,
+				57B5684E51B694A9C11FBA2A /* GameButtonStyle.swift */,
 				7A6BBDDDDD27BFC16282A60A /* GameHeader.swift */,
 				161290410D3F23E29D6B7BEA /* GamePanel.swift */,
 				B2EF33FE7D2A84C73A586145 /* GameScreen.swift */,
@@ -225,6 +228,7 @@
 			files = (
 				A0BBF1378BC6867BA490F2E7 /* BoardView.swift in Sources */,
 				F1313749CC9030724E9D77C6 /* DieView.swift in Sources */,
+				BEC8AD7E9D4FC26ED5153ACE /* GameButtonStyle.swift in Sources */,
 				18017778EF5F51C560E96272 /* GameHeader.swift in Sources */,
 				1423C35FA64CD1F619C46D31 /* GamePanel.swift in Sources */,
 				E0F9B049B06566265E67D1F7 /* GameScreen.swift in Sources */,

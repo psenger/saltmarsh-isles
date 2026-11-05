@@ -176,6 +176,9 @@ public struct ScreenState: Equatable, Sendable {
     /// Button label → enabled.
     public var buttons: [String: Bool]
     public var buildLeft: [BuildMode: Int]
+    /// What each build button costs, shown whether or not it can be afforded.
+    public var buildCost: [BuildMode: ResourceCounts]
+    public var cardCost: ResourceCounts
     public var activeBuildMode: BuildMode?
     public var deckCount: Int
     /// Why the acting trade responder cannot accept, when they cannot.
@@ -218,11 +221,13 @@ public struct ScreenState: Equatable, Sendable {
     /// When set, the app draws only this. The other fields keep their values so the rules can still read them.
     public var handover: Handover?
 
+    static let buildCosts: [BuildMode: ResourceCounts] = [.road: Cost.road, .settlement: Cost.settlement, .city: Cost.city]
+
     /// Before any game exists.
     static func empty(board: Board) -> ScreenState {
         ScreenState(header: "", headerSeat: .crimson, status: "", dice: [Strings.dash, Strings.dash], handCounts: ResourceCounts(),
                     holdTitle: "", bank: .uniform(19), log: [], orderStrip: nil, orderStripNote: nil,
-                    buttons: [Strings.newGame: true], buildLeft: [:], activeBuildMode: nil, deckCount: 25, acceptProblem: nil,
+                    buttons: [Strings.newGame: true], buildLeft: [:], buildCost: ScreenState.buildCosts, cardCost: Cost.devCard, activeBuildMode: nil, deckCount: 25, acceptProblem: nil,
                     scoreboard: [], aiThinking: false, board: board, robberTile: board.desertTile,
                     glowingCorners: [], dashedEdges: [], selectableTiles: [], pulsingSettlements: [], hotNumbers: [6, 8], hitNumber: nil,
                     stealTargets: [], numberDiscBelowRobber: false, desertLabelBelowRobber: true, harbourRings: [:], championCorners: [],

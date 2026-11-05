@@ -60,41 +60,48 @@ struct GamePanel: View {
     private var turnButtons: some View {
         let roll = screen.buttons[Strings.rollForFirstButton] == true ? Strings.rollForFirstButton : Strings.rollDice
         return HStack {
-            turnButton(roll) {
+            turnButton(roll, icon: "dice.fill", fill: GameButtonStyle.ink) {
                 if roll == Strings.rollDice { vm.rollDice() } else { vm.rollForFirst() }
             }
-            turnButton(Strings.endTurn) { vm.endTurn() }
+            turnButton(Strings.endTurn, icon: "arrow.right.circle.fill", fill: GameButtonStyle.ink) { vm.endTurn() }
         }
     }
 
-    private func turnButton(_ label: String, perform: @escaping () -> Void) -> some View {
+    private func turnButton(_ label: String, icon: String, fill: Color, perform: @escaping () -> Void) -> some View {
         Button(action: perform) {
-            Text(label).frame(maxWidth: .infinity)
+            HStack(spacing: 6) {
+                Image(systemName: icon).accessibilityHidden(true)
+                Text(label).fontWeight(.semibold).lineLimit(1)
+            }
+            .frame(maxWidth: .infinity)
         }
-        .buttonStyle(.borderedProminent)
-        .tint(Color(hex: 0x1d2a30))
+        .buttonStyle(GameButtonStyle(fill: fill))
         .disabled(screen.buttons[label] != true)
         .accessibilityIdentifier(label)
     }
 
     private var buildButtons: some View {
-        HStack {
-            buildButton(Strings.road, .road)
-            buildButton(Strings.settlement, .settlement)
-            buildButton(Strings.city, .city)
+        HStack(spacing: 6) {
+            buildButton(Strings.road, icon: "road.lanes", .road)
+            buildButton(Strings.settlement, icon: "house.fill", .settlement)
+            buildButton(Strings.city, icon: "building.2.fill", .city)
         }
     }
 
-    private func buildButton(_ label: String, _ mode: BuildMode) -> some View {
+    private func buildButton(_ label: String, icon: String, _ mode: BuildMode) -> some View {
         Button { vm.toggleBuildMode(mode) } label: {
-            VStack(spacing: 0) {
-                Text(label).lineLimit(1).minimumScaleFactor(0.8)
+            VStack(spacing: 3) {
+                HStack(spacing: 4) {
+                    // A fixed box, because icons differ in height and would make the three buttons differ too.
+                    Image(systemName: icon).font(.caption).frame(width: 16, height: 14).accessibilityHidden(true)
+                    Text(label).fontWeight(.semibold).lineLimit(1).minimumScaleFactor(0.8)
+                }
+                CostChips(cost: screen.buildCost[mode] ?? ResourceCounts())
                 Text(Strings.piecesLeft(screen.buildLeft[mode] ?? 0)).font(.caption2)
             }
             .frame(maxWidth: .infinity)
         }
-        .buttonStyle(.bordered)
-        .tint(screen.activeBuildMode == mode ? Color(hex: 0xd68910) : nil)
+        .buttonStyle(GameButtonStyle(fill: screen.activeBuildMode == mode ? GameButtonStyle.amber : GameButtonStyle.sea))
         .disabled(screen.buttons[label] != true)
         .accessibilityIdentifier(label)
     }
@@ -176,7 +183,7 @@ struct GamePanel: View {
             VStack(alignment: .leading, spacing: 6) {
                 ForEach(screen.stealTargets, id: \.name) { target in
                     Button("\(Strings.stealFrom(target.name)), \(Strings.cardCount(target.cards))") { vm.steal(from: target.seat.rawValue) }
-                        .buttonStyle(.bordered)
+                        .buttonStyle(GameButtonStyle())
                         .accessibilityIdentifier(Strings.stealFrom(target.name))
                 }
             }
@@ -187,7 +194,7 @@ struct GamePanel: View {
 
     private func requestButton(_ label: String, perform: @escaping () -> Void) -> some View {
         Button(label, action: perform)
-            .buttonStyle(.bordered)
+            .buttonStyle(GameButtonStyle())
             .disabled(screen.buttons[label] != true)
             .accessibilityIdentifier(label)
     }
@@ -201,7 +208,7 @@ struct GamePanel: View {
             }
             // Above the rows, so it stays in view when the rows need scrolling.
             Button(box.confirmLabel) { vm.confirmDiscard() }
-                .buttonStyle(.bordered)
+                .buttonStyle(GameButtonStyle())
                 .disabled(!box.confirmEnabled)
                 .accessibilityIdentifier(box.confirmLabel)
             ForEach(box.rows, id: \.resource) { row in

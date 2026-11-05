@@ -22,6 +22,12 @@ func registerNewRules(_ r: StepRegistry) {
         w.vm.rollDice()
         try expectEqual([w.state.settlements(of: 0), w.state.roads(of: 0)], [2, 2], "setup pieces")
     }
+    r.then(#"the "(Road|Settlement|City)" button costs (\#(resList))"#) { w, c, _ in
+        try expectEqual(w.screen.buildCost[mode(c[0])], World.resources(c[1]), "\(c[0]) cost")
+    }
+    r.then(#"the "Buy a card" button costs (\#(resList))"#) { w, c, _ in
+        try expectEqual(w.screen.cardCost, World.resources(c[0]), "card cost")
+    }
     r.then(#"the "(Road|Settlement|City)" button shows "(\d+) left""#) { w, c, _ in
         try expectEqual(w.screen.buildLeft[mode(c[0])], Int(c[1])!, "\(c[0]) pieces left")
     }
