@@ -224,8 +224,10 @@ struct CardsTab: View {
     @ViewBuilder private func play(_ row: DevCardRow) -> some View {
         if row.name == DevCardType.bumperHarvest.displayName {
             Menu("Play") {
-                ForEach(bumperPairs, id: \.0) { label, pair in
-                    Button(label) { vm.playCard(row.index, bumper: pair) }
+                Section("Take 2 free cards from the bank") {
+                    ForEach(bumperPairs, id: \.0) { label, pair in
+                        Button(label) { vm.playCard(row.index, bumper: pair) }
+                    }
                 }
             }
             .fixedSize()
