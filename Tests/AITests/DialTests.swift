@@ -9,7 +9,7 @@ import SaltmarshTestSupport
         var wins = 0
         for g in 0..<games {
             let strongSeat = g % 2
-            let r = try await Match.play(strongSeat == 0 ? [strong, weak] : [weak, strong], seed: UInt64(1000 + g))
+            let r = await Arena.play(strongSeat == 0 ? [strong, weak] : [weak, strong], seed: UInt64(1000 + g))
             if r.winner == strongSeat { wins += 1 }
         }
         return wins
