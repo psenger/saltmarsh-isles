@@ -1,0 +1,13 @@
+// Signing for the SaltmarshIsles app target.
+//
+// The Mac and simulator builds sign ad hoc and need no team. A real iPhone or
+// iPad needs your Apple team ID and a bundle identifier your team can use.
+// Put them in Config/Local.xcconfig, which git ignores:
+//
+//     DEVELOPMENT_TEAM = ABCDE12345
+//     PRODUCT_BUNDLE_IDENTIFIER = com.example.SaltmarshIsles
+
+DEVELOPMENT_TEAM =
+PRODUCT_BUNDLE_IDENTIFIER = dev.psenger.SaltmarshIsles
+
+#include? "Local.xcconfig"

@@ -24,3 +24,13 @@ TestResults/
 
 # Superpowers working files
 .superpowers/
+
+# Agent working files: plans and hand-offs kept on the developer's machine
+docs/superpowers/
+.claude/
+
+# Your own signing team (see the README)
+Local.xcconfig
+
+# Disk images from make dmg
+*.dmg

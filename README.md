@@ -11,7 +11,7 @@
 ![Status: in development](https://img.shields.io/badge/status-in%20development-b5643c)
 [![License: MIT](https://img.shields.io/badge/license-MIT-3f6b3a)](LICENSE)
 
-[Quick start](#quick-start) • [How to play](#how-to-play) • [Status](#status) • [Testing](#testing) • [Architecture](#architecture)
+[Install on a Mac](#install-on-a-mac) • [iPhone and iPad](#iphone-and-ipad) • [Build from source](#build-from-source) • [How to play](#how-to-play) • [Status](#status) • [Architecture](#architecture)
 
 <img src="docs/images/ipad-game.png" height="520" alt="A game in progress on iPad, with the board above the player's hand and trade panel">
 &nbsp;&nbsp;
@@ -33,12 +33,56 @@ game deals a new island of 19 tiles and nine harbours, and any seat can be a per
 - **Rules at hand.** Searchable help is in the **Help** menu on Mac and the **Game** button on
   iPhone and iPad.
 
-## Quick start
+## Install on a Mac
+
+Download `SaltmarshIsles-<version>.dmg` from
+[Releases](https://github.com/psenger/saltmarsh-isles/releases), open it, and drag
+**SaltmarshIsles** to **Applications**. It runs on macOS 14 or later, on Apple silicon and Intel.
+Until the first release is published, [build from source](#build-from-source).
+
+The app is not signed with an Apple Developer ID or notarized, so macOS blocks it the first time:
+
+1. Open **SaltmarshIsles** from Applications. macOS says it can't verify the app. Click **Done**.
+2. Open **System Settings**, then **Privacy & Security**, and scroll down to **Security**.
+3. Click **Open Anyway** beside the message about SaltmarshIsles, and confirm with your password.
+
+You only do this once. On macOS 14 you can instead Control-click the app and choose **Open**.
+
+## iPhone and iPad
+
+There is no download for iPhone or iPad, because Apple only installs apps from the App Store,
+TestFlight or Xcode. To play on your own device, build it from source with Xcode:
+
+1. In Xcode, open **Settings**, then **Accounts**, and sign in with your Apple ID. A free account
+   works, but an app it installs stops opening after 7 days until you build it again.
+2. Find your team ID. It is the `OU` value this command prints:
+
+   ```bash
+   security find-certificate -c "Apple Development" -p | openssl x509 -noout -subject
+   ```
+
+3. Create `Config/Local.xcconfig` with your team ID and a bundle identifier of your own. Git
+   ignores this file.
+
+   ```
+   DEVELOPMENT_TEAM = ABCDE12345
+   PRODUCT_BUNDLE_IDENTIFIER = com.yourname.SaltmarshIsles
+   ```
+
+4. Turn on **Developer Mode** on the device, under **Settings**, then **Privacy & Security**.
+5. Connect the device, open `SaltmarshIsles.xcodeproj`, choose the device as the destination, and
+   press **Cmd-R**.
+
+The Mac and simulator builds sign ad hoc, so they need none of this.
+
+## Build from source
 
 You need a Mac with Xcode 26 or later, because the app icon uses the `.icon` format. The project is
-tested with Xcode 27.2.
+tested with Xcode 27.2 and needs no other dependencies.
 
 ```bash
+git clone https://github.com/psenger/saltmarsh-isles.git
+cd saltmarsh-isles
 open SaltmarshIsles.xcodeproj
 ```
 
@@ -88,14 +132,21 @@ In development.
 | AI opponents | **Not built yet.** Computer seats play random legal moves at every effort level |
 | `ai-bench` benchmark tool | Placeholder only |
 
-The [master plan](docs/superpowers/plans/2026-11-02-saltmarsh-native-plan.md) holds the roadmap.
+Next come heuristic opponents for the Deckhand, Sailor and Mate levels, then search-based ones for
+Captain and Admiral.
 
 ## Building from the command line
 
 ```bash
 make mac    # build for Mac
 make ios    # build for the iPhone 15 Pro simulator on iOS 17.5
+make dmg    # build the Mac disk image into build/SaltmarshIsles-<version>.dmg
 ```
+
+`make ios` and the UI tests expect the iOS 17.5 simulator runtime with an iPhone 15 Pro. Install it
+from Xcode's **Settings**, then **Components**, or change the destination to a simulator you have.
+`make dmg` makes a Release build for Apple silicon and Intel, signed ad hoc. The version comes from
+`MARKETING_VERSION` in `project.yml`.
 
 The Xcode project is generated from `project.yml`. After adding or removing files, or changing
 `project.yml`, regenerate it with [XcodeGen](https://github.com/yonaskolb/XcodeGen):
@@ -155,10 +206,8 @@ flowchart TD
 | `Tests/` | Engine, AI, game and Gherkin tests. |
 | `saltmarsh-isles-spec.md` | The build spec: rules, data model, UI, AI plan and test checklist. |
 | `saltmarsh-isles.feature` | Gherkin scenarios for every player interaction. |
-| `docs/superpowers/` | Design documents and implementation plans. |
-
-The [native app design](docs/superpowers/specs/2026-11-02-saltmarsh-native-design.md) explains the
-reasoning behind this structure.
+| `Config/` | Signing settings. Your own team goes in the untracked `Config/Local.xcconfig`. |
+| `docs/images/` | Screenshots used in this README. |
 
 ## Web prototype
 
@@ -196,6 +245,6 @@ Run the full game with `python3 playgame.py <output-folder>`.
 
 **A pass-and-play island board game, written natively for Apple devices.**
 
-[Build spec](saltmarsh-isles-spec.md) • [Scenarios](saltmarsh-isles.feature) • [Design](docs/superpowers/specs/2026-11-02-saltmarsh-native-design.md)
+[Build spec](saltmarsh-isles-spec.md) • [Scenarios](saltmarsh-isles.feature) • [Report a bug](https://github.com/psenger/saltmarsh-isles/issues)
 
 </div>

@@ -26,9 +26,14 @@ targets:
         product: SaltmarshAI
       - package: SaltmarshCore
         product: SaltmarshGame
+    # Your signing team goes in the untracked Config/Local.xcconfig (see the README).
+    configFiles:
+      Debug: Config/Signing.xcconfig
+      Release: Config/Signing.xcconfig
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: dev.psenger.SaltmarshIsles
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "6.0"
         SWIFT_STRICT_CONCURRENCY: complete
         GENERATE_INFOPLIST_FILE: YES
@@ -42,7 +47,6 @@ targets:
         CODE_SIGN_IDENTITY: "-"
         # A real iPhone will not run an app signed with "-". Kept here because `make project` rewrites the project.
         "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "Apple Development"
-        DEVELOPMENT_TEAM: F728VX3G8A
         ENABLE_PREVIEWS: YES
   AppUITests:
     type: bundle.ui-testing

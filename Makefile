@@ -1,7 +1,8 @@
-.PHONY: test mac ios project help run
+.PHONY: test mac ios project help run dmg
 
 PROJECT = SaltmarshIsles.xcodeproj
 SCHEME = SaltmarshIsles
+VERSION = $(shell sed -n 's/.*MARKETING_VERSION: "\(.*\)"/\1/p' project.yml)
 
 test:
 	swift test
@@ -17,6 +18,16 @@ run:
 	mkdir -p "$(HOME)/Applications/SaltmarshIslesDev"
 	ditto build/Build/Products/Debug/SaltmarshIsles.app "$(HOME)/Applications/SaltmarshIslesDev/SaltmarshIsles.app"
 	open -n "$(HOME)/Applications/SaltmarshIslesDev/SaltmarshIsles.app"
+
+# A Release build for Apple silicon and Intel Macs, signed ad hoc, in a disk image
+# with a link to Applications.
+dmg:
+	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration Release -destination 'generic/platform=macOS' -derivedDataPath build/release build
+	rm -rf build/dmg
+	mkdir -p build/dmg
+	ditto build/release/Build/Products/Release/SaltmarshIsles.app build/dmg/SaltmarshIsles.app
+	ln -s /Applications build/dmg/Applications
+	hdiutil create -volname "Saltmarsh Isles" -srcfolder build/dmg -ov -format UDZO build/SaltmarshIsles-$(VERSION).dmg
 
 ios:
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' build

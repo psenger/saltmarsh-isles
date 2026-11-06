@@ -44,6 +44,7 @@
 		4A3BA7A66E1A9C181A578BE9 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 		57B5684E51B694A9C11FBA2A /* GameButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButtonStyle.swift; sourceTree = "<group>"; };
 		691C638C1971E77F9C71174C /* SavedGamesSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedGamesSheets.swift; sourceTree = "<group>"; };
+		7575681911BCE30D49975BD1 /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 		7A6BBDDDDD27BFC16282A60A /* GameHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHeader.swift; sourceTree = "<group>"; };
 		8CDB0D55A20F738780116C1F /* VictoryOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VictoryOverlay.swift; sourceTree = "<group>"; };
 		9EA1788793F12C46F8F1B3F4 /* LaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
@@ -94,6 +95,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		9137D9E3E3B0725FF1974FE4 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				7575681911BCE30D49975BD1 /* Signing.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 		C4A42F6B26B68F58D4AF91BF /* Packages */ = {
 			isa = PBXGroup;
 			children = (
@@ -125,6 +134,7 @@
 			children = (
 				03D2AB28D0141671A3E98994 /* App */,
 				FBB368C8FC7E533E174F1A28 /* AppUITests */,
+				9137D9E3E3B0725FF1974FE4 /* Config */,
 				C4A42F6B26B68F58D4AF91BF /* Packages */,
 				15113D88F07D531904BB670F /* Products */,
 			);
@@ -195,7 +205,7 @@
 						TestTargetID = F543C124BF8C320F4E28CC40;
 					};
 					F543C124BF8C320F4E28CC40 = {
-						DevelopmentTeam = F728VX3G8A;
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -300,12 +310,13 @@
 		};
 		7BB60CFC4C6AEEC71A57F68E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7575681911BCE30D49975BD1 /* Signing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "-";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = F728VX3G8A;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -317,7 +328,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = dev.psenger.SaltmarshIsles;
+				MARKETING_VERSION = 0.1.0;
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
@@ -354,12 +365,13 @@
 		};
 		C36D7240A1DC57B29B44563F /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7575681911BCE30D49975BD1 /* Signing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "-";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = F728VX3G8A;
+				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -371,7 +383,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = dev.psenger.SaltmarshIsles;
+				MARKETING_VERSION = 0.1.0;
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
