@@ -1,23 +1,26 @@
 extension Engine {
     /// Longest trail of the player's roads without reusing an edge. A trail may end at, but not pass
     /// through, a corner holding an opponent's building.
-    public static func roadLength(_ s: GameState, player p: Int) -> Int {
-        let mine = s.board.edges.indices.filter { s.board.edges[$0].owner == p }
+    public static func roadLength(_ s: GameState, player p: Int) -> Int { roadLength(board: s.board, player: p) }
+
+    /// The same measure on a bare board, so the AI can score a road it has not built yet.
+    public static func roadLength(board: Board, player p: Int) -> Int {
+        let mine = board.edges.indices.filter { board.edges[$0].owner == p }
         guard !mine.isEmpty else { return 0 }
         var used = Set<Int>()
         var best = 0
         func walk(from corner: Int, length: Int) {
             best = max(best, length)
-            if let owner = s.board.corners[corner].owner, owner != p { return }
-            for e in s.board.corners[corner].edges where s.board.edges[e].owner == p && !used.contains(e) {
+            if let owner = board.corners[corner].owner, owner != p { return }
+            for e in board.corners[corner].edges where board.edges[e].owner == p && !used.contains(e) {
                 used.insert(e)
-                walk(from: s.board.edges[e].other(corner), length: length + 1)
+                walk(from: board.edges[e].other(corner), length: length + 1)
                 used.remove(e)
             }
         }
         for e in mine {
-            walk(from: s.board.edges[e].a, length: 0)
-            walk(from: s.board.edges[e].b, length: 0)
+            walk(from: board.edges[e].a, length: 0)
+            walk(from: board.edges[e].b, length: 0)
         }
         return best
     }

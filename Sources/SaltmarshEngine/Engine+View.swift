@@ -18,6 +18,9 @@ public struct PlayerView: Codable, Equatable, Sendable {
     public var hand: ResourceCounts
     public var devCards: [DevCard]
     public var knightsPlayed: Int
+    /// The viewing seat's own longest road and public points, as `OpponentSummary` gives them for everyone else.
+    public var roadLength: Int
+    public var publicPoints: Int
     /// Every other seat, in seat order.
     public var opponents: [OpponentSummary]
     public var board: Board
@@ -44,7 +47,8 @@ extension Engine {
                             publicPoints: publicPoints(s, player: i))
         }
         return PlayerView(me: player, playerCount: s.playerCount, controllers: s.players.map(\.controller),
-                          hand: me.hand, devCards: me.devCards, knightsPlayed: me.knightsPlayed, opponents: opponents,
+                          hand: me.hand, devCards: me.devCards, knightsPlayed: me.knightsPlayed,
+                          roadLength: roadLength(s, player: player), publicPoints: publicPoints(s, player: player), opponents: opponents,
                           board: s.board, robberTile: s.robberTile, bank: s.bank, dice: s.dice, deckCount: s.devDeck.count,
                           devCardPlayedThisTurn: s.devCardPlayedThisTurn, longestRoadHolder: s.longestRoadHolder,
                           largestArmyHolder: s.largestArmyHolder, phase: s.phase, turn: s.turn,

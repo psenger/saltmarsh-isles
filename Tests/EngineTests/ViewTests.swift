@@ -12,6 +12,15 @@ import SaltmarshTestSupport
         let json = String(decoding: try! JSONEncoder().encode(v), as: UTF8.self)
         #expect(!json.contains("\"devDeck\"")); #expect(v.deckCount == s.devDeck.count)
     }
+    @Test func viewCarriesTheSeatsOwnRoadAndPoints() {
+        var s = TestGames.afterSetup(seed: 2)
+        var avoid = Set(s.board.corners.indices.filter { s.board.corners[$0].owner != nil })   // a trail cannot pass an opponent's building
+        s.placeChain(s.firstChain(length: 3, avoiding: &avoid), owner: 0)
+        let v = Engine.view(s, for: 0)
+        #expect(v.roadLength == Engine.roadLength(s, player: 0)); #expect(v.roadLength >= 3)
+        #expect(v.publicPoints == Engine.publicPoints(s, player: 0))
+        #expect(Engine.roadLength(board: s.board, player: 0) == v.roadLength)
+    }
     @Test func viewCarriesPublicFacts() {
         let s = TestGames.midGame(seed: 4), v = Engine.view(s, for: 1)
         #expect(v.board == s.board && v.bank == s.bank && v.robberTile == s.robberTile && v.phase == s.phase && v.dice == s.dice && v.longestRoadHolder == s.longestRoadHolder && v.current == s.current && v.turn == s.turn)
