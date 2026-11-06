@@ -34,6 +34,7 @@ public struct ResourceCounts: Codable, Equatable, Hashable, Sendable, CustomStri
 
     public var total: Int { counts.reduce(0, +) }
     public var isEmpty: Bool { total == 0 }
+    public var hasNegative: Bool { counts.contains { $0 < 0 } }
 
     public func contains(_ other: ResourceCounts) -> Bool {
         Resource.allCases.allSatisfy { self[$0] >= other[$0] }

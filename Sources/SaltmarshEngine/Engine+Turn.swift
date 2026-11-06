@@ -94,7 +94,7 @@ extension Engine {
     static func isValidDiscard(_ c: ResourceCounts, in s: GameState) -> Bool {
         guard case .discarding(let queue) = s.phase, let p = queue.first else { return false }
         let hand = s.players[p].hand
-        return c.total == hand.total / 2 && hand.contains(c)
+        return !c.hasNegative && c.total == hand.total / 2 && hand.contains(c)
     }
 
     static func applyDiscard(_ s: inout GameState, _ c: ResourceCounts) {

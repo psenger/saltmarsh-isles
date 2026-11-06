@@ -23,6 +23,10 @@ import SaltmarshTestSupport
         #expect(throws: EngineError.self) { try Engine.apply(.discard([.timber: 1]), to: &s) }
         #expect(throws: Never.self) { try Engine.apply(c, to: &s) }
     }
+    @Test func negativeDiscardIsIllegal() {                                        // Review 2026-11-06, finding 2
+        var s = sevenRolled()
+        #expect(throws: EngineError.self) { try Engine.apply(.discard([.timber: 2, .clay: 2, .wool: 1, .grain: -1]), to: &s) }
+    }
     @Test func confirmingMovesQueueThenRobber() throws {
         var s = sevenRolled(); let before = s.players[1].hand, bank = s.bank
         let pick: ResourceCounts = [.timber: 2, .clay: 2]

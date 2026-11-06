@@ -15,6 +15,14 @@ import SaltmarshTestSupport
         #expect(Engine.validate(TradeOffer(proposer: 0, give: [.timber: 1], want: [.ore: 1], to: 0), in: s) == "target is the proposer")
         #expect(Engine.validate(TradeOffer(proposer: 0, give: [.timber: 1], want: [.ore: 1], to: 3), in: s) == "target out of range")
     }
+    @Test func negativeCountsAreRejected() throws {                                // Review 2026-11-06, finding 2
+        var s = base()
+        #expect(Engine.validate(TradeOffer(proposer: 0, give: [.timber: 3, .clay: -1], want: [.ore: 1], to: nil), in: s) == "negative count")
+        #expect(Engine.validate(TradeOffer(proposer: 0, give: [.timber: 1], want: [.ore: 2, .grain: -1], to: nil), in: s) == "negative count")
+        try Engine.apply(.proposeTrade(offer), to: &s)
+        let counter = TradeOffer(proposer: 0, give: [.timber: 3], want: [.ore: 2, .grain: -1], to: 1)
+        #expect(throws: EngineError.self) { try Engine.apply(.respondToTrade(seat: 1, .countered(counter)), to: &s) }
+    }
     @Test func proposeToEveryoneSkipsEmptyHands() throws {
         var s = base(); s.set(hand: [:], for: 2)
         try Engine.apply(.proposeTrade(offer), to: &s)

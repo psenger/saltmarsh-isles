@@ -45,6 +45,7 @@ extension Engine {
 
     /// nil when the offer is well formed and the proposer can pay; otherwise the reason.
     public static func validate(_ offer: TradeOffer, in s: GameState) -> String? {
+        if offer.give.hasNegative || offer.want.hasNegative { return "negative count" }
         if offer.give.isEmpty { return "give side is empty" }
         if offer.want.isEmpty { return "want side is empty" }
         if Resource.allCases.contains(where: { offer.give[$0] > 0 && offer.want[$0] > 0 }) { return "same resource on both sides" }
