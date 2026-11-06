@@ -8,9 +8,9 @@ public protocol Opponent: Sendable {
 }
 
 public enum OpponentFactory {
-    /// The opponent for an effort level: the heuristic at every level. Captain and Admiral play Mate's
-    /// profile until Plan 4 adds rollout search above it.
+    /// The opponent for an effort level: the heuristic alone for Deckhand, Sailor and Mate; the heuristic with
+    /// rollout search for Captain and Admiral.
     public static func make(level: EffortLevel, seed: UInt64) -> any Opponent {
-        HeuristicOpponent(level: level, seed: seed)
+        LevelProfile.forLevel(level).search == nil ? HeuristicOpponent(level: level, seed: seed) : SearchOpponent(level: level, seed: seed)
     }
 }

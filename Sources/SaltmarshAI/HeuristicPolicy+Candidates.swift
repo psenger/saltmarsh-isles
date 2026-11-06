@@ -1,7 +1,8 @@
 import SaltmarshEngine
 
 /// The short list a Captain or Admiral searches over at one decision (design section 6.3), the heuristic's
-/// own choice first. Empty when the step is not worth a search: rolling, a forced move, a single option.
+/// own choice first. Empty for a step that is never searched (rolling, a forced move); a single entry when
+/// the step had one option, so the caller need not ask the policy twice.
 extension HeuristicPolicy {
     static let candidateCap = 6
 
@@ -35,7 +36,7 @@ extension HeuristicPolicy {
         var seen = Set<Move>(), out: [Move] = []
         for move in list where legal.contains(move) && seen.insert(move).inserted { out.append(move) }
         if out.count > candidateCap { out = Array(out.prefix(candidateCap)) }
-        return out.count >= 2 ? out : []
+        return out
     }
 
     /// The main order's own pick, then the best of each kind it would consider, then ending the turn.

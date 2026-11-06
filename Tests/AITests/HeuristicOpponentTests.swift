@@ -4,8 +4,8 @@ import SaltmarshTestSupport
 @testable import SaltmarshAI
 
 @Suite struct HeuristicOpponentTests {
-    @Test func factoryMapsEveryLevelToTheHeuristic() {
-        for level in EffortLevel.allCases { #expect(OpponentFactory.make(level: level, seed: 1) is HeuristicOpponent) }
+    @Test func factoryMapsTheLowerLevelsToTheHeuristic() {
+        for level in [EffortLevel.deckhand, .sailor, .mate] { #expect(OpponentFactory.make(level: level, seed: 1) is HeuristicOpponent) }
     }
     @Test func sameSeedSameGame() async throws {
         let a = await Arena.play(levels: [.deckhand, .mate], seed: 5, maxMoves: 300), b = await Arena.play(levels: [.deckhand, .mate], seed: 5, maxMoves: 300)
