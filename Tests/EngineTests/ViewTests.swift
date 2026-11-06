@@ -21,6 +21,27 @@ import SaltmarshTestSupport
         #expect(v.publicPoints == Engine.publicPoints(s, player: 0))
         #expect(Engine.roadLength(board: s.board, player: 0) == v.roadLength)
     }
+    @Test func sampledHandsNeverExceedTheBank() {                                   // Plan 4 Review Focus 1
+        for seed in 1...20 {
+            var s = TestGames.midGame(seed: UInt64(seed), moves: 90)
+            s.bank = .uniform(2); s.set(hand: [.ore: 3], for: 0)
+            s.set(hand: [.timber: 9, .clay: 8, .wool: 8, .grain: 8, .ore: 7], for: 1)     // with seat 2 and the bank, 19 of each
+            s.set(hand: [.timber: 8, .clay: 9, .wool: 9, .grain: 9, .ore: 7], for: 2)
+            let v = Engine.view(s, for: 0); var rng = SeededRNG(seed: UInt64(seed))
+            let g = Engine.sampleFullState(from: v, using: &rng)
+            for r in Resource.allCases { #expect(g.bank[r] + g.players.reduce(0) { $0 + $1.hand[r] } == 19, "seed \(seed) \(r)") }
+            for o in v.opponents { #expect(g.players[o.index].hand.total == o.cardCount) }
+        }
+    }
+    @Test func sampledDeckLeavesOutPlayedProgressCards() {
+        var s = TestGames.afterSetup(seed: 1); s.clearHands()
+        s.devDeck.removeLast(3)                                                       // three progress cards were played and are gone
+        let v = Engine.view(s, for: 0); var rng = SeededRNG(seed: 4)
+        let g = Engine.sampleFullState(from: v, using: &rng)
+        #expect(g.devDeck.count == 22)
+        #expect(g.devDeck.filter { $0 == .knight }.count == 14); #expect(g.devDeck.filter { $0 == .victoryPoint }.count == 5)
+        #expect(g.devDeck.filter { [.roadCrew, .bumperHarvest, .cornerMarket].contains($0) }.count == 3)
+    }
     @Test func viewCarriesPublicFacts() {
         let s = TestGames.midGame(seed: 4), v = Engine.view(s, for: 1)
         #expect(v.board == s.board && v.bank == s.bank && v.robberTile == s.robberTile && v.phase == s.phase && v.dice == s.dice && v.longestRoadHolder == s.longestRoadHolder && v.current == s.current && v.turn == s.turn)

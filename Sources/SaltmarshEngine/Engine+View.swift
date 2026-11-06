@@ -55,15 +55,30 @@ extension Engine {
                           firstPlayer: s.firstPlayer, current: s.current)
     }
 
-    /// A guessed full state consistent with the view: opponents' hands are drawn with weights from what
-    /// their buildings produce, their development cards and the deck from the cards not yet seen.
+    /// A guessed full state consistent with the view: opponents' hands are drawn, with weights from what their
+    /// buildings produce, out of the cards the bank and my hand do not account for; their development cards and
+    /// the deck come from the cards not yet seen, less the progress cards the counts show were played.
     public static func sampleFullState(from v: PlayerView, using rng: inout SeededRNG) -> GameState {
         var remaining = DevCardType.deckComposition
         for card in v.devCards { remaining[card.type, default: 0] -= 1 }
-        remaining[.knight, default: 0] -= v.knightsPlayed + v.opponents.reduce(0) { $0 + $1.knightsPlayed }
+        let knightsPlayed = v.knightsPlayed + v.opponents.reduce(0) { $0 + $1.knightsPlayed }
+        remaining[.knight, default: 0] -= knightsPlayed
+        // Cards in no hand, not in the deck and not played Knights were played progress cards.
+        let seen = v.devCards.count + v.opponents.reduce(0) { $0 + $1.devCardCount } + knightsPlayed + v.deckCount
+        var playedProgress = max(0, 25 - seen)
+        let progress: [DevCardType] = [.roadCrew, .bumperHarvest, .cornerMarket]
+        var turn = 0
+        while playedProgress > 0, progress.contains(where: { remaining[$0, default: 0] > 0 }) {
+            let type = progress[turn % progress.count]; turn += 1
+            if remaining[type, default: 0] > 0 { remaining[type, default: 0] -= 1; playedProgress -= 1 }
+        }
         var pool: [DevCardType] = []
         for type in DevCardType.allCases { pool += Array(repeating: type, count: max(0, remaining[type] ?? 0)) }
         pool.shuffle(using: &rng)
+
+        // 19 of each resource exist; what the bank and my hand do not hold is spread over the other hands.
+        var supply = ResourceCounts()
+        for r in Resource.allCases { supply[r] = max(0, 19 - v.bank[r] - v.hand[r]) }
 
         var players: [Player] = []
         for i in 0..<v.playerCount {
@@ -81,10 +96,13 @@ extension Engine {
             }
             var hand = ResourceCounts()
             for _ in 0..<o.cardCount {
-                var k = Int.random(in: 0..<weight.total, using: &rng)
+                var pick = weight
+                for r in Resource.allCases where supply[r] == 0 { pick[r] = 0 }
+                if pick.total == 0 { pick = weight }          // an inconsistent view: keep dealing rather than trap
+                var k = Int.random(in: 0..<pick.total, using: &rng)
                 for r in Resource.allCases {
-                    if k < weight[r] { hand[r] += 1; break }
-                    k -= weight[r]
+                    if k < pick[r] { hand[r] += 1; supply[r] = max(0, supply[r] - 1); break }
+                    k -= pick[r]
                 }
             }
             var cards: [DevCard] = []
