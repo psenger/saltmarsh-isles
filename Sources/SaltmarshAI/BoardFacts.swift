@@ -81,13 +81,13 @@ enum BoardFacts {
         return dist
     }
 
-    /// The settleable corner maximising spotScore − 2 × distance over distance ≤ roadsLeft; ties go to the
-    /// smaller distance, then the lower index.
-    static func bestTarget(for seat: Int, board: Board, produces: ResourceCounts, roadsLeft: Int) -> (corner: Int, distance: Int)? {
+    /// The settleable corner maximising spotScore − 2 × distance over minDistance ≤ distance ≤ roadsLeft; ties go
+    /// to the smaller distance, then the lower index.
+    static func bestTarget(for seat: Int, board: Board, produces: ResourceCounts, roadsLeft: Int, minDistance: Int = 0) -> (corner: Int, distance: Int)? {
         let d = distances(from: network(of: seat, board: board), board: board, seat: seat)
         var best: (corner: Int, distance: Int, value: Int)?
         for c in board.corners.indices where settleable(c, board: board) {
-            guard let dc = d[c], dc <= roadsLeft else { continue }
+            guard let dc = d[c], dc >= minDistance, dc <= roadsLeft else { continue }
             let value = spotScore(c, board: board, produces: produces) - 2 * dc
             if let b = best, (value, -dc, -c) <= (b.value, -b.distance, -b.corner) { continue }
             best = (c, dc, value)

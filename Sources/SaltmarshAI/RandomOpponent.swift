@@ -10,10 +10,15 @@ public actor RandomOpponent: Opponent {
     }
 
     public func chooseMove(view: PlayerView, legal: [Move]) async -> Move {
+        Self.pick(from: legal, using: &rng)
+    }
+
+    /// A move kind uniformly, then a move of that kind uniformly. The heuristic's blunders use the same rule.
+    static func pick(from legal: [Move], using rng: inout SeededRNG) -> Move {
         precondition(!legal.isEmpty, "no legal moves to choose from")
-        let kinds = Array(Set(legal.map(Self.kind))).sorted()
+        let kinds = Array(Set(legal.map(kind))).sorted()
         let chosen = kinds[Int(rng.next() % UInt64(kinds.count))]
-        let ofKind = legal.filter { Self.kind($0) == chosen }
+        let ofKind = legal.filter { kind($0) == chosen }
         return ofKind[Int(rng.next() % UInt64(ofKind.count))]
     }
 
