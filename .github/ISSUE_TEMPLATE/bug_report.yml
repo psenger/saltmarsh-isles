@@ -1,0 +1,96 @@
+name: Bug report
+description: Something in the game, the app or the build behaves wrongly
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Two things help most: exact steps, and the game log
+        from the Log tab around the moment it went wrong.
+
+        If the bug is about a rule, check `saltmarsh-isles-spec.md` first. It is the
+        source of truth for how the game is meant to play, and a few surprises
+        turn out to be the rules working as written.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did the game do?
+      placeholder: After I played a Knight, the robber stayed on the same tile and nobody lost a card.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      placeholder: The board should have asked me to move the robber, then steal from a neighbour.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Start from a new game if you can. Name the seats by colour.
+      placeholder: |
+        1. Start a 3-player game, all human seats.
+        2. Place the starting settlements and roads.
+        3. On Crimson's second turn, buy a development card and draw a Knight.
+        4. Tap Play card, then Knight.
+    validations:
+      required: true
+
+  - type: textarea
+    id: setup
+    attributes:
+      label: Game setup
+      description: >-
+        How many players, which seats were the computer, and where the turn was
+        (first roll, setup, rolling, trading, robber, discarding, victory).
+      placeholder: 3 players. Amber was a computer seat. It was Crimson's roll phase.
+
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where it happened
+      multiple: true
+      options:
+        - iPhone
+        - iPad
+        - Mac
+        - swift test or the command line
+        - Xcode build or project generation
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: OS and Xcode versions
+      placeholder: iOS 17.5 simulator, macOS 14.6, Xcode 27.2
+
+  - type: input
+    id: build
+    attributes:
+      label: Build
+      description: The commit hash or branch you were running.
+      placeholder: main at 7a4e21d
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Game log, screenshot or recording
+      description: >-
+        Paste the lines from the Log tab inside a code block, and drop in a
+        screenshot or screen recording if you have one. A saved game that
+        reproduces it is gold.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you send it
+      options:
+        - label: I searched the open issues and did not find this one.
+        - label: If this is about a rule, I checked it against the build spec.

@@ -1,0 +1,86 @@
+name: Feature request
+description: Suggest a rule, a screen change, an opponent, or anything else the game should do
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Good ideas welcome, from a small quality-of-life fix to a new expansion rule.
+
+        Before you write, glance at the Status table in the README. AI opponents are
+        not built yet and are already on the plan, so requests for them are better
+        framed as what you would like the opponent to do well.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is awkward, missing or slow today? Describe the moment at the table, not the solution.
+      placeholder: >-
+        When a 7 is rolled with four players, the discard picker takes a long time
+        because each player has to work out how many cards to drop.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: The change you would like
+      description: What should the game do instead? Sketches, mock-ups and examples from other board game apps are welcome.
+      placeholder: Show "Discard 4 of 8" in the picker title and disable Done until the count matches.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Part of the game
+      options:
+        - Rules of play
+        - Game screen and interaction
+        - AI opponents
+        - Saved games and resume
+        - Accessibility
+        - Build, tests and tooling
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: rules-change
+    attributes:
+      label: Does this change how the game plays?
+      description: >-
+        A change to the rules needs a scenario in saltmarsh-isles.feature and an
+        update to the build spec, so it helps to know up front.
+      options:
+        - "No, the rules stay the same"
+        - "Yes, it changes a rule or adds one"
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Platforms
+      multiple: true
+      options:
+        - iPhone
+        - iPad
+        - Mac
+        - All of them
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or workarounds
+      description: Anything you tried, or other ways this could be solved.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you send it
+      options:
+        - label: I searched the open issues and did not find this one.
