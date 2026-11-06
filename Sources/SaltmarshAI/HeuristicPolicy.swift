@@ -48,7 +48,7 @@ public enum HeuristicPolicy {
     }
 
     /// The road whose far end has the best settleable corner on or next to it: the best spot within two edges.
-    private static func setupRoad(view: PlayerView, legal: [Move], last: Int?) -> Move {
+    static func setupRoad(view: PlayerView, legal: [Move], last: Int?) -> Move {
         let board = view.board, produces = BoardFacts.production(of: view.me, board: board)
         let roads = legal.compactMap { if case .placeRoad(let e) = $0 { e } else { nil } }
         func prospect(_ e: Int) -> Int {
@@ -65,12 +65,28 @@ public enum HeuristicPolicy {
     }
 
     static func robber(view: PlayerView, legal: [Move], profile: LevelProfile, rng: inout SeededRNG) -> Move {
+        let pool = robberPool(view: view, legal: legal)
+        guard !pool.isEmpty else { return legal[0] }
+        switch profile.robber {
+        case .random: return .moveRobber(tile: pool[Int(rng.next() % UInt64(pool.count))])
+        case .richest: return .moveRobber(tile: rankedRobberTiles(view: view, legal: legal, of: Set(view.opponents.map(\.index)))[0])
+        case .leader: return .moveRobber(tile: rankedRobberTiles(view: view, legal: legal, of: leader(view).map { [$0] } ?? [])[0])
+        }
+    }
+
+    /// The legal robber tiles that touch none of the seat's own buildings, or all of them when every tile does.
+    static func robberPool(view: PlayerView, legal: [Move]) -> [Int] {
         let board = view.board
         let candidates = legal.compactMap { if case .moveRobber(let t) = $0 { t } else { nil } }
-        guard !candidates.isEmpty else { return legal[0] }
         let notMine = candidates.filter { t in !board.tiles[t].corners.contains { board.corners[$0].owner == view.me } }
-        let pool = notMine.isEmpty ? candidates : notMine
-        func weight(_ t: Int, of seats: Set<Int>) -> Int {
+        return notMine.isEmpty ? candidates : notMine
+    }
+
+    /// The pool, best first: the pips `seats` lose on the tile (a city counts twice), then the cards held by
+    /// everyone built there, then the lower index.
+    static func rankedRobberTiles(view: PlayerView, legal: [Move], of seats: Set<Int>) -> [Int] {
+        let board = view.board
+        func weight(_ t: Int) -> Int {
             board.tiles[t].corners.filter { board.corners[$0].owner.map(seats.contains) ?? false }
                 .reduce(0) { $0 + board.tiles[t].pips * (board.corners[$1].isCity ? 2 : 1) }
         }
@@ -78,14 +94,7 @@ public enum HeuristicPolicy {
             let owners = Set(board.tiles[t].corners.compactMap { board.corners[$0].owner })
             return view.opponents.filter { owners.contains($0.index) }.reduce(0) { $0 + $1.cardCount }
         }
-        func richest(for seats: Set<Int>) -> Int {
-            pool.max { (weight($0, of: seats), cards($0), -$0) < (weight($1, of: seats), cards($1), -$1) }!
-        }
-        switch profile.robber {
-        case .random: return .moveRobber(tile: pool[Int(rng.next() % UInt64(pool.count))])
-        case .richest: return .moveRobber(tile: richest(for: Set(view.opponents.map(\.index))))
-        case .leader: return .moveRobber(tile: richest(for: leader(view).map { [$0] } ?? []))
-        }
+        return robberPool(view: view, legal: legal).sorted { (weight($0), cards($0), -$0) > (weight($1), cards($1), -$1) }
     }
 
     private static func victim(view: PlayerView, legal: [Move]) -> Move {
@@ -138,7 +147,7 @@ public enum HeuristicPolicy {
     // MARK: Pieces of the main phase
 
     /// A pair whose cards complete the goal, when the goal is one or two cards short.
-    private static func bumperHarvest(completing plan: GoalPlan, hand: ResourceCounts, legal: [Move]) -> Move? {
+    static func bumperHarvest(completing plan: GoalPlan, hand: ResourceCounts, legal: [Move]) -> Move? {
         guard (1...2).contains(plan.missing.total) else { return nil }
         return legal.first { move in
             guard case .playBumperHarvest(let a, let b) = move else { return false }
@@ -148,13 +157,13 @@ public enum HeuristicPolicy {
     }
 
     /// The one resource the plan is short of, when it is short of exactly one kind.
-    private static func singleMissing(_ plan: GoalPlan) -> Resource? {
+    static func singleMissing(_ plan: GoalPlan) -> Resource? {
         let short = Resource.allCases.filter { plan.missing[$0] > 0 }
         return short.count == 1 ? short[0] : nil
     }
 
     /// A road that takes or defends longest road, else one step toward the best target.
-    private static func roadMove(view: PlayerView, legal: [Move], maxOppRoad: Int) -> Move? {
+    static func roadMove(view: PlayerView, legal: [Move], maxOppRoad: Int) -> Move? {
         let board = view.board, me = view.me
         let roads = legal.compactMap { if case .placeRoad(let e) = $0 { e } else { nil } }
         guard !roads.isEmpty else { return nil }
@@ -189,7 +198,7 @@ public enum HeuristicPolicy {
     }
 
     /// The candidate with the highest score; ties go to the lowest candidate.
-    private static func bestBy(_ candidates: [Int], score: (Int) -> Int) -> Int? {
+    static func bestBy(_ candidates: [Int], score: (Int) -> Int) -> Int? {
         var best: (value: Int, score: Int)?
         for c in candidates {
             let s = score(c)
