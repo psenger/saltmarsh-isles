@@ -9,6 +9,10 @@ enum Match {
         var moves: [Move]
         /// Choices the opponents made that the engine would have refused; the net replaced them.
         var illegalChoices: Int
+        /// The first few of those, with the phase they were made in.
+        var illegalSamples: [(move: Move, phase: Phase)]
+        /// Trade answers the engine refused (a counter the proposer could not pay); they became declines.
+        var refusedAnswers: Int
     }
 
     /// Opponents are seeded seat by seat from `seed`. A pending responder answers through `respondToTrade`
@@ -17,7 +21,7 @@ enum Match {
     static func play(_ levels: [EffortLevel], seed: UInt64, maxMoves: Int = 4000, check: (@Sendable (GameState) -> Void)? = nil) async throws -> Result {
         var s = Engine.newGame(GameConfig(controllers: levels.map { .ai($0) }, seed: seed))
         let bots = levels.enumerated().map { OpponentFactory.make(level: $1, seed: seed &* 31 &+ UInt64($0)) }
-        var moves: [Move] = [], illegal = 0
+        var moves: [Move] = [], illegal = 0, refused = 0, samples: [(move: Move, phase: Phase)] = []
         for _ in 0..<maxMoves {
             if case .gameOver = s.phase { break }
             let p = Engine.actingPlayer(s), legal = Engine.legalMoves(s)
@@ -28,10 +32,10 @@ enum Match {
             let move: Move
             if case .tradeOffered(let offer, let responses) = s.phase, responses[p] == .pending {
                 let answer = Move.respondToTrade(seat: p, await bots[p].respondToTrade(offer, view: view))
-                if isLegal(answer) { move = answer } else { illegal += 1; move = .respondToTrade(seat: p, .declined) }
+                if isLegal(answer) { move = answer } else { refused += 1; move = .respondToTrade(seat: p, .declined) }
             } else {
                 let proposed = await bots[p].chooseMove(view: view, legal: legal)
-                if !isLegal(proposed) { illegal += 1 }
+                if !isLegal(proposed) { illegal += 1; if samples.count < 5 { samples.append((proposed, s.phase)) } }
                 move = MoveResolver.resolve(proposed, isLegal: isLegal, legal: legal) {
                     let steady = HeuristicPolicy.fallback(view: view, legal: legal)
                     return isLegal(steady) ? steady : [Move.endTurn, .withdrawTrade, .roll].first { legal.contains($0) }
@@ -43,6 +47,6 @@ enum Match {
         }
         var winner: Int?
         if case .gameOver(let w) = s.phase { winner = w }
-        return Result(winner: winner, moves: moves, illegalChoices: illegal)
+        return Result(winner: winner, moves: moves, illegalChoices: illegal, illegalSamples: samples, refusedAnswers: refused)
     }
 }
