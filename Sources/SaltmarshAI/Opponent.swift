@@ -8,9 +8,9 @@ public protocol Opponent: Sendable {
 }
 
 public enum OpponentFactory {
-    /// The opponent for an effort level. Every level is the seeded random stand-in until the
-    /// heuristic and search opponents land (Plans 2 and 4).
+    /// The opponent for an effort level: the heuristic at every level. Captain and Admiral play Mate's
+    /// profile until Plan 4 adds rollout search above it.
     public static func make(level: EffortLevel, seed: UInt64) -> any Opponent {
-        RandomOpponent(seed: seed)
+        HeuristicOpponent(level: level, seed: seed)
     }
 }

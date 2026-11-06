@@ -2,7 +2,7 @@ import SaltmarshEngine
 
 /// The deterministic brain: from the view, the legal list, a level's knobs, the turn's memory and the
 /// opponent's own generator, one move. Trading lives in HeuristicPolicy+Trades.swift.
-enum HeuristicPolicy {
+public enum HeuristicPolicy {
     static func choose(view: PlayerView, legal: [Move], profile: LevelProfile, memory: inout TurnMemory, rng: inout SeededRNG) -> Move {
         precondition(!legal.isEmpty, "no legal moves to choose from")
         if memory.turn != view.turn { memory = TurnMemory(); memory.turn = view.turn }
@@ -26,7 +26,8 @@ enum HeuristicPolicy {
     }
 
     /// Mate without proposals, fresh memory, a generator seeded by the turn: the safety net's substitute move.
-    static func fallback(view: PlayerView, legal: [Move]) -> Move {
+    /// The one entry point the game layer uses; everything else stays inside the AI package.
+    public static func fallback(view: PlayerView, legal: [Move]) -> Move {
         var memory = TurnMemory(), rng = SeededRNG(seed: UInt64(max(0, view.turn)))
         return choose(view: view, legal: legal, profile: .fallback, memory: &memory, rng: &rng)
     }

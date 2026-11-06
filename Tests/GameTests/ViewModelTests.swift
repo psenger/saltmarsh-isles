@@ -253,6 +253,6 @@ private struct BuyThenEnd: Opponent {
         }
         let vm = GameViewModel(store: InMemoryGameStore(), pacing: NoPacing()) { _, _ in Stubborn() }
         vm.newGame(GameConfig(controllers: [.ai(.deckhand), .ai(.deckhand)], seed: 1)); await vm.waitForAI()
-        #expect(vm.state!.turn > 0 || isOver(vm.state!))
+        #expect(isOver(vm.state!))                                                  // design 6.5: the net plays the game out
     }
 }
