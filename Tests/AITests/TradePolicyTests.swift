@@ -70,6 +70,12 @@ import SaltmarshTestSupport
         #expect(HeuristicPolicy.respond(to: stingy, view: v, profile: .forLevel(.mate)) == .countered(TradeOffer(proposer: 1, give: [.wool: 1, .ore: 1], want: [.timber: 1], to: 0)))
         #expect(HeuristicPolicy.respond(to: stingy, view: v, profile: .forLevel(.sailor)) == .declined)
     }
+    @Test func aProposerExecutesItsOwnAcceptedOfferAtEveryLevel() throws {                      // self-review finding
+        var m = TurnMemory()
+        var s = main(hand: oneOreShort); try Engine.apply(.proposeTrade(oneForOne), to: &s)
+        try Engine.apply(.respondToTrade(seat: 1, .declined), to: &s); try Engine.apply(.respondToTrade(seat: 2, .accepted), to: &s)
+        #expect(decide(s, level: .sailor, memory: &m) == .executeTrade(with: 2))     // its own offer completes the city; Sailor's bar of 3 is for other people's offers
+    }
     @Test func proposerExecutesTheBestAnswerOrWithdraws() throws {
         var m = TurnMemory()
         var s = main(hand: oneOreShort); try Engine.apply(.proposeTrade(oneForOne), to: &s)

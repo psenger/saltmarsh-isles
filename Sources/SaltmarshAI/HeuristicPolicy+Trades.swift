@@ -54,19 +54,19 @@ extension HeuristicPolicy {
         return gain(view: view, paying: counter.want, receiving: counter.give) >= threshold ? .countered(counter) : .declined
     }
 
-    /// Every answer is in: execute the best one worth at least the threshold, on the counter's terms where
-    /// there was one; ties go to the seat with the fewest points. Otherwise withdraw.
+    /// Every answer is in: execute the best one, on the counter's terms where there was one; ties go to the
+    /// seat with the fewest points. An accepted offer was the seat's own and completes a build, so any gain
+    /// takes it; a counter has to clear the level's threshold. Otherwise withdraw.
     static func proposerDecision(view: PlayerView, legal: [Move], profile: LevelProfile) -> Move {
         let withdraw = legal.contains(.withdrawTrade) ? Move.withdrawTrade : legal[0]
         guard case .tradeOffered(let offer, let responses) = view.phase else { return withdraw }
-        let threshold = profile.acceptThreshold ?? 1
         var best: (move: Move, rank: (Int, Int, Int))?
         for move in legal {
             guard case .executeTrade(let seat) = move else { continue }
-            var terms = offer
-            if case .countered(let counter)? = responses[seat] { terms = counter }
+            var terms = offer, bar = 1
+            if case .countered(let counter)? = responses[seat] { terms = counter; bar = profile.acceptThreshold ?? 1 }
             let g = gain(view: view, paying: terms.give, receiving: terms.want)
-            guard g >= threshold else { continue }
+            guard g >= bar else { continue }
             let points = view.opponents.first { $0.index == seat }?.publicPoints ?? 0
             let rank = (g, -points, -seat)
             if best == nil || rank > best!.rank { best = (move, rank) }
