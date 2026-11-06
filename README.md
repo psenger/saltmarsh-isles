@@ -11,7 +11,7 @@
 ![Status: in development](https://img.shields.io/badge/status-in%20development-b5643c)
 [![License: MIT](https://img.shields.io/badge/license-MIT-3f6b3a)](LICENSE)
 
-[Install on a Mac](#install-on-a-mac) • [iPhone and iPad](#iphone-and-ipad) • [Build from source](#build-from-source) • [How to play](#how-to-play) • [Status](#status) • [Architecture](#architecture)
+[Install on a Mac](#install-on-a-mac) • [iPhone and iPad](#iphone-and-ipad) • [Build from source](#build-from-source) • [How to play](#how-to-play) • [Status](#status) • [Architecture](#architecture) • [Contributing](#contributing)
 
 <img src="docs/images/ipad-game.png" height="520" alt="A game in progress on iPad, with the board above the player's hand and trade panel">
 &nbsp;&nbsp;
@@ -129,11 +129,10 @@ In development.
 | Game screen, animation and in-app help | Done |
 | Pass and play for 2 to 4 people | Done |
 | Resuming the game in progress, and five named saves | Done |
-| AI opponents | **Not built yet.** Computer seats play random legal moves at every effort level |
+| AI opponents | Deckhand, Sailor and Mate play by heuristics: spot scoring, build priorities, robber targeting and trades that complete a build. Captain and Admiral play as Mate until the search opponents land |
 | `ai-bench` benchmark tool | Placeholder only |
 
-Next come heuristic opponents for the Deckhand, Sailor and Mate levels, then search-based ones for
-Captain and Admiral.
+Next come the search-based Captain and Admiral and the `ai-bench` benchmark.
 
 ## Building from the command line
 
@@ -200,7 +199,7 @@ flowchart TD
 | `App/` | The SwiftUI app: views, app entry point and icon. |
 | `AppUITests/` | UI tests that drive the real screen. |
 | `Sources/SaltmarshEngine/` | The rules engine. |
-| `Sources/SaltmarshAI/` | The opponent interface and the random stand-in. |
+| `Sources/SaltmarshAI/` | The opponent interface, the heuristic opponents and the move resolver. |
 | `Sources/SaltmarshGame/` | The game layer between the engine and the screen, including the help text. |
 | `Sources/SaltmarshTestSupport/` | State helpers and seeded game builders shared by the tests. |
 | `Tests/` | Engine, AI, game and Gherkin tests. |
@@ -235,6 +234,14 @@ Run the full game with `python3 playgame.py <output-folder>`.
 
 </details>
 
+## Contributing
+
+Bug reports, rule corrections and new features are all welcome. Open an issue with the
+[bug report](https://github.com/psenger/saltmarsh-isles/issues/new?template=bug_report.yml) or
+[feature request](https://github.com/psenger/saltmarsh-isles/issues/new?template=feature_request.yml)
+form, and read [CONTRIBUTING.md](CONTRIBUTING.md) before sending a pull request. It covers the
+toolchain, how the tests and the Gherkin scenarios fit together, and the commit style.
+
 ## License
 
 [MIT](LICENSE) © 2026 Philip A. Senger
@@ -245,6 +252,6 @@ Run the full game with `python3 playgame.py <output-folder>`.
 
 **A pass-and-play island board game, written natively for Apple devices.**
 
-[Build spec](saltmarsh-isles-spec.md) • [Scenarios](saltmarsh-isles.feature) • [Report a bug](https://github.com/psenger/saltmarsh-isles/issues)
+[Build spec](saltmarsh-isles-spec.md) • [Scenarios](saltmarsh-isles.feature) • [Report a bug](https://github.com/psenger/saltmarsh-isles/issues/new?template=bug_report.yml) • [Request a feature](https://github.com/psenger/saltmarsh-isles/issues/new?template=feature_request.yml)
 
 </div>

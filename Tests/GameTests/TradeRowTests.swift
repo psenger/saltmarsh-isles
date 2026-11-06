@@ -20,6 +20,16 @@ import SaltmarshTestSupport
         return s
     }
 
+    @Test func tradeRowsCarryNoHandInformationDuringAnAITurn() {                       // review carried-forward item
+        var s = TestGames.rolled(8); s.players[0].controller = .ai(.mate); s.clearHands()
+        let h = s.board.harbours.firstIndex { $0.kind == .any }!; s.place(settlement: s.board.harbours[h].a, owner: 0)
+        s.set(hand: [.ore: 4], for: 0); let withOre = screen(s)
+        s.set(hand: [.wool: 4], for: 0); let withWool = screen(s)
+        #expect(withOre.harbours.rows == withWool.harbours.rows)
+        #expect(withOre.harbours.rows.allSatisfy { !$0.rowEnabled }); #expect(!withOre.bankRowEnabled)
+        s.players[0].controller = .human
+        #expect(screen(s).bankRowEnabled)
+    }
     @Test func bankRowNeedsFourOfOneResource() {
         #expect(!screen(rolled(hand: [.timber: 3, .ore: 3])).bankRowEnabled)
         #expect(screen(rolled(hand: [.timber: 4])).bankRowEnabled)

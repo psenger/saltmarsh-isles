@@ -14,6 +14,9 @@ extension ScreenState {
         let current = s.current
         let over = GameViewModel.isOver(s)
         let legal = aiThinking ? [] : Engine.legalMoves(s)
+        // During an AI's turn the trade rows carry nothing of its hand: no legal pairs, no hand behind the defaults.
+        let currentIsAI = s.players[current].controller.isAI
+        let tradeLegal = currentIsAI ? [] : legal
         func name(_ i: Int) -> String { s.players[i].name }
         func has(_ test: (Move) -> Bool) -> Bool { legal.contains(where: test) }
         let settleCorners = Set(legal.compactMap { if case .placeSettlement(let c) = $0 { c } else { nil } })
@@ -89,7 +92,7 @@ extension ScreenState {
             handover = Handover(player: panelOwner, seat: s.players[panelOwner].seat, message: Strings.passDevice(who), button: button)
         }
 
-        let bankPairs = legal.compactMap { move -> TradeChoice? in
+        let bankPairs = tradeLegal.compactMap { move -> TradeChoice? in
             if case .bankTrade(let give, let get) = move { TradeChoice(give: give, get: get) } else { nil }
         }
         let bankChoice = TradeChoice.shown(picked: ui.bankChoice, legal: bankPairs, fallback: .bankFallback)
@@ -195,10 +198,10 @@ extension ScreenState {
 
         // Harbours, bank, cards and the trade section belong to the current player.
         let captured = Engine.capturedHarbours(s, player: current)
-        let hand = s.players[current].hand
+        let hand = currentIsAI ? ResourceCounts() : s.players[current].hand
         let harbourRows = captured.map { ch -> HarbourRow in
             let h = ch.harbour
-            let pairs = legal.compactMap { move -> TradeChoice? in
+            let pairs = tradeLegal.compactMap { move -> TradeChoice? in
                 if case .harbourTrade(ch.index, let give, let get) = move { TradeChoice(give: give, get: get) } else { nil }
             }
             let choice = TradeChoice.shown(picked: ui.harbourChoice[ch.index], legal: pairs,
@@ -207,7 +210,7 @@ extension ScreenState {
             return HarbourRow(index: ch.index, title: Strings.harbourTitle(h), heldBy: ch.heldByDescription, giveFixed: fixed,
                               give: choice.give, get: choice.get, giveOptions: TradeChoice.giveOptions(legal: pairs, shown: choice),
                               tradeLabel: Strings.harbourTrade(h.ratio),
-                              tradeEnabled: legal.contains(.harbourTrade(harbour: ch.index, give: choice.give, get: choice.get)),
+                              tradeEnabled: tradeLegal.contains(.harbourTrade(harbour: ch.index, give: choice.give, get: choice.get)),
                               rowEnabled: !pairs.isEmpty)
         }
         let devRows = aiThinking ? [] : s.players[current].devCards.enumerated().map { i, card -> DevCardRow in
