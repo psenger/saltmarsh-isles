@@ -20,7 +20,7 @@ enum HeuristicPolicy {
         case .choosingVictim: return victim(view: view, legal: legal)
         case .placingFreeRoads: return freeRoad(view: view, legal: legal)
         case .main: return mainMove(view: view, legal: legal, profile: profile, memory: &memory)
-        case .tradeOffered: return legal.contains(.withdrawTrade) ? .withdrawTrade : legal[0]
+        case .tradeOffered: return proposerDecision(view: view, legal: legal, profile: profile)
         default: return legal[0]
         }
     }
@@ -130,6 +130,7 @@ enum HeuristicPolicy {
         if let c = bestBy(spots, score: { BoardFacts.spotScore($0, board: board, produces: produces) }) { return .placeSettlement(corner: c) }
         if let road = roadMove(view: view, legal: legal, maxOppRoad: maxOppRoad) { return road }
         if legal.contains(.buyDevCard) { return .buyDevCard }
+        if let trade = tradeToComplete(view: view, legal: legal, profile: profile, memory: &memory) { return trade }
         return legal.contains(.endTurn) ? .endTurn : legal[0]
     }
 
