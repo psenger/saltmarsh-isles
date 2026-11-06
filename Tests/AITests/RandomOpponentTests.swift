@@ -24,9 +24,11 @@ import SaltmarshTestSupport
         #expect(a == b)
     }
     @Test func resolverFallsBack() {
-        #expect(MoveResolver.resolve(.endTurn, legal: [.roll]) == .roll)
-        #expect(MoveResolver.resolve(.endTurn, legal: [.roll, .playKnight], fallback: { .playKnight }) == .playKnight)
-        #expect(MoveResolver.resolve(.roll, legal: [.roll, .playKnight], fallback: { .playKnight }) == .roll)
+        let legal: [Move] = [.roll, .playKnight]
+        #expect(MoveResolver.resolve(.endTurn, isLegal: { $0 == .roll }, legal: [.roll]) == .roll)
+        #expect(MoveResolver.resolve(.endTurn, isLegal: legal.contains, legal: legal, fallback: { .playKnight }) == .playKnight)
+        #expect(MoveResolver.resolve(.roll, isLegal: legal.contains, legal: legal, fallback: { .playKnight }) == .roll)
+        #expect(MoveResolver.resolve(.endTurn, isLegal: { $0 == .endTurn }, legal: legal) == .endTurn)   // legal but unlisted
     }
     @Test func factoryGivesAnOpponentForEveryLevel() async {
         let s = TestGames.rolled(8); let v = Engine.view(s, for: 0), legal = Engine.legalMoves(s)

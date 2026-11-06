@@ -21,7 +21,7 @@ enum TurnRunner {
 
         let proposed = await opponent.chooseMove(view: view, legal: legal)
         // When the opponent's choice is illegal, prefer a move that keeps the game moving.
-        return MoveResolver.resolve(proposed, legal: legal) {
+        return MoveResolver.resolve(proposed, isLegal: { Engine.isLegal($0, in: state) }, legal: legal) {
             [Move.endTurn, .withdrawTrade, .roll].first { legal.contains($0) }
         }
     }
