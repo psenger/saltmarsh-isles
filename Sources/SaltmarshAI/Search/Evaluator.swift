@@ -9,6 +9,7 @@ enum Evaluator {
     /// the seat's nearest build.
     static func score(_ s: GameState, for seat: Int) -> Int {
         var value = 10 * Engine.totalPoints(s, player: seat)
+        if case .gameOver(let winner) = s.phase { value += winner == seat ? 1000 : -1000 }   // a finished game outranks any position
         let production = BoardFacts.production(of: seat, board: s.board, robber: s.robberTile)
         for r in Resource.allCases where production[r] > 0 { value += min(production[r], 8) + 2 }
         value += s.largestArmyHolder == seat ? 3 : min(s.players[seat].knightsPlayed, 2)
