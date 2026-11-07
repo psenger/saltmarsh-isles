@@ -26,6 +26,17 @@ targets:
         product: SaltmarshAI
       - package: SaltmarshCore
         product: SaltmarshGame
+    # Every build is stamped in the built app only (nothing in the repo changes): the build number is the
+    # date and time, yyyyMMdd.HHmm, and SaltmarshBuilt says it in words for the About screen. CFBundleName is
+    # set here because the generated Info.plist always writes the product name, SaltmarshIsles, over it.
+    postBuildScripts:
+      - name: Stamp the name, build number and build date
+        basedOnDependencyAnalysis: false
+        script: |
+          PLIST="${TARGET_BUILD_DIR}/${INFOPLIST_PATH}"
+          plutil -replace CFBundleName -string "Saltmarsh Isles" "$PLIST"
+          plutil -replace CFBundleVersion -string "$(date +%Y%m%d.%H%M)" "$PLIST"
+          plutil -replace SaltmarshBuilt -string "$(LC_ALL=C date '+%-d %b %Y at %H:%M')" "$PLIST"
     # Your signing team goes in the untracked Config/Local.xcconfig (see the README).
     configFiles:
       Debug: Config/Signing.xcconfig
@@ -38,6 +49,8 @@ targets:
         SWIFT_STRICT_CONCURRENCY: complete
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_FILE: App/Info.plist
+        # The name people see: About, the Mac app menu, the iPhone home screen. The bundle stays SaltmarshIsles.app.
+        INFOPLIST_KEY_CFBundleDisplayName: "Saltmarsh Isles"
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
