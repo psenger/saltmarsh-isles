@@ -124,7 +124,6 @@ public enum Strings {
     // The Cards tab and the card button
     public static let card = "Card", noCardsYet = "Nothing up your sleeve yet.", victoryPoints = "Victory points"
     public static func pointsOfTen(_ n: Int) -> String { "\(n) / 10" }
-    public static func knightsPlayed(_ n: Int) -> String { "Knights played: \(n)" }
 
     // Trade responses
     public static let pending = "pending", accepted = "accepted", declined = "declined"

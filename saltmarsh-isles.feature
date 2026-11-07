@@ -768,6 +768,14 @@ Feature: Saltmarsh Isles pass-and-play game
       Given Crimson holds 2 Victory point cards and 1 Knight
       Then the hand heading reads "In your hand (3)"
 
+    Scenario: A card that can be played now says so
+      Given Crimson has rolled and holds a playable Knight
+      Then the Knight tile reads "ready"
+
+    Scenario: A victory point card shows the point it is worth
+      Given Crimson draws a victory point card
+      Then the Victory point tile shows "+1 point"
+
   # ─────────────────────────────────────────────────────────────
   Rule: Longest road
 

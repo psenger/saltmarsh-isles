@@ -106,6 +106,15 @@ func registerDevCards(_ r: StepRegistry) {
         w.vm.playCard(indexOf(w, .knight))
         moveAndSteal(w)
     }
+    r.then(#"the (.+) tile reads "([^"]*)""#) { w, c, _ in
+        try expectEqual(Strings.ready, c[1], "ready label")
+        let row = rowFor(w, card(c[0]))
+        try expectTrue(row?.note == nil && row?.playEnabled == true, "the \(c[0]) tile is not ready to play")
+    }
+    r.then(#"the Victory point tile shows "([^"]*)""#) { w, c, _ in
+        try expectEqual(Strings.plusOnePoint, c[0], "point badge")
+        try expectTrue(rowFor(w, .victoryPoint) != nil, "no Victory point tile")
+    }
     r.given(#"(\w+) draws a victory point card"#) { w, c, _ in
         roll(w, w.seat(c[0]))
         give(w, w.seat(c[0]), .victoryPoint, turn: w.state.turn)
