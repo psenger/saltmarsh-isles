@@ -17,7 +17,7 @@ import SaltmarshTestSupport
         let sc = humans().screen
         #expect(sc.header == "Crimson · first roll"); #expect(sc.headerSeat == .crimson)
         #expect(sc.status == "Who sails first? Roll for it!"); #expect(sc.buttons["Roll for first"] == true)
-        #expect(on(turnButtons, sc).isEmpty); #expect(sc.orderStrip == [.crimson, .cobalt, .amber]); #expect(sc.log.last == "New game with 3 players. Everyone rolls for first player.")
+        #expect(on(turnButtons, sc).isEmpty); #expect(sc.orderStrip == [.crimson, .cobalt, .amber]); #expect(sc.log.first == "New game with 3 players. Everyone rolls for first player.")
     }
     @Test func setupStrings() throws {
         var f = TestGames.fresh(); f.forcedRolls = [[1, 1], [1, 1], [6, 6]]; for _ in 0..<3 { try Engine.apply(.rollForFirst, to: &f) }

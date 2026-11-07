@@ -20,6 +20,12 @@ extension Engine {
             phase: .rollingForFirst(rolls: Array(repeating: nil, count: n), contenders: Array(0..<n)),
             log: [], rng: rng, seed: config.seed, forcedRolls: [])
         state.log("New game with \(n) players. Everyone rolls for first player.")
+        for player in state.players {
+            switch player.controller {
+            case .human: state.log("\(player.name) is human.")
+            case .ai(let level): state.log("\(player.name) is an AI \(level.name).")
+            }
+        }
         return state
     }
 

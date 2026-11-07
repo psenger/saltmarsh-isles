@@ -977,6 +977,9 @@ Feature: Saltmarsh Isles pass-and-play game
       When I start a 3-player game with Crimson human, Cobalt an AI Mate and Amber an AI Admiral
       Then the players are Crimson, Cobalt and Amber
       And Cobalt and Amber are AI seats
+      And the log contains "Crimson is human."
+      And the log contains "Cobalt is an AI Mate."
+      And the log contains "Amber is an AI Admiral."
 
     Scenario: A searching seat says how hard it thought
       When I start a 3-player game with Crimson human, Cobalt an AI Captain and Amber an AI Captain
