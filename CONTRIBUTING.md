@@ -86,6 +86,10 @@ Run everything before you push:
 swift test
 ```
 
+One test only runs as a release build, because a searched game takes seconds in debug: `make dial`
+plays forty seeded games of a small-budget Captain against Mate. Run it when you touch the search or the
+evaluator. `make bench BENCH_ARGS="--fast --games 4"` prints the level-versus-level win table.
+
 The UI tests, when you touched a screen:
 
 ```bash

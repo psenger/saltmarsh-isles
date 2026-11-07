@@ -129,10 +129,10 @@ In development.
 | Game screen, animation and in-app help | Done |
 | Pass and play for 2 to 4 people | Done |
 | Resuming the game in progress, and five named saves | Done |
-| AI opponents | Deckhand, Sailor and Mate play by heuristics: spot scoring, build priorities, robber targeting and trades that complete a build. Captain and Admiral play as Mate until the search opponents land |
-| `ai-bench` benchmark tool | Placeholder only |
+| AI opponents | Done. Deckhand, Sailor and Mate play by heuristics; Captain and Admiral add Monte Carlo rollouts over guessed hands, capped at 0.75 s and 1.5 s a move |
+| `ai-bench` benchmark tool | Done: `make bench` prints the level-versus-level win table and the two criteria |
 
-Next come the search-based Captain and Admiral and the `ai-bench` benchmark.
+Next is Plan 5: polish, the remaining UI tests and the spec rewrite.
 
 ## Building from the command line
 
@@ -179,6 +179,13 @@ xcodebuild test -project SaltmarshIsles.xcodeproj -scheme SaltmarshIsles \
 `make test` runs `swift test` and then the full test scheme on the Mac. The Mac UI test runner can
 fail with "Authentication cancelled" unless someone is there to approve its prompt.
 
+Two checks on the AI need a release build, because a searched game takes seconds in debug:
+
+```bash
+make dial                      # a small-budget Captain beats Mate in at least 26 of 40 seeded games
+make bench BENCH_ARGS="--fast --games 4"   # the five-by-five win table; drop --fast for shipped budgets
+```
+
 ## Architecture
 
 The rules live in a pure Swift engine with no UI code. The AI and the screens both go through it,
@@ -199,7 +206,8 @@ flowchart TD
 | `App/` | The SwiftUI app: views, app entry point and icon. |
 | `AppUITests/` | UI tests that drive the real screen. |
 | `Sources/SaltmarshEngine/` | The rules engine. |
-| `Sources/SaltmarshAI/` | The opponent interface, the heuristic opponents and the move resolver. |
+| `Sources/SaltmarshAI/` | The opponent interface, the heuristic and search opponents, the move resolver and the benchmark arena. |
+| `Sources/ai-bench/` | The effort-dial benchmark behind `make bench`. |
 | `Sources/SaltmarshGame/` | The game layer between the engine and the screen, including the help text. |
 | `Sources/SaltmarshTestSupport/` | State helpers and seeded game builders shared by the tests. |
 | `Tests/` | Engine, AI, game and Gherkin tests. |
