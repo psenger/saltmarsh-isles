@@ -256,13 +256,13 @@ private struct CardTile: View {
         let shape = RoundedRectangle(cornerRadius: 10)
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text(row.name).font(.subheadline.bold()).lineLimit(1)
+                Text(row.name).font(.subheadline.bold()).lineLimit(1).minimumScaleFactor(0.75)
                 Spacer(minLength: 4)
                 Image(systemName: symbol).accessibilityHidden(true)
             }
             .foregroundStyle(.white)
             .padding(.horizontal, 10)
-            .frame(height: 30)
+            .frame(minHeight: 30)
             .background(row.type == .victoryPoint ? GameButtonStyle.amber : GameButtonStyle.sea)
             Text(row.text)
                 .font(.callout)

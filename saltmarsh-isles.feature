@@ -755,6 +755,7 @@ Feature: Saltmarsh Isles pass-and-play game
       And Crimson has rolled and holds a playable Corner the market
       And Crimson chooses ore and taps "Play"
       Then the played pills read "Knight, Corner the market"
+      And the played line is labelled "Played"
       When Crimson's turn comes round again
       And Crimson has rolled and holds a playable Knight
       And Crimson plays the Knight, moves the robber and steals
@@ -767,6 +768,12 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: The hand heading counts every card
       Given Crimson holds 2 Victory point cards and 1 Knight
       Then the hand heading reads "In your hand (3)"
+      And beside it the hint reads "1 card per turn"
+
+    Scenario: An empty hand says so
+      Given setup is complete and Crimson has rolled
+      Then the hand heading reads "In your hand (0)"
+      And the hand reads "Nothing up your sleeve yet."
 
     Scenario: A card that can be played now says so
       Given Crimson has rolled and holds a playable Knight

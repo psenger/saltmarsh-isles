@@ -229,6 +229,15 @@ func registerDevCards(_ r: StepRegistry) {
             s.players[w.seat(c[0])].knightsPlayed = Int(c[1])!
         }
     }
+    r.then(#"the played line is labelled "([^"]*)""#) { w, c, _ in
+        try expectEqual(Strings.played, c[0], "played label")
+        try expectTrue(!w.screen.playedPills.isEmpty, "no played line")
+    }
+    r.then(#"beside it the hint reads "([^"]*)""#) { _, c, _ in try expectEqual(Strings.oneCardPerTurnHint, c[0], "heading hint") }
+    r.then(#"the hand reads "([^"]*)""#) { w, c, _ in
+        try expectEqual(Strings.noCardsYet, c[0], "empty hand")
+        try expectTrue(w.screen.devCards.isEmpty, "the hand is not empty")
+    }
     r.then(#"the hand heading reads "([^"]*)""#) { w, c, _ in try expectEqual(w.screen.handHeading, c[0], "hand heading") }
     r.then(#"(\w+) and (\w+) hold 0 (\w+)"#) { w, c, _ in
         for name in [c[0], c[1]] { try expectEqual(w.state.players[w.seat(name)].hand[Resource(rawValue: c[2])!], 0, "\(name)'s \(c[2])") }
