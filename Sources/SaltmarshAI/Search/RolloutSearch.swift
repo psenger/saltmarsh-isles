@@ -19,6 +19,17 @@ enum RolloutSearch {
         var move: Move
         /// Playouts that ran to an evaluation.
         var playouts: Int
+        /// Guessed states drawn.
+        var samples: Int
+        var elapsed: Duration
+        var outOfTime: Bool
+        /// The search overruled candidates[0].
+        var changedMind: Bool
+
+        /// Two decisions are the same when they chose the same and measured the same; the clock does not count.
+        static func == (a: Decision, b: Decision) -> Bool {
+            a.move == b.move && a.playouts == b.playouts && a.samples == b.samples && a.outOfTime == b.outOfTime && a.changedMind == b.changedMind
+        }
     }
 
     /// `candidates[0]` is the heuristic's own choice: the answer with fewer than two candidates, when the budget
@@ -28,13 +39,18 @@ enum RolloutSearch {
     /// playouts; what was measured so far decides.
     static func choose(view: PlayerView, candidates: [Move], budget: SearchBudget, rng: inout SeededRNG,
                        clock: ContinuousClock = .continuous) -> Decision {
-        guard candidates.count >= 2 else { return Decision(move: candidates.first ?? .endTurn, playouts: 0) }
         let start = clock.now
-        func overCap() -> Bool { budget.timeCap.map { clock.now - start >= $0 } ?? false }
+        guard candidates.count >= 2 else { return Decision(move: candidates.first ?? .endTurn, playouts: 0, samples: 0, elapsed: .zero, outOfTime: false, changedMind: false) }
+        var outOfTime = false
+        func overCap() -> Bool {
+            guard let cap = budget.timeCap, clock.now - start >= cap else { return false }
+            outOfTime = true; return true
+        }
         var total = [Int](repeating: 0, count: candidates.count), runs = [Int](repeating: 0, count: candidates.count)
-        var played = 0
+        var played = 0, drawn = 0
         samples: for _ in 0..<budget.samples {
             if played >= budget.playouts || overCap() { break }
+            drawn += 1
             var sample = Engine.sampleFullState(from: view, using: &rng)
             // One turn past a full round, so the seat's own next turn, where this turn's cards get spent, is played.
             let stopTurn = sample.turn + budget.rounds * sample.playerCount + 1
@@ -56,7 +72,7 @@ enum RolloutSearch {
             if bestMean == nil || mean > bestMean! { best = i; bestMean = mean }
         }
         if best != 0, runs[0] > 0, let bestMean, bestMean - Double(total[0]) / Double(runs[0]) < Double(budget.holdBack) { best = 0 }
-        return Decision(move: candidates[best], playouts: played)
+        return Decision(move: candidates[best], playouts: played, samples: drawn, elapsed: clock.now - start, outOfTime: outOfTime, changedMind: best != 0)
     }
 
     /// Every seat plays the fallback policy until the turn counter reaches `stopTurn`, the game ends, or the

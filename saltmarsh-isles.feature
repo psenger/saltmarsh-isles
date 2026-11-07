@@ -978,6 +978,16 @@ Feature: Saltmarsh Isles pass-and-play game
       Then the players are Crimson, Cobalt and Amber
       And Cobalt and Amber are AI seats
 
+    Scenario: A searching seat says how hard it thought
+      When I start a 3-player game with Crimson human, Cobalt an AI Captain and Amber an AI Captain
+      And the first-player rolls are Crimson 8, Cobalt 5 and Amber 3
+      And the AI seats have finished acting
+      And Crimson taps a glowing corner
+      And Crimson taps a dashed edge
+      And the AI seats have finished acting
+      Then the log has a line starting "Cobalt weighed"
+      And the log has a line starting "Amber weighed"
+
     Scenario: AI seats take their turns by themselves
       Given a 3-player game with Crimson human and the others AI
       When the AI seats have finished acting

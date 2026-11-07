@@ -22,6 +22,7 @@ func registerCommon(_ r: StepRegistry) {
     r.then(#"the status does not read "([^"]*)""#) { w, c, _ in try expectTrue(w.screen.status != c[0], "status should not read \(c[0])") }
     r.then(#"the log reads "([^"]*)""#) { w, c, _ in try expectEqual(w.state.log.last ?? "", c[0], "last log line") }
     r.then(#"the log contains "([^"]*)""#) { w, c, _ in try expectTrue(w.state.log.contains(c[0]), "log should contain \(c[0])") }
+    r.then(#"the log has a line starting "([^"]*)""#) { w, c, _ in try expectTrue(w.state.log.contains { $0.hasPrefix(c[0]) }, "log should have a line starting \(c[0])") }
     r.then(#"the log ends with "([^"]*)""#) { w, c, _ in try expectTrue((w.state.log.last ?? "").hasSuffix(c[0]), "log should end with \(c[0]); got \(w.state.log.last ?? "")") }
     r.then(#"the log twice reads "([^"]*)""#) { w, c, _ in try expectEqual(Array(w.state.log.suffix(2)), [c[0], c[0]], "last two log lines") }
 

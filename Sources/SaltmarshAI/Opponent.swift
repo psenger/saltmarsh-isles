@@ -5,6 +5,26 @@ import SaltmarshEngine
 public protocol Opponent: Sendable {
     func chooseMove(view: PlayerView, legal: [Move]) async -> Move
     func respondToTrade(_ offer: TradeOffer, view: PlayerView) async -> TradeResponse
+    /// How hard the seat thought about its last answer, reported once; nil when it did not search.
+    func lastThought() async -> Thought?
+}
+
+public extension Opponent {
+    func lastThought() async -> Thought? { nil }
+}
+
+/// What a searching seat did before a decision, for the game log.
+public struct Thought: Sendable, Equatable {
+    /// Candidate moves weighed.
+    public var moves: Int
+    /// Guessed full states played out.
+    public var hands: Int
+    public var playouts: Int
+    public var seconds: Double
+    /// The wall-clock cap stopped the search before its count was spent.
+    public var outOfTime: Bool
+    /// The search overruled the heuristic's own choice.
+    public var changedMind: Bool
 }
 
 public enum OpponentFactory {

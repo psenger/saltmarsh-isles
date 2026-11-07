@@ -1,4 +1,5 @@
 import SaltmarshEngine
+import SaltmarshAI
 
 /// Every status, header and button string the panel shows, in one place. The wording is the
 /// feature file's, word for word.
@@ -25,6 +26,13 @@ public enum Strings {
     /// The same offer from the responder's side: "You give 1 ore and get 2 timber."
     public static func offerTerms(_ offer: TradeOffer) -> String { "You give \(offer.want) and get \(offer.give)." }
     public static func thinking(_ name: String) -> String { "\(name) is plotting…" }
+    /// A searching seat's log line: "Amber weighed 4 moves over 32 guessed hands (128 playouts, 0.6 s) and stuck with its first instinct."
+    public static func thought(_ name: String, _ t: Thought) -> String {
+        let tenths = Int((t.seconds * 10).rounded())
+        let time = "\(tenths / 10).\(tenths % 10) s" + (t.outOfTime ? ", out of time" : "")
+        let verdict = t.changedMind ? "changed its mind" : "stuck with its first instinct"
+        return "\(name) weighed \(t.moves) moves over \(t.hands) guessed hands (\(t.playouts) playouts, \(time)) and \(verdict)."
+    }
     public static func cannotPay(_ want: ResourceCounts) -> String { "You don't have \(want)" }
 
     // Header suffixes

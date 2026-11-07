@@ -21,13 +21,13 @@ import SaltmarshTestSupport
         let s = crimsonToTrade()
         let offer = Move.proposeTrade(TradeOffer(proposer: 0, give: [.timber: 3], want: [.ore: 1], to: nil))
         #expect(!Engine.legalMoves(s).contains(offer)); #expect(Engine.isLegal(offer, in: s))
-        let move = await TurnRunner.step(state: s, opponents: [0: Fixed(move: offer)])
+        let move = await TurnRunner.step(state: s, opponents: [0: Fixed(move: offer)])?.move
         #expect(move == offer)
     }
     @Test func illegalChoiceIsReplaced() async {
         let s = crimsonToTrade()
         let tooMuch = Move.proposeTrade(TradeOffer(proposer: 0, give: [.timber: 4], want: [.ore: 1], to: nil))
-        let move = await TurnRunner.step(state: s, opponents: [0: Fixed(move: tooMuch)])
+        let move = await TurnRunner.step(state: s, opponents: [0: Fixed(move: tooMuch)])?.move
         #expect(move == .endTurn)
     }
 }

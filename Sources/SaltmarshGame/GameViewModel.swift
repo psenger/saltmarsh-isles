@@ -159,10 +159,12 @@ public final class GameViewModel {
             guard let self else { return }
             var moves = 0
             while !Task.isCancelled, moves < Self.aiMoveCap, let current = self.state,
-                  let move = await TurnRunner.step(state: current, opponents: self.opponents) {
+                  let step = await TurnRunner.step(state: current, opponents: self.opponents) {
                 // A new game cancelled this turn while the opponent was deciding; the move is for the old game.
                 if Task.isCancelled { return }
+                let move = step.move
                 var next = current
+                if let thought = step.thought { next.log.append(Strings.thought(next.players[Engine.actingPlayer(current)].name, thought)) }
                 do { try Engine.apply(move, to: &next) } catch { break }
                 self.state = next
                 self.afterMove(move, from: current)

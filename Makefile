@@ -12,11 +12,12 @@ mac:
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination 'platform=macOS' build
 
 # Help pages only load from an Applications folder, so this runs the Mac app from one.
+# A Release build, so the Captain and Admiral search at full speed; a Debug build is about twenty times slower.
 run:
-	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination 'platform=macOS' -derivedDataPath build build
+	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration Release -destination 'platform=macOS' -derivedDataPath build build
 	rm -rf "$(HOME)/Applications/SaltmarshIslesDev"
 	mkdir -p "$(HOME)/Applications/SaltmarshIslesDev"
-	ditto build/Build/Products/Debug/SaltmarshIsles.app "$(HOME)/Applications/SaltmarshIslesDev/SaltmarshIsles.app"
+	ditto build/Build/Products/Release/SaltmarshIsles.app "$(HOME)/Applications/SaltmarshIslesDev/SaltmarshIsles.app"
 	open -n "$(HOME)/Applications/SaltmarshIslesDev/SaltmarshIsles.app"
 
 # A Release build for Apple silicon and Intel Macs, signed ad hoc, in a disk image

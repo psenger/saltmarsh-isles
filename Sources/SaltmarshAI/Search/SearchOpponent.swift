@@ -8,6 +8,7 @@ public actor SearchOpponent: Opponent {
     private let budget: SearchBudget
     private var rng: SeededRNG
     private var memory = TurnMemory()
+    private var thought: Thought?
 
     public init(level: EffortLevel, seed: UInt64) {
         let profile = LevelProfile.forLevel(level)
@@ -27,8 +28,20 @@ public actor SearchOpponent: Opponent {
         switch candidates.count {
         case 0: return HeuristicPolicy.choose(view: view, legal: legal, profile: profile, memory: &memory, rng: &rng)
         case 1: return candidates[0]
-        default: return RolloutSearch.choose(view: view, candidates: candidates, budget: budget, rng: &rng).move
+        default: return remember(RolloutSearch.choose(view: view, candidates: candidates, budget: budget, rng: &rng), over: candidates.count).move
         }
+    }
+
+    /// The last searched decision's measurements, reported once.
+    public func lastThought() async -> Thought? {
+        defer { thought = nil }
+        return thought
+    }
+
+    private func remember(_ d: RolloutSearch.Decision, over moves: Int) -> RolloutSearch.Decision {
+        let seconds = Double(d.elapsed.components.seconds) + Double(d.elapsed.components.attoseconds) / 1e18
+        thought = Thought(moves: moves, hands: d.samples, playouts: d.playouts, seconds: seconds, outOfTime: d.outOfTime, changedMind: d.changedMind)
+        return d
     }
 
     /// The heuristic's answer first; when accepting is also open, both are played out. A counter the heuristic
@@ -39,7 +52,7 @@ public actor SearchOpponent: Opponent {
         var answers = [first]
         for answer in [TradeResponse.accepted, .declined] where answer != first { answers.append(answer) }
         let candidates = answers.map { Move.respondToTrade(seat: view.me, $0) }
-        let decision = RolloutSearch.choose(view: view, candidates: candidates, budget: budget, rng: &rng)
+        let decision = remember(RolloutSearch.choose(view: view, candidates: candidates, budget: budget, rng: &rng), over: candidates.count)
         if case .respondToTrade(_, let answer) = decision.move { return answer }
         return first
     }

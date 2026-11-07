@@ -1,6 +1,6 @@
 import Testing
 import SaltmarshEngine
-import SaltmarshAI
+@testable import SaltmarshAI
 import SaltmarshTestSupport
 @testable import SaltmarshGame
 
@@ -245,6 +245,17 @@ private struct BuyThenEnd: Opponent {
         let again = GameViewModel(store: store, pacing: NoPacing()) { c, _ in c.isAI ? RandomOpponent(seed: 9) : nil }
         #expect(again.resume()); await again.waitForAI()
         #expect(again.state!.turn > mid.turn || Engine.actingPlayer(again.state!) != 0 || isOver(again.state!))
+    }
+    @Test func searchingSeatsLogHowHardTheyThought() async {
+        let tiny = SearchBudget(samples: 2, rounds: 1, playouts: 8, timeCap: nil)
+        let vm = GameViewModel(store: InMemoryGameStore(), pacing: NoPacing()) { c, seat in
+            c.isAI ? SearchOpponent(level: .captain, seed: UInt64(seat), budget: tiny) : nil
+        }
+        vm.newGame(GameConfig(controllers: [.ai(.captain), .ai(.captain)], seed: 3)); await vm.waitForAI()
+        let thoughts = vm.state!.log.filter { $0.contains(" weighed ") }
+        #expect(!thoughts.isEmpty)
+        #expect(thoughts.allSatisfy { $0.hasPrefix("Crimson weighed ") || $0.hasPrefix("Cobalt weighed ") })
+        #expect(thoughts.allSatisfy { $0.contains("guessed hands") && ($0.hasSuffix("stuck with its first instinct.") || $0.hasSuffix("changed its mind.")) })
     }
     @Test func illegalAIMovesAreResolved() async {                         // Review Focus 1
         struct Stubborn: Opponent {
