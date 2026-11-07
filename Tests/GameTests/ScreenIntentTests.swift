@@ -76,8 +76,8 @@ import SaltmarshTestSupport
     @Test func devCardRows() {
         var s = TestGames.rolled(8); s.clearHands(); s.players[0].devCards = [DevCard(type: .knight, boughtOnTurn: s.turn), DevCard(type: .victoryPoint, boughtOnTurn: -1), DevCard(type: .bumperHarvest, boughtOnTurn: -1)]
         let vm = humans(s); var rows = vm.screen.devCards
-        #expect(rows.map(\.name) == ["Knight", "Victory point", "Bumper harvest"]); #expect(rows[0].note == "bought this turn"); #expect(!rows[0].playEnabled)
-        #expect(rows[1].note == "counts automatically"); #expect(!rows[1].playEnabled); #expect(rows[2].note == nil); #expect(rows[2].playEnabled); #expect(rows[2].needsChoices)
+        #expect(rows.map(\.name) == ["Knight", "Bumper harvest", "Victory point"]); #expect(rows[0].note == "bought this turn"); #expect(!rows[0].playEnabled)
+        #expect(rows[2].note == "counts automatically"); #expect(!rows[2].playEnabled); #expect(rows[1].note == nil); #expect(rows[1].playEnabled); #expect(rows[1].needsChoices)
         #expect(vm.screen.deckCount == 25)
         vm.playCard(2, bumper: (.ore, .ore)); rows = vm.screen.devCards
         #expect(rows.map(\.name) == ["Knight", "Victory point"]); #expect(rows[0].note == "bought this turn")

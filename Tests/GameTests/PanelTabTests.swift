@@ -136,10 +136,10 @@ import SaltmarshTestSupport
         var s = TestGames.afterSetup()
         s.players[0].devCards = [DevCard(type: .roadCrew, boughtOnTurn: -1), DevCard(type: .knight, boughtOnTurn: -1)]
         let rows = screen(s).devCards
-        #expect(rows[0].note == Strings.rollFirst)
-        #expect(!rows[0].playEnabled)
-        #expect(rows[1].note == nil)
-        #expect(rows[1].playEnabled)
+        #expect(rows[1].note == Strings.rollFirst)
+        #expect(!rows[1].playEnabled)
+        #expect(rows[0].note == nil)
+        #expect(rows[0].playEnabled)
     }
     @Test func scoreRowCarriesThePointsAlone() {
         #expect(screen(TestGames.rolled(8)).scoreboard[0].points == 2)

@@ -729,6 +729,45 @@ Feature: Saltmarsh Isles pass-and-play game
       And Cobalt and Amber hold 0 ore
       And the log reads "Crimson cornered the ore market and took 5 (Cobalt 3, Amber 2)."
 
+    Scenario: Each card says what it does
+      Given Crimson holds one of each development card
+      Then the cards read:
+        | card              | text                                                                                             |
+        | Knight            | Move the robber and steal a card from someone with a building there. Counts toward largest army. |
+        | Road crew         | Build 2 roads for free. The usual road rules apply.                                              |
+        | Bumper harvest    | Take any 2 cards from the bank. The same resource twice is fine.                                 |
+        | Corner the market | Name a resource. Every other player hands over all of theirs.                                    |
+        | Victory point     | Worth 1 point from the moment you drew it. Hidden from everyone until you win.                   |
+
+    Scenario: Two of the same card share one tile
+      Given Crimson bought a Knight this turn
+      And Crimson also holds a Knight bought on an earlier turn
+      Then Crimson's hand shows one Knight tile holding 2 cards
+      And that Knight's "Play" button is enabled
+      And the Knight tile has no note
+      When Crimson taps "Play" on the Knight tile
+      Then Crimson still holds the Knight bought this turn
+
+    Scenario: Played cards show as pills
+      Given Crimson has rolled and holds a playable Knight
+      When Crimson plays the Knight, moves the robber and steals
+      And Crimson's turn comes round again
+      And Crimson has rolled and holds a playable Corner the market
+      And Crimson chooses ore and taps "Play"
+      Then the played pills read "Knight, Corner the market"
+      When Crimson's turn comes round again
+      And Crimson has rolled and holds a playable Knight
+      And Crimson plays the Knight, moves the robber and steals
+      Then the played pills read "Knight ×2, Corner the market"
+
+    Scenario: Played pills in a game saved before they were recorded
+      Given a game saved before played cards were recorded, in which Crimson has played 2 Knights
+      Then the played pills read "Knight ×2"
+
+    Scenario: The hand heading counts every card
+      Given Crimson holds 2 Victory point cards and 1 Knight
+      Then the hand heading reads "In your hand (3)"
+
   # ─────────────────────────────────────────────────────────────
   Rule: Longest road
 

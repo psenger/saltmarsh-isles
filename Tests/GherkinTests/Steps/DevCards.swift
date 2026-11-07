@@ -18,7 +18,11 @@ func registerDevCards(_ r: StepRegistry) {
     func give(_ w: World, _ seat: Int, _ type: DevCardType, turn: Int) {
         w.mutate { s in s.players[seat].devCards.append(DevCard(type: type, boughtOnTurn: turn)) }
     }
-    func rowFor(_ w: World, _ type: DevCardType) -> DevCardRow? { w.screen.devCards.first { $0.name == type.displayName } }
+    func rowFor(_ w: World, _ type: DevCardType) -> DevCardRow? { w.screen.devCards.first { $0.type == type } }
+    /// The row for the card a step gave or drew last; the hand is grouped by type, so it need not be the last row.
+    func givenRow(_ w: World) -> DevCardRow? {
+        w.state.players[w.state.current].devCards.last.flatMap { rowFor(w, $0.type) }
+    }
     func indexOf(_ w: World, _ type: DevCardType) -> Int { w.state.players[w.state.current].devCards.firstIndex { $0.type == type }! }
     /// A Cobalt settlement with cards on the chosen tile, then the robber moves there and Crimson steals.
     func moveAndSteal(_ w: World) {
@@ -56,10 +60,10 @@ func registerDevCards(_ r: StepRegistry) {
         give(w, w.seat(c[0]), card(c[1]), turn: w.state.turn)
     }
     r.then(#"that card's "Play" button is disabled"#) { w, _, _ in
-        guard let row = w.screen.devCards.last else { throw StepError.failed("no card row") }
+        guard let row = givenRow(w) else { throw StepError.failed("no card row") }
         try expectEqual(row.playEnabled, false, "Play on \(row.name)")
     }
-    r.then(#"the card notes "([^"]*)""#) { w, c, _ in try expectEqual(w.screen.devCards.last?.note ?? "", c[0], "card note") }
+    r.then(#"the card notes "([^"]*)""#) { w, c, _ in try expectEqual(givenRow(w)?.note ?? "", c[0], "card note") }
     r.given(#"(\w+) has played a development card this turn"#) { w, c, _ in
         roll(w, w.seat(c[0]))
         give(w, w.seat(c[0]), .knight, turn: -1)
@@ -167,6 +171,56 @@ func registerDevCards(_ r: StepRegistry) {
         w.rememberedHands = w.state.players.map(\.hand)
         w.vm.playCard(indexOf(w, .cornerMarket), market: Resource(rawValue: c[1])!)
     }
+    r.given(#"(\w+) also holds a (.+) bought on an earlier turn"#) { w, c, _ in give(w, w.seat(c[0]), card(c[1]), turn: -1) }
+    r.given(#"(\w+) holds one of each development card"#) { w, c, _ in
+        for type in DevCardType.allCases { give(w, w.seat(c[0]), type, turn: -1) }
+    }
+    r.given(#"(\w+) holds (\d+) (.+) cards and (\d+) (.+)"#) { w, c, _ in
+        for _ in 0..<Int(c[1])! { give(w, w.seat(c[0]), card(c[2]), turn: -1) }
+        for _ in 0..<Int(c[3])! { give(w, w.seat(c[0]), card(c[4]), turn: -1) }
+    }
+    r.then(#"the cards read:"#) { w, _, table in
+        guard let table else { throw StepError.failed("no table") }
+        let rows = w.screen.devCards
+        try expectEqual(rows.map(\.name), table.dropFirst().map { $0[0] }, "card names")
+        try expectEqual(rows.map(\.text), table.dropFirst().map { $0[1] }, "card texts")
+    }
+    r.then(#"(\w+)'s hand shows one (.+) tile holding (\d+) cards"#) { w, c, _ in
+        let rows = w.screen.devCards.filter { $0.type == card(c[1]) }
+        try expectEqual(rows.count, 1, "\(c[1]) tiles")
+        try expectEqual(rows.first?.count, Int(c[2])!, "cards on the \(c[1]) tile")
+    }
+    r.then(#"the (.+) tile has no note"#) { w, c, _ in
+        guard let row = rowFor(w, card(c[0])) else { throw StepError.failed("no \(c[0]) tile") }
+        try expectEqual(row.note, nil, "note on the \(c[0]) tile")
+    }
+    r.when(#"(\w+) taps "Play" on the (.+) tile"#) { w, c, _ in
+        guard let row = rowFor(w, card(c[1])) else { throw StepError.failed("no \(c[1]) tile") }
+        w.vm.playCard(row.index)
+    }
+    r.then(#"(\w+) still holds the (.+) bought this turn"#) { w, c, _ in
+        let held = w.state.players[w.seat(c[0])].devCards.filter { $0.type == card(c[1]) }
+        try expectEqual(held.map(\.boughtOnTurn), [w.state.turn], "\(c[1]) cards left")
+    }
+    r.when(#"(\w+)'s turn comes round again"#) { w, c, _ in
+        w.mutate { s in
+            s.turn += s.playerCount
+            s.current = w.seat(c[0])
+            s.dice = nil
+            s.devCardPlayedThisTurn = false
+            s.phase = .awaitingRoll
+        }
+    }
+    r.then(#"the played pills read "([^"]*)""#) { w, c, _ in
+        try expectEqual(w.screen.playedPills.joined(separator: ", "), c[0], "played pills")
+    }
+    r.given(#"a game saved before played cards were recorded, in which (\w+) has played (\d+) Knights"#) { w, c, _ in
+        w.mutate { s in
+            for i in s.players.indices { s.players[i].cardsPlayed = nil }
+            s.players[w.seat(c[0])].knightsPlayed = Int(c[1])!
+        }
+    }
+    r.then(#"the hand heading reads "([^"]*)""#) { w, c, _ in try expectEqual(w.screen.handHeading, c[0], "hand heading") }
     r.then(#"(\w+) and (\w+) hold 0 (\w+)"#) { w, c, _ in
         for name in [c[0], c[1]] { try expectEqual(w.state.players[w.seat(name)].hand[Resource(rawValue: c[2])!], 0, "\(name)'s \(c[2])") }
     }

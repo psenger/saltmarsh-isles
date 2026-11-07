@@ -214,7 +214,14 @@ extension ScreenState {
                               tradeEnabled: tradeLegal.contains(.harbourTrade(harbour: ch.index, give: choice.give, get: choice.get)),
                               rowEnabled: !pairs.isEmpty)
         }
-        let devRows = aiThinking ? [] : s.players[current].devCards.enumerated().map { i, card -> DevCardRow in
+        // One row per kind of card held, in this order. A row plays the first copy not bought this turn.
+        let cardOrder: [DevCardType] = [.knight, .roadCrew, .bumperHarvest, .cornerMarket, .victoryPoint]
+        let heldCards = s.players[current].devCards
+        let devRows = aiThinking ? [] : cardOrder.compactMap { type -> DevCardRow? in
+            let copies = heldCards.indices.filter { heldCards[$0].type == type }
+            guard let first = copies.first else { return nil }
+            let i = copies.first { heldCards[$0].boughtOnTurn != s.turn } ?? first
+            let card = heldCards[i]
             let note: String?
             if card.type == .victoryPoint { note = Strings.countsAutomatically }
             else if card.boughtOnTurn == s.turn { note = Strings.boughtThisTurn }
@@ -231,7 +238,12 @@ extension ScreenState {
             }
             return DevCardRow(index: i, name: card.type.displayName, note: note, playEnabled: note == nil && playable,
                               needsChoices: card.type == .bumperHarvest || card.type == .cornerMarket,
-                              type: card.type, count: 1, text: Strings.cardText(card.type))
+                              type: card.type, count: copies.count, text: Strings.cardText(card.type))
+        }
+        let played = s.players[current].cardsPlayed ?? []
+        let playedPills = aiThinking ? [] : cardOrder.compactMap { type -> String? in
+            let n = type == .knight ? s.players[current].knightsPlayed : played.filter { $0 == type }.count
+            return n > 0 ? Strings.playedPill(type, n) : nil
         }
         var responses: [ResponseRow] = []
         if case .tradeOffered(_, let answers) = s.phase {
@@ -324,7 +336,7 @@ extension ScreenState {
             victory: victory, victoryAnimation: reduceMotion ? .reduced : .full, enabledTabs: enabledTabs, tabs: tabs, handover: handover,
             drawnCard: ui.drawnCard.map { DrawnCard(title: Strings.youDrew($0.displayName), text: Strings.drawnCardText($0)) },
             pointsBreakdown: aiThinking ? [] : breakdown(current), totalPoints: aiThinking ? 0 : Engine.totalPoints(s, player: current),
-            handHeading: Strings.inYourHand(aiThinking ? 0 : s.players[current].devCards.count), playedPills: [])
+            handHeading: Strings.inYourHand(aiThinking ? 0 : heldCards.count), playedPills: playedPills)
     }
 }
 
