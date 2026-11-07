@@ -74,6 +74,9 @@ when you change things:
   `GameState`. Do not widen that view to make an opponent smarter.
 - **The spec is the source of truth for the rules.** If a change alters how the game plays,
   update `saltmarsh-isles-spec.md` in the same pull request.
+- **The log is a replay contract.** A game must rebuild from its log alone (`LogReplayTests`). If you add
+  or change a log line, keep every state change and random outcome in it, update the scenario that pins
+  the wording, and update `docs/game-log.md`.
 
 ## Tests and scenarios
 

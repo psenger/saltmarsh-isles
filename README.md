@@ -219,6 +219,7 @@ flowchart TD
 | `saltmarsh-isles.feature` | Gherkin scenarios for every player interaction. |
 | `Config/` | Signing settings. Your own team goes in the untracked `Config/Local.xcconfig`. |
 | `docs/images/` | Screenshots used in this README. |
+| `docs/game-log.md` | The game log: every line type, the board numbering, and how to replay a game from it. |
 
 ## Web prototype
 
