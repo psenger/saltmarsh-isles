@@ -16,6 +16,8 @@ public final class GameViewModel {
     public private(set) var rollCount = 0
     /// The tiles the latest roll paid out from, so the board can celebrate them. Empty after a roll for first.
     public private(set) var payingTiles: [Int] = []
+    /// Where `resume()` put a save the last launch crashed on, when it found one.
+    public private(set) var setAsideSave: URL?
 
     private let store: GameStore
     private let pacing: Pacing
@@ -43,11 +45,18 @@ public final class GameViewModel {
         install(Engine.newGame(config))
     }
 
-    /// Loads the saved game, if any, and restarts an AI turn when one was in progress.
+    /// Loads the saved game, if any, and restarts an AI turn when one was in progress. A save the last launch
+    /// died on while resuming is set aside instead, so a crash cannot repeat itself at every start.
     @discardableResult
     public func resume() -> Bool {
+        if store.resumeWasInterrupted {
+            setAsideSave = (try? store.setAside()) ?? nil
+            return false
+        }
         guard let saved = try? store.load() else { return false }
+        try? store.markResuming()
         install(saved)
+        if aiTask == nil { try? store.resumeSucceeded() }      // a human must act: nothing risky runs on its own
         return true
     }
 
@@ -159,6 +168,7 @@ public final class GameViewModel {
             guard let self else { return }
             var moves = 0
             while !Task.isCancelled, moves < Self.aiMoveCap, let current = self.state,
+                  (try? self.store.markResuming()) != nil,
                   let step = await TurnRunner.step(state: current, opponents: self.opponents) {
                 // A new game cancelled this turn while the opponent was deciding; the move is for the old game.
                 if Task.isCancelled { return }
@@ -168,6 +178,7 @@ public final class GameViewModel {
                 do { try Engine.apply(move, to: &next) } catch { break }
                 self.state = next
                 self.afterMove(move, from: current)
+                try? self.store.resumeSucceeded()               // the step and its save are through
                 moves += 1
                 await self.pacing.pause()
                 // The dice tumble for most of one pause; these two let them land and be read before the seat moves on.
@@ -178,6 +189,7 @@ public final class GameViewModel {
             }
             // These flags now belong to whatever replaced a cancelled turn.
             if Task.isCancelled { return }
+            try? self.store.resumeSucceeded()
             self.aiThinking = false
             self.aiTask = nil
         }

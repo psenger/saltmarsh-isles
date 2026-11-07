@@ -46,4 +46,30 @@ import SaltmarshTestSupport
         #expect(!vm.resume())
         #expect(vm.state == nil)
     }
+    @Test func theResumeMarkSurvivesUntilCleared() throws {
+        let store = FileGameStore(directory: directory)
+        try store.save(TestGames.fresh())
+        #expect(!store.resumeWasInterrupted)
+        try store.markResuming(); #expect(store.resumeWasInterrupted)
+        #expect(FileGameStore(directory: directory).resumeWasInterrupted)              // the next launch sees it
+        try store.resumeSucceeded(); #expect(!store.resumeWasInterrupted)
+    }
+    @Test func settingAsideKeepsTheGameForAReplay() throws {
+        let store = FileGameStore(directory: directory), game = TestGames.midGame(seed: 6)
+        try store.save(game); try store.markResuming()
+        let kept = try #require(try store.setAside())
+        #expect(kept.lastPathComponent.hasPrefix("game-crashed-")); #expect(kept.pathExtension == "json")
+        #expect(try JSONDecoder().decode(GameState.self, from: Data(contentsOf: kept)) == game)
+        #expect(try store.load() == nil); #expect(!store.resumeWasInterrupted)
+        #expect(try store.setAside() == nil)                                               // nothing left to move
+    }
+    @Test func anInterruptedResumeStartsCleanAndKeepsTheSave() throws {
+        let store = FileGameStore(directory: directory)
+        try store.save(TestGames.midGame(seed: 7)); try store.markResuming()               // the last launch died here
+        let vm = GameViewModel(store: store, pacing: NoPacing()) { _, _ in nil }
+        #expect(!vm.resume()); #expect(vm.state == nil)
+        #expect(vm.setAsideSave?.lastPathComponent.hasPrefix("game-crashed-") == true)
+        #expect(try store.load() == nil)
+        #expect(FileGameStore(directory: directory).resumeWasInterrupted == false)
+    }
 }

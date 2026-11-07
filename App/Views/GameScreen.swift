@@ -53,7 +53,7 @@ struct GameScreen: View {
         .sheet(item: $sheet) { kind in
             switch kind {
             case .newGame:
-                NewGameSheet { config in
+                NewGameSheet(note: vm.setAsideSave == nil ? nil : Strings.setAsideNote) { config in
                     vm.newGame(config)
                     sheet = nil
                 }

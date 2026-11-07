@@ -1067,6 +1067,13 @@ Feature: Saltmarsh Isles pass-and-play game
       And the saves list "Newest"
       And the saves do not list "Save 2"
 
+    Scenario: A save that crashed the last launch is set aside
+      Given setup is complete and Crimson has rolled
+      And the last launch died while resuming the game
+      When the app is relaunched
+      Then no game is on the board
+      And the crashed game is kept aside for a replay
+
     Scenario: Deleting a save makes room
       Given setup is complete and Crimson has rolled
       And all 5 saves are used

@@ -17,6 +17,10 @@ func registerSaving(_ r: StepRegistry) {
         try w.vm.saveGame(named: c[0], replacing: named(w, c[1]).id)
     }
     r.when(#"the game moves on a turn"#) { w, _, _ in w.vm.endTurn() }
+    r.given(#"the last launch died while resuming the game"#) { w, _, _ in try w.store.markResuming() }
+    r.when(#"the app is relaunched"#) { w, _, _ in _ = w.relaunch() }
+    r.then(#"no game is on the board"#) { w, _, _ in try expectTrue(w.vm.state == nil, "a game is on the board") }
+    r.then(#"the crashed game is kept aside for a replay"#) { w, _, _ in try expectEqual(w.store.setAsideGames.count, 1, "games set aside") }
     r.when(#"I load the save called "([^"]*)""#) { w, c, _ in try w.vm.loadGame(id: named(w, c[0]).id) }
     r.when(#"I delete the save called "([^"]*)""#) { w, c, _ in try w.vm.deleteSavedGame(id: named(w, c[0]).id) }
     r.given(#"all 5 saves are used"#) { w, _, _ in

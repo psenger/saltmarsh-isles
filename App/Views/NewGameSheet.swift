@@ -3,6 +3,8 @@ import SaltmarshEngine
 
 /// Choose the player count and who plays each seat. Defaults: 3 players, Crimson human, the rest Mate.
 struct NewGameSheet: View {
+    /// Shown under the title, for example when the last game was set aside after a crash.
+    var note: String? = nil
     let onStart: (GameConfig) -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -13,6 +15,7 @@ struct NewGameSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Saltmarsh Isles").font(.title2.bold())
+            if let note { Text(note).font(.footnote).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true) }
             Picker("Players", selection: $count) {
                 ForEach(2...4, id: \.self) { Text("\($0)").tag($0) }
             }

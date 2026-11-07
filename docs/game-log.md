@@ -23,6 +23,7 @@ Two rules hold for every line:
 | The Log tab in the app | the current game's log, as it grows |
 | `~/Library/Application Support/SaltmarshIsles/game.json` | the autosave of the game in progress; its `log` array |
 | `~/Library/Application Support/SaltmarshIsles/saves/<id>.json` | each named save, same shape |
+| `~/Library/Application Support/SaltmarshIsles/game-crashed-<date>.json` | a game the app set aside because the previous launch crashed while resuming it; replay it to find the bug |
 | `GameState.log` | in code, after any move |
 
 ## The header

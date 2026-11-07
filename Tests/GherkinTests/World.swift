@@ -39,6 +39,13 @@ final class World {
     func load(_ s: GameState) { frozenScreen = nil; vm.load(s) }
 
     /// A fresh view model for a game with the given seats.
+    /// A fresh view model on the same store, as a new launch of the app would make, resuming whatever is saved.
+    func relaunch() -> Bool {
+        frozenScreen = nil
+        vm = GameViewModel(store: store, pacing: NoPacing(), saves: saves)
+        return vm.resume()
+    }
+
     func newGame(_ controllers: [Controller], seed: UInt64 = 1) {
         frozenScreen = nil
         vm = GameViewModel(store: store, pacing: NoPacing(), saves: saves)

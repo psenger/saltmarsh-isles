@@ -257,6 +257,30 @@ private struct BuyThenEnd: Opponent {
         #expect(thoughts.allSatisfy { $0.hasPrefix("Crimson weighed ") || $0.hasPrefix("Cobalt weighed ") })
         #expect(thoughts.allSatisfy { $0.contains("guessed hands") && ($0.hasSuffix("stuck with its first instinct.") || $0.hasSuffix("changed its mind.")) })
     }
+    @Test func theResumeMarkStandsOnlyWhileAStepRuns() async {
+        let store = InMemoryGameStore()
+        try? store.save(TestGames.rolled(8))                                             // a human must act
+        let quiet = GameViewModel(store: store, pacing: NoPacing()) { _, _ in nil }
+        #expect(quiet.resume()); #expect(!store.resumeWasInterrupted)
+        var s = TestGames.rolled(8); s.players[1].controller = .ai(.mate); s.current = 1; s.phase = .awaitingRoll
+        try? store.save(s)
+        let gate = Gate()
+        let vm = GameViewModel(store: store, pacing: NoPacing()) { c, _ in c.isAI ? GatedOpponent(gate: gate) : nil }
+        #expect(vm.resume())
+        await gate.untilArrivals(1)
+        #expect(store.resumeWasInterrupted, "marked while Cobalt's first step is in progress")
+        await gate.releaseAll(); await gate.untilArrivals(2); await gate.releaseAll()
+        await vm.waitForAI()
+        #expect(!store.resumeWasInterrupted, "cleared once control is back with a human")
+    }
+    @Test func aSaveTheLastLaunchDiedOnIsSetAside() throws {
+        let store = InMemoryGameStore()
+        try? store.save(TestGames.midGame(seed: 3)); try? store.markResuming()
+        let vm = GameViewModel(store: store, pacing: NoPacing()) { _, _ in nil }
+        #expect(!vm.resume()); #expect(vm.state == nil)
+        #expect(store.setAsideGames.count == 1); #expect(try store.load() == nil); #expect(!store.resumeWasInterrupted)
+        #expect(vm.resume() == false, "nothing left to resume")
+    }
     @Test func illegalAIMovesAreResolved() async {                         // Review Focus 1
         struct Stubborn: Opponent {
             func chooseMove(view: PlayerView, legal: [Move]) async -> Move { .withdrawTrade }
