@@ -20,9 +20,9 @@ struct LevelProfile: Sendable {
         case .sailor: return LevelProfile(blunderOdds: 8, robber: .richest, acceptThreshold: 3, counters: false, proposes: true)
         case .mate: return LevelProfile(blunderOdds: 0, robber: .leader, acceptThreshold: 1, counters: true, proposes: true)
         case .captain:
-            var p = forLevel(.mate); p.search = SearchBudget(samples: 16, rounds: 1, playouts: 300, timeCap: .milliseconds(750)); return p
+            var p = forLevel(.mate); p.search = SearchBudget(samples: 32, rounds: 1, playouts: 300, timeCap: .milliseconds(750), holdBack: 4); return p
         case .admiral:
-            var p = forLevel(.mate); p.search = SearchBudget(samples: 32, rounds: 2, playouts: 1500, timeCap: .milliseconds(1500)); return p
+            var p = forLevel(.mate); p.search = SearchBudget(samples: 96, rounds: 1, playouts: 1500, timeCap: .milliseconds(1500), holdBack: 4); return p
         }
     }
 

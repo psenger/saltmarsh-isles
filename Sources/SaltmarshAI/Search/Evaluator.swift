@@ -4,18 +4,20 @@ import SaltmarshEngine
 /// spread and nearness to the awards break ties; the hand counts for what it can build next. Only guessed
 /// states reach this file.
 enum Evaluator {
-    /// 10 per point held or hidden; production pips per resource capped at 8; 2 per resource produced; 3 for
-    /// an award held, else 1 per Knight played (up to 2) and 1 for a road of 4; plus the hand's value toward
-    /// the seat's nearest build.
+    /// Design section 6.3: 10 per point held or hidden; production pips per resource capped at 8 and doubled
+    /// for a resource the seat's nearest build still lacks; 2 per resource produced; 3 for an award held, else
+    /// 1 per Knight played (up to 2) and 1 for a road of 4; 2 off per card over 7. A finished game outranks
+    /// any position. Cards in hand count for nothing on their own: a playout spends them or it does not.
     static func score(_ s: GameState, for seat: Int) -> Int {
         var value = 10 * Engine.totalPoints(s, player: seat)
-        if case .gameOver(let winner) = s.phase { value += winner == seat ? 1000 : -1000 }   // a finished game outranks any position
+        if case .gameOver(let winner) = s.phase { value += winner == seat ? 1000 : -1000 }
+        let view = Engine.view(s, for: seat)
+        let missing = Goals.nearest(view: view)?.missing ?? ResourceCounts()
         let production = BoardFacts.production(of: seat, board: s.board, robber: s.robberTile)
-        for r in Resource.allCases where production[r] > 0 { value += min(production[r], 8) + 2 }
+        for r in Resource.allCases where production[r] > 0 { value += min(production[r], 8) * (missing[r] > 0 ? 2 : 1) + 2 }
         value += s.largestArmyHolder == seat ? 3 : min(s.players[seat].knightsPlayed, 2)
         value += s.longestRoadHolder == seat ? 3 : (Engine.roadLength(board: s.board, player: seat) >= 4 ? 1 : 0)
-        let view = Engine.view(s, for: seat)
-        value += Goals.handValue(view.hand, toward: Goals.nearest(view: view))
+        value -= 2 * max(0, view.hand.total - 7)
         return value
     }
 

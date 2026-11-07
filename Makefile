@@ -1,4 +1,4 @@
-.PHONY: test mac ios project help run dmg
+.PHONY: test mac ios project help run dmg dial bench
 
 PROJECT = SaltmarshIsles.xcodeproj
 SCHEME = SaltmarshIsles
@@ -39,3 +39,11 @@ help:
 	swift run help-book App/SaltmarshIsles.help
 	cd App/SaltmarshIsles.help/Contents/Resources && hiutil -I lsm -Caf en.lproj/SaltmarshIsles.helpindex en.lproj
 	cd App/SaltmarshIsles.help/Contents/Resources && hiutil -I corespotlight -Caf en.lproj/SaltmarshIsles.cshelpindex en.lproj
+
+# The search dial test needs a release build; a searched game takes seconds in debug.
+dial:
+	swift test -c release -Xswiftc -enable-testing --filter SearchDialTests
+
+# The effort dial at shipped budgets: minutes with --fast, hours in full. BENCH_ARGS="--games 20".
+bench:
+	swift run -c release ai-bench $(BENCH_ARGS)

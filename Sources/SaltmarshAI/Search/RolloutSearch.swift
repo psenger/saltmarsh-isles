@@ -7,6 +7,9 @@ struct SearchBudget: Sendable, Equatable {
     var rounds: Int
     var playouts: Int
     var timeCap: Duration?
+    /// How much better an alternative's mean margin must be than the heuristic's own choice to displace it;
+    /// a guard against a noisy estimate overruling a sound default.
+    var holdBack: Int = 0
 }
 
 /// Design section 6.3: determinize, play out, evaluate, pick. Every state here is a guess from
@@ -20,8 +23,8 @@ enum RolloutSearch {
 
     /// `candidates[0]` is the heuristic's own choice: the answer with fewer than two candidates, when the budget
     /// allows no playout, or on a tie. Otherwise each sample is played out once per candidate with the Plan 2
-    /// fallback policy for every seat, and the candidate with the best mean margin over its completed playouts
-    /// wins. A candidate the engine refuses in a sample is skipped for that sample. The cap is checked between
+    /// fallback policy for every seat, through `rounds` rounds and the seat's next turn, and the candidate with
+    /// the best mean margin over its completed playouts wins. A candidate the engine refuses in a sample is skipped for that sample. The cap is checked between
     /// playouts; what was measured so far decides.
     static func choose(view: PlayerView, candidates: [Move], budget: SearchBudget, rng: inout SeededRNG,
                        clock: ContinuousClock = .continuous) -> Decision {
@@ -32,8 +35,11 @@ enum RolloutSearch {
         var played = 0
         samples: for _ in 0..<budget.samples {
             if played >= budget.playouts || overCap() { break }
-            let sample = Engine.sampleFullState(from: view, using: &rng)
-            let stopTurn = sample.turn + budget.rounds * sample.playerCount
+            var sample = Engine.sampleFullState(from: view, using: &rng)
+            // One turn past a full round, so the seat's own next turn, where this turn's cards get spent, is played.
+            let stopTurn = sample.turn + budget.rounds * sample.playerCount + 1
+            // Every candidate meets the same dice in this sample, so their playouts differ only by the move.
+            sample.forcedRolls = (0..<(budget.rounds * sample.playerCount + 2)).map { _ in [rng.d6(), rng.d6()] }
             for (i, candidate) in candidates.enumerated() {
                 if played >= budget.playouts || overCap() { break samples }
                 var state = sample
@@ -49,6 +55,7 @@ enum RolloutSearch {
             let mean = Double(total[i]) / Double(runs[i])
             if bestMean == nil || mean > bestMean! { best = i; bestMean = mean }
         }
+        if best != 0, runs[0] > 0, let bestMean, bestMean - Double(total[0]) / Double(runs[0]) < Double(budget.holdBack) { best = 0 }
         return Decision(move: candidates[best], playouts: played)
     }
 

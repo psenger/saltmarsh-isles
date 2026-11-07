@@ -13,9 +13,13 @@ public enum Arena {
         public var refusedAnswers: Int
     }
 
-    /// The game between factory opponents, each seeded from the game's seed and its seat.
-    public static func play(_ levels: [EffortLevel], seed: UInt64, maxMoves: Int = 4000) async -> Outcome {
-        let d = await play(levels: levels, seed: seed, maxMoves: maxMoves)
+    /// The game between factory opponents, each seeded from the game's seed and its seat. `fast` gives the
+    /// searching levels a tenth of their playouts and no clock, for a smoke run that still replays from its seed.
+    public static func play(_ levels: [EffortLevel], seed: UInt64, maxMoves: Int = 4000, fast: Bool = false) async -> Outcome {
+        let d = await play(levels: levels, seed: seed, maxMoves: maxMoves, make: fast ? { level, seed in
+            guard let b = LevelProfile.forLevel(level).search else { return OpponentFactory.make(level: level, seed: seed) }
+            return SearchOpponent(level: level, seed: seed, budget: SearchBudget(samples: max(2, b.samples / 10), rounds: b.rounds, playouts: max(4, b.playouts / 10), timeCap: nil))
+        } : nil)
         return Outcome(winner: d.winner, moves: d.moves.count, illegalChoices: d.illegalChoices, refusedAnswers: d.refusedAnswers)
     }
 

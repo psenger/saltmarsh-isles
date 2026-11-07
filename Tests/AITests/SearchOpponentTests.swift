@@ -9,7 +9,7 @@ import SaltmarshTestSupport
     @Test func factorySplitsTheLevels() {
         for level in [EffortLevel.deckhand, .sailor, .mate] { #expect(OpponentFactory.make(level: level, seed: 1) is HeuristicOpponent) }
         for level in [EffortLevel.captain, .admiral] { #expect(OpponentFactory.make(level: level, seed: 1) is SearchOpponent) }
-        #expect(LevelProfile.forLevel(.captain).search?.timeCap == .milliseconds(750)); #expect(LevelProfile.forLevel(.admiral).search?.rounds == 2)
+        #expect(LevelProfile.forLevel(.captain).search?.timeCap == .milliseconds(750)); #expect(LevelProfile.forLevel(.admiral).search?.samples == 96)
         #expect(LevelProfile.forLevel(.mate).search == nil)
     }
     @Test func sameSeedSameGameWithSearch() async {
