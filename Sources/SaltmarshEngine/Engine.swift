@@ -18,7 +18,7 @@ extension Engine {
             bank: .uniform(19), devDeck: deck, devCardPlayedThisTurn: false,
             longestRoadHolder: nil, largestArmyHolder: nil,
             phase: .rollingForFirst(rolls: Array(repeating: nil, count: n), contenders: Array(0..<n)),
-            log: [], rng: rng, seed: config.seed, forcedRolls: [])
+            log: [], rng: rng, seed: config.seed, forcedRolls: [], showsLog: config.showsLog)
         state.log("New game with \(n) players. Everyone rolls for first player.")
         for player in state.players {
             switch player.controller {

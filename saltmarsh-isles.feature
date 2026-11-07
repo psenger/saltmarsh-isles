@@ -1092,3 +1092,29 @@ Feature: Saltmarsh Isles pass-and-play game
     Scenario: A finished game cannot be saved
       Given the game has ended
       Then saving is not offered
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: Turning on the log
+
+    Scenario: The log is off unless turned on
+      Then the new game sheet has a box "Turn on logs", unticked
+      When I start a 3-player game
+      Then the tabs are "Trade, Cards, Players"
+      And under the order strip the panel shows the Players tab
+      And the game still writes its log
+
+    Scenario: Turning on logs shows the Log tab
+      When I start a 3-player game with logs turned on
+      Then the tabs are "Trade, Cards, Players, Log"
+
+    Scenario: A saved game keeps its log setting
+      Given a 3-player game with logs turned on
+      When I save the game as "Logged"
+      And I start a 3-player game
+      And I load the save called "Logged"
+      Then the tabs are "Trade, Cards, Players, Log"
+
+    Scenario: A game saved before the log setting shows its log
+      Given a game saved before the log setting existed
+      When the app is relaunched
+      Then the tabs are "Trade, Cards, Players, Log"

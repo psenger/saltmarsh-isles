@@ -10,9 +10,12 @@ public struct Player: Codable, Hashable, Sendable {
 public struct GameConfig: Codable, Hashable, Sendable {
     public var controllers: [Controller]
     public var seed: UInt64
-    public init(controllers: [Controller], seed: UInt64) {
+    /// "Turn on logs" on the new game sheet: whether the app shows the Log tab. The log is written either way.
+    public var showsLog: Bool
+    public init(controllers: [Controller], seed: UInt64, showsLog: Bool = false) {
         self.controllers = controllers
         self.seed = seed
+        self.showsLog = showsLog
     }
     public var playerCount: Int { controllers.count }
 }
@@ -36,6 +39,9 @@ public struct GameState: Codable, Equatable, Sendable {
     public var seed: UInt64
     /// Test/debug: when non-empty the next roll pops `first` instead of using `rng`.
     public var forcedRolls: [[Int]]
+    /// Whether the app shows the Log tab, from `GameConfig.showsLog`. Nil in a game saved before the setting
+    /// existed, which the app treats as shown.
+    public var showsLog: Bool?
 
     public var playerCount: Int { players.count }
 

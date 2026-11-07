@@ -124,7 +124,7 @@ struct GamePanel: View {
 
     private var tabBar: some View {
         HStack(spacing: 0) {
-            ForEach(PanelTab.allCases, id: \.self) { tab in
+            ForEach(screen.tabs, id: \.self) { tab in
                 let enabled = screen.enabledTabs.contains(tab), on = shownTab == tab
                 Button { picked = tab } label: {
                     Text(tab.rawValue)

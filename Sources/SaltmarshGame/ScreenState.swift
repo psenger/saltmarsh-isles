@@ -225,8 +225,10 @@ public struct ScreenState: Equatable, Sendable {
     public var victoryAnimation: VictoryAnimation
     /// Empty while the game asks the player for something; that request takes the tab area.
     public var enabledTabs: Set<PanelTab>
+    /// The tabs drawn, in order. The Log tab is left out unless the game was started with "Turn on logs".
+    public var tabs: [PanelTab] = PanelTab.allCases
     /// The tab on show when the picked one is grey: the log under the order strip, otherwise the players.
-    public var fallbackTab: PanelTab { orderStrip == nil ? .players : .log }
+    public var fallbackTab: PanelTab { orderStrip != nil && tabs.contains(.log) ? .log : .players }
     /// When set, the app draws only this. The other fields keep their values so the rules can still read them.
     public var handover: Handover?
     public var drawnCard: DrawnCard? = nil

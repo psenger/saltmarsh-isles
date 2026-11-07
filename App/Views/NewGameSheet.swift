@@ -1,5 +1,6 @@
 import SwiftUI
 import SaltmarshEngine
+import SaltmarshGame
 
 /// Choose the player count and who plays each seat. Defaults: 3 players, Crimson human, the rest Mate.
 struct NewGameSheet: View {
@@ -11,6 +12,7 @@ struct NewGameSheet: View {
     @State private var count = 3
     @State private var isAI = [false, true, true, true]
     @State private var levels = [EffortLevel](repeating: .mate, count: 4)
+    @State private var showsLog = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -23,6 +25,8 @@ struct NewGameSheet: View {
             ForEach(Array(Seat.allCases.prefix(count)), id: \.self) { seat in
                 seatRow(seat)
             }
+            Toggle(Strings.turnOnLogs, isOn: $showsLog)
+                .accessibilityIdentifier("turn on logs")
             HStack {
                 Button("Cancel", role: .cancel) { dismiss() }
                     .keyboardShortcut(.cancelAction)
@@ -64,6 +68,6 @@ struct NewGameSheet: View {
         let controllers = Seat.allCases.prefix(count).map { seat -> Controller in
             isAI[seat.rawValue] ? .ai(levels[seat.rawValue]) : .human
         }
-        onStart(GameConfig(controllers: controllers, seed: UInt64.random(in: 1...UInt64.max)))
+        onStart(GameConfig(controllers: controllers, seed: UInt64.random(in: 1...UInt64.max), showsLog: showsLog))
     }
 }

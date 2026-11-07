@@ -10,16 +10,22 @@ import SaltmarshTestSupport
         vm.load(s)
         return vm.screen
     }
+    /// The same game with "Turn on logs" ticked.
+    func logged(_ s: GameState) -> GameState {
+        var s = s
+        s.showsLog = true
+        return s
+    }
     let readOnly: Set<PanelTab> = [.players, .log]
 
     @Test func allTabsOnAPlayersOwnTurn() {
-        #expect(screen(TestGames.rolled(8)).enabledTabs == Set(PanelTab.allCases))
+        #expect(screen(logged(TestGames.rolled(8))).enabledTabs == Set(PanelTab.allCases))
     }
     @Test func onlyReadableTabsDuringFirstRollAndSetup() {
-        #expect(screen(TestGames.fresh()).enabledTabs == readOnly)
+        #expect(screen(logged(TestGames.fresh())).enabledTabs == readOnly)
     }
     @Test func onlyReadableTabsWhileAnAIActs() {
-        let sc = ScreenState.derive(state: TestGames.rolled(8), ui: UIState(), aiThinking: true, reduceMotion: false)
+        let sc = ScreenState.derive(state: logged(TestGames.rolled(8)), ui: UIState(), aiThinking: true, reduceMotion: false)
         #expect(sc.enabledTabs == readOnly)
     }
     @Test func noTabsDuringADiscard() {
@@ -53,7 +59,16 @@ import SaltmarshTestSupport
         #expect(sc.fallbackTab == .players)
     }
     @Test func theLogStaysUnderTheOrderStripDuringFirstRollAndSetup() {
-        #expect(screen(TestGames.fresh()).fallbackTab == .log)
+        #expect(screen(logged(TestGames.fresh())).fallbackTab == .log)
+    }
+    @Test func playersShowUnderTheOrderStripWithLogsOff() {
+        let sc = screen(TestGames.fresh())
+        #expect(sc.fallbackTab == .players)
+        #expect(sc.enabledTabs == [.players])
+    }
+    @Test func noLogTabWithLogsOff() {
+        #expect(screen(TestGames.rolled(8)).tabs == [.trade, .cards, .players])
+        #expect(screen(logged(TestGames.rolled(8))).tabs == PanelTab.allCases)
     }
     /// Reported hand: 3 timber, 1 wool, 3 ore, offering 2 timber for 1 clay.
     func offerOfTwoTimberForOneClay(rolled: Bool) -> GameViewModel {

@@ -251,7 +251,8 @@ extension ScreenState {
 
         // Trade and Cards belong to the current player, so they close while an AI is that player.
         let hasRequest = responderPending || discardBox != nil || !stealTargets.isEmpty || buttons[Strings.withdraw] == true
-        let enabledTabs: Set<PanelTab> = hasRequest ? [] : (aiThinking || orderStrip != nil ? [.players, .log] : Set(PanelTab.allCases))
+        let tabs = PanelTab.allCases.filter { $0 != .log || s.showsLog != false }
+        let enabledTabs: Set<PanelTab> = (hasRequest ? [] : (aiThinking || orderStrip != nil ? [.players, .log] : Set(PanelTab.allCases))).intersection(tabs)
 
         // Victory card.
         var victory: VictoryCard?
@@ -319,7 +320,7 @@ extension ScreenState {
             bankTitle: Strings.bankTitle, bankChoice: bankChoice, bankGiveOptions: TradeChoice.giveOptions(legal: bankPairs, shown: bankChoice),
             bankRowEnabled: !bankPairs.isEmpty,
             devCards: devRows, tradeSection: tradeSection,
-            victory: victory, victoryAnimation: reduceMotion ? .reduced : .full, enabledTabs: enabledTabs, handover: handover,
+            victory: victory, victoryAnimation: reduceMotion ? .reduced : .full, enabledTabs: enabledTabs, tabs: tabs, handover: handover,
             drawnCard: ui.drawnCard.map { DrawnCard(title: Strings.youDrew($0.displayName), text: Strings.drawnCardText($0)) },
             pointsBreakdown: aiThinking ? [] : breakdown(current), totalPoints: aiThinking ? 0 : Engine.totalPoints(s, player: current))
     }

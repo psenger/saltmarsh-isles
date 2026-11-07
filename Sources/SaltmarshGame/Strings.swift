@@ -91,6 +91,9 @@ public enum Strings {
     public static func discardRow(_ picked: Int, _ held: Int) -> String { "\(picked) of \(held)" }
     public static func next(_ name: String) -> String { "Next: \(name)" }
 
+    // The new game sheet and the Log tab
+    public static let turnOnLogs = "Turn on logs"
+
     // Development card notes
     public static let boughtThisTurn = "bought this turn", oneCardPerTurn = "one card per turn", countsAutomatically = "counts automatically", rollFirst = "roll first"
     public static func youDrew(_ card: String) -> String { "You drew: \(card)!" }

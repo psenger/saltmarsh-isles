@@ -46,10 +46,10 @@ final class World {
         return vm.resume()
     }
 
-    func newGame(_ controllers: [Controller], seed: UInt64 = 1) {
+    func newGame(_ controllers: [Controller], seed: UInt64 = 1, showsLog: Bool = false) {
         frozenScreen = nil
         vm = GameViewModel(store: store, pacing: NoPacing(), saves: saves)
-        vm.newGame(GameConfig(controllers: controllers, seed: seed))
+        vm.newGame(GameConfig(controllers: controllers, seed: seed, showsLog: showsLog))
     }
 
     // MARK: Names and lists
