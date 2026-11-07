@@ -1,4 +1,4 @@
-.PHONY: test mac ios project help run dmg dial bench
+.PHONY: test mac ios project help build run dmg dial bench clean
 
 PROJECT = SaltmarshIsles.xcodeproj
 SCHEME = SaltmarshIsles
@@ -12,9 +12,13 @@ mac:
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination 'platform=macOS' build
 
 # Help pages only load from an Applications folder, so this runs the Mac app from one.
-# A Release build, so the Captain and Admiral search at full speed; a Debug build is about twenty times slower.
-run:
+# A Release build of the Mac app into build/Build/Products/Release/SaltmarshIsles.app, so the Captain and
+# Admiral search at full speed; a Debug build is about twenty times slower.
+build:
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration Release -destination 'platform=macOS' -derivedDataPath build build
+
+# Build, install the app in ~/Applications/SaltmarshIslesDev and open it.
+run: build
 	rm -rf "$(HOME)/Applications/SaltmarshIslesDev"
 	mkdir -p "$(HOME)/Applications/SaltmarshIslesDev"
 	ditto build/Build/Products/Release/SaltmarshIsles.app "$(HOME)/Applications/SaltmarshIslesDev/SaltmarshIsles.app"
@@ -48,3 +52,8 @@ dial:
 # The effort dial at shipped budgets: minutes with --fast, hours in full. BENCH_ARGS="--games 20".
 bench:
 	swift run -c release ai-bench $(BENCH_ARGS)
+
+# Remove every build product: the repo's build folders and Xcode's DerivedData for this project.
+clean:
+	rm -rf build .build
+	find "$(HOME)/Library/Developer/Xcode/DerivedData" -maxdepth 1 -name 'SaltmarshIsles-*' -exec rm -rf {} +

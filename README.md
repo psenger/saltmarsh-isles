@@ -137,9 +137,12 @@ Next is Plan 5: polish, the remaining UI tests and the spec rewrite.
 ## Building from the command line
 
 ```bash
-make mac    # build for Mac
-make ios    # build for the iPhone 15 Pro simulator on iOS 17.5
+make build  # Release build of the Mac app into build/Build/Products/Release/SaltmarshIsles.app
+make run    # the same, then install it in ~/Applications/SaltmarshIslesDev and open it
+make mac    # Debug build for Mac, into Xcode's DerivedData
+make ios    # Debug build for the iPhone 15 Pro simulator on iOS 17.5
 make dmg    # build the Mac disk image into build/SaltmarshIsles-<version>.dmg
+make clean  # remove build/, .build/ and this project's DerivedData
 ```
 
 `make ios` and the UI tests expect the iOS 17.5 simulator runtime with an iPhone 15 Pro. Install it
