@@ -29,8 +29,31 @@ final class GameFlowTests: XCTestCase {
         }
     }
 
-    private func startNewGame(_ app: XCUIApplication) {
+    /// The "Turn on logs" box: a checkbox on a Mac, a switch on iPhone and iPad.
+    private func logsBox(_ app: XCUIApplication) -> XCUIElement {
+        #if os(macOS)
+        app.checkBoxes["turn on logs"]
+        #else
+        app.switches["turn on logs"]
+        #endif
+    }
+
+    private func isTicked(_ box: XCUIElement) -> Bool {
+        "\(box.value ?? "")" == "1"
+    }
+
+    private func startNewGame(_ app: XCUIApplication, logsOn: Bool = false) {
         openNewGameSheet(app)
+        let box = logsBox(app)
+        XCTAssertTrue(box.waitForExistence(timeout: 5), "no Turn on logs box")
+        if isTicked(box) != logsOn {
+            #if os(macOS)
+            box.click()
+            #else
+            box.switches.firstMatch.exists ? box.switches.firstMatch.tap() : box.tap()
+            #endif
+        }
+        XCTAssertEqual(isTicked(box), logsOn, "the Turn on logs box did not change")
         app.buttons["Start game"].tap()
     }
 
@@ -120,11 +143,30 @@ final class GameFlowTests: XCTestCase {
     func testTheLogStaysInsideTheTabArea() {
         let app = XCUIApplication()
         app.launch()
-        startNewGame(app)
+        startNewGame(app, logsOn: true)
         let log = app.scrollViews["log"]
         XCTAssertTrue(log.waitForExistence(timeout: 5))
         XCTAssertLessThanOrEqual(log.frame.maxY, app.windows.firstMatch.frame.maxY)
         XCTAssertGreaterThanOrEqual(log.frame.minY, app.buttons["tab Log"].frame.maxY)
+    }
+
+    func testLogsAreOffUnlessTurnedOn() {
+        let app = XCUIApplication()
+        app.launch()
+        openNewGameSheet(app)
+        XCTAssertTrue(logsBox(app).waitForExistence(timeout: 5), "no Turn on logs box")
+        XCTAssertFalse(isTicked(logsBox(app)), "Turn on logs starts ticked")
+        app.buttons["Start game"].tap()
+        XCTAssertTrue(app.buttons["tab Players"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["tab Log"].exists, "the Log tab shows with logs off")
+
+        startNewGame(app, logsOn: true)
+        let logTab = app.buttons["tab Log"]
+        XCTAssertTrue(logTab.waitForExistence(timeout: 5), "no Log tab with logs on")
+        logTab.tap()
+        let copy = app.buttons["copy log"]
+        XCTAssertTrue(copy.waitForExistence(timeout: 5), "no Copy log button")
+        XCTAssertEqual(copy.label, "Copy log")
     }
 
     func testHelpOpensAndCloses() {
@@ -149,7 +191,7 @@ final class GameFlowTests: XCTestCase {
     func testSavedGameComesBackAndSurvivesARelaunch() {
         let app = XCUIApplication()
         app.launch()
-        startNewGame(app)
+        startNewGame(app, logsOn: true)
         let rolled = app.scrollViews["log"].staticTexts.matching(NSPredicate(format: "(label CONTAINS 'for first player' AND label CONTAINS 'rolled') OR (value CONTAINS 'for first player' AND value CONTAINS 'rolled')")).firstMatch
         let rollFirst = app.buttons["Roll for first"]
         XCTAssertTrue(rollFirst.waitForExistence(timeout: 5))
@@ -381,7 +423,7 @@ final class GameFlowTests: XCTestCase {
     func testControlsNeverMove() {
         let app = XCUIApplication()
         app.launch()
-        startNewGame(app)
+        startNewGame(app, logsOn: true)
         XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5))
 
         var places: [String: CGRect] = [:], moments = Set<String>()
