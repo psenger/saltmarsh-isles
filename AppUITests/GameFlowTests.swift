@@ -169,6 +169,26 @@ final class GameFlowTests: XCTestCase {
         XCTAssertEqual(copy.label, "Copy log")
     }
 
+    func testAboutSaysTheVersionAndWhenItWasBuilt() {
+        let app = XCUIApplication()
+        app.launch()
+        startNewGame(app)
+        XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5))
+        #if os(macOS)
+        // On a Mac it is Apple's own About panel, opened from the app menu, which carries the app's name.
+        app.menuBarItems["Saltmarsh Isles"].click()
+        XCTAssertTrue(app.menuItems["About Saltmarsh Isles"].waitForExistence(timeout: 5), "no About Saltmarsh Isles in the app menu")
+        app.typeKey(.escape, modifierFlags: [])
+        #else
+        chooseFromMenu(app, "About Saltmarsh Isles")
+        XCTAssertTrue(text(app, "Saltmarsh Isles").waitForExistence(timeout: 5), "About did not open")
+        let lines = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Version ' OR label BEGINSWITH 'Build ' OR label BEGINSWITH 'Built '"))
+        XCTAssertEqual(lines.count, 3, "About should show the version, the build and when it was built")
+        app.buttons["about done"].tap()
+        XCTAssertTrue(app.staticTexts["status"].waitForExistence(timeout: 5), "About did not close")
+        #endif
+    }
+
     func testHelpOpensAndCloses() {
         let app = XCUIApplication()
         app.launch()

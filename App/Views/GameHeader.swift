@@ -14,6 +14,7 @@ struct GameHeader: View {
 
     #if !os(macOS)
     @State private var showHelp = false
+    @State private var showAbout = false
     #endif
 
     var body: some View {
@@ -81,6 +82,7 @@ struct GameHeader: View {
             Button(Strings.loadGame, action: actions.loadGame)
             Button(Strings.saveGame, action: actions.saveGame).disabled(!actions.canSave)
             Button(Strings.howToPlay) { showHelp = true }
+            Button(Strings.aboutMenu) { showAbout = true }
             #if DEBUG
             Button(Strings.previewWin, action: actions.previewWin).disabled(!actions.canPreview)
             Button(Strings.previewLose, action: actions.previewLose).disabled(!actions.canPreview)
@@ -91,9 +93,35 @@ struct GameHeader: View {
         .fixedSize()
         .accessibilityIdentifier("menu")
         .sheet(isPresented: $showHelp) { HelpSheet() }
+        .sheet(isPresented: $showAbout) { AboutSheet() }
     }
     #endif
 }
+
+#if !os(macOS)
+/// About on devices without an app menu: the name, version, build and when it was built. A Mac uses Apple's panel.
+private struct AboutSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        let lines = About.lines(info: Bundle.main.infoDictionary ?? [:])
+        NavigationStack {
+            VStack(spacing: 8) {
+                Text(lines[0]).font(.title2.bold())
+                ForEach(lines.dropFirst(), id: \.self) { Text($0).foregroundStyle(.secondary) }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                        .accessibilityIdentifier("about done")
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+}
+#endif
 
 #if !os(macOS)
 /// The rules on devices without Apple's Help Viewer: an index of topics with a search box.
