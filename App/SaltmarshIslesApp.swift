@@ -36,7 +36,7 @@ private struct GameCommands: Commands {
                 .keyboardShortcut("s")
                 .disabled(actions?.canSave != true)
         }
-        // Opens the help book named in Info.plist, built by `make help`. Its pages stay blank unless
+        // Opens the help book named in Info.plist, built by `make helpbook`. Its pages stay blank unless
         // the app runs from an Applications folder, so use `make run` rather than Cmd-R to check it.
         CommandGroup(replacing: .help) {
             Button(Help.bookTitle) { NSApp.showHelp(nil) }

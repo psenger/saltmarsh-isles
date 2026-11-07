@@ -25,6 +25,7 @@ git clone https://github.com/psenger/saltmarsh-isles.git
 cd saltmarsh-isles
 swift test                      # engine, AI, game and Gherkin tests, no Xcode project needed
 open SaltmarshIsles.xcodeproj   # run the app from Xcode
+make help                       # list every make target with a line on what it does
 ```
 
 The Xcode project is generated from `project.yml`. If you add, move or delete a file under
@@ -42,8 +43,23 @@ Two more things to know when you build:
 
 - Running on a real iPhone or iPad needs your own signing team in `Config/Local.xcconfig`. The
   README's [iPhone and iPad](README.md#iphone-and-ipad) section walks through it.
-- After changing the rules text in `Sources/SaltmarshGame/Help.swift`, run `make help` to rebuild
+- After changing the rules text in `Sources/SaltmarshGame/Help.swift`, run `make helpbook` to rebuild
   the Mac help book and its search index.
+
+### Where builds go
+
+Each build target prints where it put its output as its last line.
+
+| Target | Output |
+|---|---|
+| `make mac` | Debug app in Xcode's DerivedData: `~/Library/Developer/Xcode/DerivedData/SaltmarshIsles-<hash>/Build/Products/Debug/` |
+| `make ios` | Debug app in the same DerivedData folder, under `Build/Products/Debug-iphonesimulator/` |
+| `make build` | Release app in `build/Build/Products/Release/` |
+| `make run` | the `make build` app, copied to `~/Applications/SaltmarshIslesDev/` and opened |
+| `make dmg` | `build/SaltmarshIsles-<version>.dmg`, built from `build/release/` |
+| `swift test`, `make dial`, `make bench` | Swift Package Manager's `.build/` |
+
+`make clean` removes all of these except the copy in `~/Applications/SaltmarshIslesDev/`.
 
 ## How the code is laid out
 

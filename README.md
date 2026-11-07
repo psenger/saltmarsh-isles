@@ -143,6 +143,7 @@ make mac    # Debug build for Mac, into Xcode's DerivedData
 make ios    # Debug build for the iPhone 15 Pro simulator on iOS 17.5
 make dmg    # build the Mac disk image into build/SaltmarshIsles-<version>.dmg
 make clean  # remove build/, .build/ and this project's DerivedData
+make help   # list every make target with a line on what it does
 ```
 
 `make ios` and the UI tests expect the iOS 17.5 simulator runtime with an iPhone 15 Pro. Install it
@@ -159,7 +160,7 @@ make project
 ```
 
 After changing the rules text in `Sources/SaltmarshGame/Help.swift`, rebuild the Mac help book and
-its search index with `make help`.
+its search index with `make helpbook`.
 
 ## Testing
 
