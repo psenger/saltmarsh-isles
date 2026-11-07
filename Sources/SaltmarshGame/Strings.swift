@@ -95,7 +95,7 @@ public enum Strings {
     public static let turnOnLogs = "Turn on logs", copyLog = "Copy log"
 
     // The Cards tab
-    public static let played = "Played", oneCardPerTurnHint = "1 card per turn"
+    public static let played = "Played", oneCardPerTurnHint = "1 card per turn", plusOnePoint = "+1 point", ready = "ready"
     public static func inYourHand(_ n: Int) -> String { "In your hand (\(n))" }
     public static func playedPill(_ type: DevCardType, _ count: Int) -> String { count > 1 ? "\(type.displayName) \u{00D7}\(count)" : type.displayName }
     public static func cardText(_ type: DevCardType) -> String {

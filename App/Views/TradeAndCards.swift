@@ -159,34 +159,43 @@ struct TradeTab: View {
     }
 }
 
-/// The Cards tab: the cards still to play, and where the player's points come from.
+/// The Cards tab: the hand's size, where the player's points come from, the cards already played, then the hand as tiles.
+/// One view for every device; only the number of grid columns changes with the width.
 struct CardsTab: View {
     let vm: GameViewModel
     let screen: ScreenState
 
-    /// Victory point cards are never played, so they count under Victory points instead.
-    private var cardsToPlay: [DevCardRow] {
-        screen.devCards.filter { $0.note != Strings.countsAutomatically }
-    }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            if cardsToPlay.isEmpty {
-                Text(Strings.noCardsYet).font(.callout).foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text(screen.handHeading).font(.subheadline.bold())
+                Spacer()
+                Text(Strings.oneCardPerTurnHint).font(.caption).italic().foregroundStyle(.secondary)
             }
-            ForEach(cardsToPlay, id: \.index) { row in
-                HStack {
-                    Text(row.name)
-                    if let note = row.note { Text(note).font(.caption).foregroundStyle(.secondary) }
-                    Spacer()
-                    play(row)
+            victoryPoints
+            if !screen.playedPills.isEmpty {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(Strings.played).font(.caption.bold()).foregroundStyle(.secondary)
+                    FlowLayout(spacing: 6) {
+                        ForEach(screen.playedPills, id: \.self) { pill in
+                            Text(pill)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Color.secondary.opacity(0.12), in: Capsule())
+                        }
+                    }
+                }
+                .accessibilityIdentifier("played")
+            }
+            if screen.devCards.isEmpty {
+                Text(Strings.noCardsYet).font(.callout).foregroundStyle(.secondary)
+            } else {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 170), spacing: 10)], spacing: 10) {
+                    ForEach(screen.devCards, id: \.index) { CardTile(row: $0, vm: vm) }
                 }
             }
-            if let me = screen.scoreboard.first(where: \.isCurrent), me.knights > 0 {
-                Text(Strings.knightsPlayed(me.knights)).font(.callout).accessibilityIdentifier("knights played")
-            }
-            Divider()
-            victoryPoints
         }
         .buttonStyle(GameButtonStyle())
     }
@@ -221,8 +230,93 @@ struct CardsTab: View {
         }
     }
 
-    @ViewBuilder private func play(_ row: DevCardRow) -> some View {
-        if row.name == DevCardType.bumperHarvest.displayName {
+}
+
+/// One kind of card in the hand: a coloured band with its name, what it does, and how to play it.
+/// Identical cards share a tile with a "×N" badge.
+private struct CardTile: View {
+    let row: DevCardRow
+    let vm: GameViewModel
+
+    /// The board's token colour, so a card looks like a piece of the game.
+    private static let face = Color(hex: 0xf4efe2)
+    private static let gold = Color(hex: 0xf2c94c)
+
+    private var symbol: String {
+        switch row.type {
+        case .knight: "shield"
+        case .roadCrew: "road.lanes"
+        case .bumperHarvest: "leaf"
+        case .cornerMarket: "arrow.down.to.line"
+        case .victoryPoint: "star"
+        }
+    }
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: 10)
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text(row.name).font(.subheadline.bold()).lineLimit(1)
+                Spacer(minLength: 4)
+                Image(systemName: symbol).accessibilityHidden(true)
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 10)
+            .frame(height: 30)
+            .background(row.type == .victoryPoint ? GameButtonStyle.amber : GameButtonStyle.sea)
+            Text(row.text)
+                .font(.callout)
+                .foregroundStyle(GameButtonStyle.ink)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(10)
+            Spacer(minLength: 0)
+            footer.padding([.horizontal, .bottom], 10)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(Self.face)
+        .clipShape(shape)
+        .overlay(shape.stroke(GameButtonStyle.ink.opacity(0.35), lineWidth: 1))
+        .shadow(color: .black.opacity(0.1), radius: 1, y: 1)
+        .overlay(alignment: .topTrailing) {
+            if row.count > 1 {
+                Text("\u{00D7}\(row.count)")
+                    .font(.caption.monospacedDigit().bold())
+                    .foregroundStyle(GameButtonStyle.ink)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Self.gold, in: Capsule())
+                    .offset(x: -8, y: -8)
+            }
+        }
+        .accessibilityIdentifier("card \(row.name)")
+    }
+
+    private var footer: some View {
+        HStack {
+            if row.type == .victoryPoint {
+                if let note = row.note { Text(note).font(.caption).italic().foregroundStyle(.secondary) }
+                Spacer(minLength: 4)
+                Text(Strings.plusOnePoint)
+                    .font(.caption.bold())
+                    .foregroundStyle(GameButtonStyle.ink)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Self.gold, in: Capsule())
+            } else {
+                if let note = row.note {
+                    Text(note).font(.caption).italic().foregroundStyle(.secondary)
+                } else if row.playEnabled {
+                    Text(Strings.ready).font(.caption.bold()).foregroundStyle(GameButtonStyle.sea)
+                }
+                Spacer(minLength: 4)
+                play
+            }
+        }
+    }
+
+    @ViewBuilder private var play: some View {
+        switch row.type {
+        case .bumperHarvest:
             Menu("Play") {
                 Section("Take 2 free cards from the bank") {
                     ForEach(bumperPairs, id: \.0) { label, pair in
@@ -232,7 +326,7 @@ struct CardsTab: View {
             }
             .fixedSize()
             .disabled(!row.playEnabled)
-        } else if row.name == DevCardType.cornerMarket.displayName {
+        case .cornerMarket:
             Menu("Play") {
                 ForEach(Resource.allCases, id: \.self) { resource in
                     Button(resource.rawValue) { vm.playCard(row.index, market: resource) }
@@ -240,7 +334,7 @@ struct CardsTab: View {
             }
             .fixedSize()
             .disabled(!row.playEnabled)
-        } else {
+        default:
             Button("Play") { vm.playCard(row.index) }.disabled(!row.playEnabled)
         }
     }
@@ -255,6 +349,32 @@ struct CardsTab: View {
                 guard Engine.isLegal(move, in: state) else { return nil }
                 return (all[i] == other ? "2 \(other.rawValue)" : "\(all[i].rawValue) and \(other.rawValue)", (all[i], other))
             }
+        }
+    }
+}
+
+/// Lays its subviews out left to right at their ideal sizes, starting a new line when the next one does not fit.
+private struct FlowLayout: Layout {
+    var spacing: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let frames = frames(for: subviews, width: proposal.width ?? .infinity)
+        return CGSize(width: proposal.width ?? frames.map(\.maxX).max() ?? 0, height: frames.map(\.maxY).max() ?? 0)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        for (subview, frame) in zip(subviews, frames(for: subviews, width: bounds.width)) {
+            subview.place(at: CGPoint(x: bounds.minX + frame.minX, y: bounds.minY + frame.minY), proposal: ProposedViewSize(frame.size))
+        }
+    }
+
+    private func frames(for subviews: Subviews, width: CGFloat) -> [CGRect] {
+        var x: CGFloat = 0, y: CGFloat = 0, lineHeight: CGFloat = 0
+        return subviews.map { subview in
+            let size = subview.sizeThatFits(.unspecified)
+            if x > 0 && x + size.width > width { x = 0; y += lineHeight + spacing; lineHeight = 0 }
+            defer { x += size.width + spacing; lineHeight = max(lineHeight, size.height) }
+            return CGRect(origin: CGPoint(x: x, y: y), size: size)
         }
     }
 }
