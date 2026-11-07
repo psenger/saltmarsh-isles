@@ -67,10 +67,10 @@ import SaltmarshTestSupport
         var s = TestGames.rolled(8); s.clearBoard(); s.clearHands(); s.set(hand: [.timber: 2], for: 0); s.set(hand: [.grain: 1], for: 1); s.set(hand: [.ore: 1], for: 2)
         let vm = humans(s); vm.offerAdjust(give: .timber, by: 2); vm.offerAdjust(want: .ore, by: 1); vm.proposeOffer()
         var sc = vm.screen
-        #expect(sc.header == "Cobalt · trade offer"); #expect(sc.headerSeat == .cobalt); #expect(sc.status == "Crimson offers 2 timber for 1 ore.")
+        #expect(sc.header == "Cobalt · trade offer"); #expect(sc.headerSeat == .cobalt); #expect(sc.status == "Crimson gives 2 timber and wants 1 ore."); #expect(sc.offerTerms == "You give 1 ore and get 2 timber.")
         #expect(sc.buttons["Accept"] == false); #expect(sc.acceptProblem == "You don't have 1 ore"); #expect(sc.buttons["Decline"] == true); #expect(sc.holdTitle == "Cobalt's hold"); #expect(sc.handCounts == [.grain: 1])
         vm.respondToOffer(accept: false); sc = vm.screen
-        #expect(sc.header == "Amber · trade offer"); #expect(sc.buttons["Accept"] == true); #expect(sc.acceptProblem == nil)
+        #expect(sc.header == "Amber · trade offer"); #expect(sc.buttons["Accept"] == true); #expect(sc.acceptProblem == nil); #expect(sc.offerTerms == "You give 1 ore and get 2 timber.")
         vm.respondToOffer(accept: true); sc = vm.screen
         #expect(sc.header == "Crimson"); #expect(sc.status == "The answers are in! Trade with someone or withdraw."); #expect(sc.buttons["Withdraw"] == true)
         var waiting = vm.state!; waiting.phase = .tradeOffered(offer: TradeOffer(proposer: 0, give: [.timber: 2], want: [.ore: 1], to: nil), responses: [1: .declined, 2: .pending]); vm.load(waiting)

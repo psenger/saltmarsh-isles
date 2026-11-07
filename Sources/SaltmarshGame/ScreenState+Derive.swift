@@ -126,9 +126,10 @@ extension ScreenState {
                 }
             }(),
         ]
-        var acceptProblem: String?
-        if case .tradeOffered(let offer, _) = s.phase, responderPending, buttons[Strings.accept] == false {
-            acceptProblem = Strings.cannotPay(offer.want)
+        var acceptProblem: String?, offerTerms: String?
+        if case .tradeOffered(let offer, _) = s.phase, responderPending {
+            offerTerms = Strings.offerTerms(offer)
+            if buttons[Strings.accept] == false { acceptProblem = Strings.cannotPay(offer.want) }
         }
 
         // Discard box.
@@ -308,7 +309,7 @@ extension ScreenState {
             orderStrip: orderStrip, orderStripNote: orderStripNote, buttons: buttons,
             buildLeft: [.road: left.roads, .settlement: left.settlements, .city: left.cities],
             buildCost: ScreenState.buildCosts, cardCost: Cost.devCard,
-            activeBuildMode: ui.buildMode, deckCount: s.devDeck.count, acceptProblem: acceptProblem,
+            activeBuildMode: ui.buildMode, deckCount: s.devDeck.count, acceptProblem: acceptProblem, offerTerms: offerTerms,
             scoreboard: scoreboard, aiThinking: aiThinking, board: s.board, robberTile: s.robberTile,
             glowingCorners: glowing, dashedEdges: dashed, selectableTiles: selectable, pulsingSettlements: pulsing,
             hotNumbers: [6, 8], hitNumber: s.dice.map { $0.reduce(0, +) }.flatMap { $0 == 7 ? nil : $0 },

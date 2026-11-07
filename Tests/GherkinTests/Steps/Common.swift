@@ -18,6 +18,7 @@ func registerCommon(_ r: StepRegistry) {
         try expectEqual(w.screen.headerSeat, w.state.players[w.seat(c[1])].seat, "header colour")
     }
     r.then(#"the status reads "([^"]*)""#) { w, c, _ in try expectEqual(w.screen.status, c[0], "status") }
+    r.then(#"the offer terms read "([^"]*)""#) { w, c, _ in try expectEqual(w.screen.offerTerms ?? "", c[0], "offer terms") }
     r.then(#"the status does not read "([^"]*)""#) { w, c, _ in try expectTrue(w.screen.status != c[0], "status should not read \(c[0])") }
     r.then(#"the log reads "([^"]*)""#) { w, c, _ in try expectEqual(w.state.log.last ?? "", c[0], "last log line") }
     r.then(#"the log contains "([^"]*)""#) { w, c, _ in try expectTrue(w.state.log.contains(c[0]), "log should contain \(c[0])") }

@@ -189,6 +189,8 @@ public struct ScreenState: Equatable, Sendable {
     public var deckCount: Int
     /// Why the acting trade responder cannot accept, when they cannot.
     public var acceptProblem: String?
+    /// The offer from the responder's side, "You give 1 ore and get 2 timber.", while an answer is due.
+    public var offerTerms: String?
     public var scoreboard: [ScoreRow]
     public var aiThinking: Bool
     public var board: Board
@@ -238,7 +240,7 @@ public struct ScreenState: Equatable, Sendable {
     static func empty(board: Board) -> ScreenState {
         ScreenState(header: "", headerSeat: .crimson, status: "", dice: [Strings.dash, Strings.dash], handCounts: ResourceCounts(),
                     holdTitle: "", bank: .uniform(19), log: [], orderStrip: nil, orderStripNote: nil,
-                    buttons: [Strings.newGame: true], buildLeft: [:], buildCost: ScreenState.buildCosts, cardCost: Cost.devCard, activeBuildMode: nil, deckCount: 25, acceptProblem: nil,
+                    buttons: [Strings.newGame: true], buildLeft: [:], buildCost: ScreenState.buildCosts, cardCost: Cost.devCard, activeBuildMode: nil, deckCount: 25, acceptProblem: nil, offerTerms: nil,
                     scoreboard: [], aiThinking: false, board: board, robberTile: board.desertTile,
                     glowingCorners: [], dashedEdges: [], selectableTiles: [], pulsingSettlements: [], hotNumbers: [6, 8], hitNumber: nil,
                     stealTargets: [], numberDiscBelowRobber: false, desertLabelBelowRobber: true, harbourRings: [:], championCorners: [],

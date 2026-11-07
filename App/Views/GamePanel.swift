@@ -187,6 +187,7 @@ struct GamePanel: View {
         if isResponding {
             VStack(alignment: .leading, spacing: 8) {
                 Text(screen.status).font(.callout.bold()).fixedSize(horizontal: false, vertical: true)
+                if let terms = screen.offerTerms { Text(terms).font(.callout).fixedSize(horizontal: false, vertical: true) }
                 HStack {
                     requestButton(Strings.accept) { vm.respondToOffer(accept: true) }
                     requestButton(Strings.decline) { vm.respondToOffer(accept: false) }

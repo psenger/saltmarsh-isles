@@ -20,7 +20,10 @@ public enum Strings {
         "\(roller) rolled a 7! \(name) has more than 7 cards and must give up half."
     }
     public static func freeRoads(_ left: Int) -> String { "Road crew on the job! Tap a dashed edge for a free road (\(left) left)." }
-    public static func offer(from proposer: String, _ offer: TradeOffer) -> String { "\(proposer) offers \(offer.description)." }
+    /// The proposer's side, in the words of the offer builder's Give and Want: "Crimson gives 2 timber and wants 1 ore."
+    public static func offer(from proposer: String, _ offer: TradeOffer) -> String { "\(proposer) gives \(offer.give) and wants \(offer.want)." }
+    /// The same offer from the responder's side: "You give 1 ore and get 2 timber."
+    public static func offerTerms(_ offer: TradeOffer) -> String { "You give \(offer.want) and get \(offer.give)." }
     public static func thinking(_ name: String) -> String { "\(name) is plotting…" }
     public static func cannotPay(_ want: ResourceCounts) -> String { "You don't have \(want)" }
 
