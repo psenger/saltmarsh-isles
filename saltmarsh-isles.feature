@@ -1118,3 +1118,9 @@ Feature: Saltmarsh Isles pass-and-play game
       Given a game saved before the log setting existed
       When the app is relaunched
       Then the tabs are "Trade, Cards, Players, Log"
+
+    Scenario: Copying the log
+      Given a 3-player game with logs turned on
+      When everyone rolls for first player
+      Then the Log tab offers "Copy log"
+      And the copied log is every log line, oldest first, one to a line

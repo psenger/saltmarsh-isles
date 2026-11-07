@@ -271,15 +271,29 @@ struct GamePanel: View {
     }
 
     private var log: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 2) {
-                ForEach(Array(screen.log.reversed().enumerated()), id: \.offset) { _, line in
-                    Text(line).font(.caption).fixedSize(horizontal: false, vertical: true)
+        VStack(alignment: .leading, spacing: 6) {
+            Button(Strings.copyLog) { copyToClipboard(screen.logText) }
+                .buttonStyle(GameButtonStyle())
+                .accessibilityIdentifier("copy log")
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 2) {
+                    ForEach(Array(screen.log.reversed().enumerated()), id: \.offset) { _, line in
+                        Text(line).font(.caption).fixedSize(horizontal: false, vertical: true)
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityIdentifier("log")
         }
-        .accessibilityIdentifier("log")
+    }
+
+    private func copyToClipboard(_ text: String) {
+        #if os(macOS)
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+        #else
+        UIPasteboard.general.string = text
+        #endif
     }
 }
 

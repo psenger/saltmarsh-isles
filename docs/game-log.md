@@ -1,10 +1,10 @@
 # The game log
 
-Every game writes a log: the engine appends one line per thing that happened, in the order it happened. The
-app shows it in the Log tab, saves it inside `game.json` and every named save, and a replay can rebuild the
-whole game from it: the board, every move, and every roll, steal and draw. This file is the contract for that
-log: every kind of line with a real example, the numbering the IDs follow, and how to replay a game to look
-for mistakes.
+Every game writes a log: the engine appends one line per thing that happened, in the order it happened. The app
+shows it in the Log tab when the game was started with Turn on logs, saves it inside `game.json` and every named
+save, and a replay can rebuild the whole game from it: the board, every move, and every roll, steal and draw. This
+file is the contract for that log: every kind of line with a real example, the numbering the IDs follow, and how to
+replay a game to look for mistakes.
 
 The log is not a private record. It names the card a seat stole and the development card a seat bought,
 because a replay needs them. Whether the shipped app shows the log to players during a game is a separate
@@ -20,7 +20,7 @@ Two rules hold for every line:
 
 | Where | What |
 |---|---|
-| The Log tab in the app | the current game's log, as it grows |
+| The Log tab in the app | the current game's log, as it grows, when the game was started with Turn on logs; Copy log puts the whole log on the clipboard, oldest line first, one to a line, ready to paste into a `.txt` file and replay |
 | `~/Library/Application Support/SaltmarshIsles/game.json` | the autosave of the game in progress; its `log` array |
 | `~/Library/Application Support/SaltmarshIsles/saves/<id>.json` | each named save, same shape |
 | `~/Library/Application Support/SaltmarshIsles/game-crashed-<date>.json` | a game the app set aside because the previous launch crashed while resuming it; replay it to find the bug |

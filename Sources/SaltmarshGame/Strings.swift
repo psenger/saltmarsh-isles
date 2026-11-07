@@ -92,7 +92,7 @@ public enum Strings {
     public static func next(_ name: String) -> String { "Next: \(name)" }
 
     // The new game sheet and the Log tab
-    public static let turnOnLogs = "Turn on logs"
+    public static let turnOnLogs = "Turn on logs", copyLog = "Copy log"
 
     // Development card notes
     public static let boughtThisTurn = "bought this turn", oneCardPerTurn = "one card per turn", countsAutomatically = "counts automatically", rollFirst = "roll first"

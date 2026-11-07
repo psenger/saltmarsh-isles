@@ -176,6 +176,8 @@ public struct ScreenState: Equatable, Sendable {
     public var holdTitle: String
     public var bank: ResourceCounts
     public var log: [String]
+    /// What Copy log puts on the clipboard: every line, oldest first, one to a line, as a replay reads it.
+    public var logText: String { log.map { $0 + "\n" }.joined() }
     /// Placement order during the first roll and setup, nil otherwise.
     public var orderStrip: [Seat]?
     public var orderStripNote: String?

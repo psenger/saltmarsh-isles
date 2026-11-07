@@ -7,7 +7,8 @@ and what a good pull request looks like here.
 ## Ways to help
 
 - **Report a bug** with the [bug report form](https://github.com/psenger/saltmarsh-isles/issues/new?template=bug_report.yml). Steps to
-  reproduce and the lines from the Log tab are the two things that matter most.
+  reproduce and the game's log are the two things that matter most: start the game with Turn on logs ticked,
+  then tap Copy log in the Log tab and paste it into the report.
 - **Suggest a feature** with the [feature request form](https://github.com/psenger/saltmarsh-isles/issues/new?template=feature_request.yml).
 - **Fix something small.** Typos, a wrong cost in a label, a missing accessibility label: open a
   pull request straight away.

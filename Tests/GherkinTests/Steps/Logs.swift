@@ -1,5 +1,6 @@
 import Foundation
 import SaltmarshEngine
+import SaltmarshTestSupport
 @testable import SaltmarshGame
 
 /// Rule: Turning on the log
@@ -23,5 +24,23 @@ func registerLogs(_ r: StepRegistry) {
         try expectTrue(json.removeValue(forKey: "showsLog") != nil, "the save has no showsLog to remove")
         let old = try JSONDecoder().decode(GameState.self, from: JSONSerialization.data(withJSONObject: json))
         try w.store.save(old)
+    }
+    // Real dice, not forced ones: a replay rebuilds rolls from the seed, so only an unforced game replays.
+    r.when(#"everyone rolls for first player"#) { w, _, _ in
+        for _ in w.state.players { w.vm.rollForFirst() }
+    }
+    r.then(#"the Log tab offers "([^"]*)""#) { w, c, _ in
+        try expectEqual(Strings.copyLog, c[0], "button label")
+        try expectTrue(w.screen.tabs.contains(.log), "no Log tab")
+    }
+    r.then(#"the copied log is every log line, oldest first, one to a line"#) { w, _, _ in
+        try expectEqual(w.screen.logText, w.state.log.map { $0 + "\n" }.joined(), "copied log")
+        // Pasted into a file, the copy is a log the replay reads back line for line and rebuilds the game from.
+        let file = FileManager.default.temporaryDirectory.appending(path: "copied-log-\(UUID().uuidString).txt")
+        defer { try? FileManager.default.removeItem(at: file) }
+        try w.screen.logText.write(to: file, atomically: true, encoding: .utf8)
+        let lines = try LogReplay.lines(ofFile: file.path)
+        try expectEqual(lines, w.state.log, "lines read back")
+        try expectEqual(try LogReplay.replay(lines).phase, w.state.phase, "replayed phase")
     }
 }
