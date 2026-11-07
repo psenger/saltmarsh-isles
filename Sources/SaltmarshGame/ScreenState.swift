@@ -86,6 +86,11 @@ public struct DevCardRow: Equatable, Sendable {
     public var note: String?
     public var playEnabled: Bool
     public var needsChoices: Bool
+    public var type: DevCardType
+    /// How many of this card the player holds; the Cards tab shows one tile with "×N".
+    public var count: Int
+    /// What the card does, from `Strings.cardText`.
+    public var text: String
 }
 
 public struct ResponseRow: Equatable, Sendable {
@@ -237,6 +242,10 @@ public struct ScreenState: Equatable, Sendable {
     /// Where the current player's points come from, hidden cards included. Empty while an AI acts.
     public var pointsBreakdown: [BreakdownRow] = []
     public var totalPoints = 0
+    /// "In your hand (N)", counting every development card held.
+    public var handHeading = ""
+    /// One pill per kind of card the current player has played, "Knight ×2". Empty before any is played.
+    public var playedPills: [String] = []
 
     static let buildCosts: [BuildMode: ResourceCounts] = [.road: Cost.road, .settlement: Cost.settlement, .city: Cost.city]
 

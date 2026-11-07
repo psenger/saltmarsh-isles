@@ -94,6 +94,20 @@ public enum Strings {
     // The new game sheet and the Log tab
     public static let turnOnLogs = "Turn on logs", copyLog = "Copy log"
 
+    // The Cards tab
+    public static let played = "Played", oneCardPerTurnHint = "1 card per turn"
+    public static func inYourHand(_ n: Int) -> String { "In your hand (\(n))" }
+    public static func playedPill(_ type: DevCardType, _ count: Int) -> String { count > 1 ? "\(type.displayName) \u{00D7}\(count)" : type.displayName }
+    public static func cardText(_ type: DevCardType) -> String {
+        switch type {
+        case .knight: "Move the robber and steal a card from someone with a building there. Counts toward largest army."
+        case .roadCrew: "Build 2 roads for free. The usual road rules apply."
+        case .bumperHarvest: "Take any 2 cards from the bank. The same resource twice is fine."
+        case .cornerMarket: "Name a resource. Every other player hands over all of theirs."
+        case .victoryPoint: "Worth 1 point from the moment you drew it. Hidden from everyone until you win."
+        }
+    }
+
     // Development card notes
     public static let boughtThisTurn = "bought this turn", oneCardPerTurn = "one card per turn", countsAutomatically = "counts automatically", rollFirst = "roll first"
     public static func youDrew(_ card: String) -> String { "You drew: \(card)!" }

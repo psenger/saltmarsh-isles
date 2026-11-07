@@ -230,7 +230,8 @@ extension ScreenState {
             case .victoryPoint: playable = false
             }
             return DevCardRow(index: i, name: card.type.displayName, note: note, playEnabled: note == nil && playable,
-                              needsChoices: card.type == .bumperHarvest || card.type == .cornerMarket)
+                              needsChoices: card.type == .bumperHarvest || card.type == .cornerMarket,
+                              type: card.type, count: 1, text: Strings.cardText(card.type))
         }
         var responses: [ResponseRow] = []
         if case .tradeOffered(_, let answers) = s.phase {
@@ -322,7 +323,8 @@ extension ScreenState {
             devCards: devRows, tradeSection: tradeSection,
             victory: victory, victoryAnimation: reduceMotion ? .reduced : .full, enabledTabs: enabledTabs, tabs: tabs, handover: handover,
             drawnCard: ui.drawnCard.map { DrawnCard(title: Strings.youDrew($0.displayName), text: Strings.drawnCardText($0)) },
-            pointsBreakdown: aiThinking ? [] : breakdown(current), totalPoints: aiThinking ? 0 : Engine.totalPoints(s, player: current))
+            pointsBreakdown: aiThinking ? [] : breakdown(current), totalPoints: aiThinking ? 0 : Engine.totalPoints(s, player: current),
+            handHeading: Strings.inYourHand(aiThinking ? 0 : s.players[current].devCards.count), playedPills: [])
     }
 }
 
