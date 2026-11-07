@@ -94,6 +94,12 @@ public enum Strings {
     // The new game sheet and the Log tab
     public static let turnOnLogs = "Turn on logs", copyLog = "Copy log"
 
+    // About
+    public static let appName = "Saltmarsh Isles", aboutMenu = "About Saltmarsh Isles"
+    public static func aboutVersion(_ v: String) -> String { "Version \(v)" }
+    public static func aboutBuild(_ b: String) -> String { "Build \(b)" }
+    public static func aboutBuilt(_ when: String) -> String { "Built \(when)" }
+
     // The Cards tab
     public static let played = "Played", oneCardPerTurnHint = "1 card per turn", plusOnePoint = "+1 point", ready = "ready"
     public static func inYourHand(_ n: Int) -> String { "In your hand (\(n))" }

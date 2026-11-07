@@ -1178,3 +1178,14 @@ Feature: Saltmarsh Isles pass-and-play game
       When everyone rolls for first player
       Then the Log tab offers "Copy log"
       And the copied log is every log line, oldest first, one to a line
+
+  # ─────────────────────────────────────────────────────────────
+  Rule: About the game
+
+    Scenario: About says which version this is and when it was built
+      Given the app is version "0.1.0", build "20261107.2231", built "7 Nov 2026 at 22:31"
+      Then About reads "Saltmarsh Isles; Version 0.1.0; Build 20261107.2231; Built 7 Nov 2026 at 22:31"
+
+    Scenario: A build with no date stamp leaves the built line out
+      Given the app is version "0.1.0", build "1", with no build date
+      Then About reads "Saltmarsh Isles; Version 0.1.0; Build 1"
