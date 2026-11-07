@@ -23,6 +23,18 @@ import SaltmarshTestSupport
         let counter = TradeOffer(proposer: 0, give: [.timber: 3], want: [.ore: 2, .grain: -1], to: 1)
         #expect(throws: EngineError.self) { try Engine.apply(.respondToTrade(seat: 1, .countered(counter)), to: &s) }
     }
+    @Test func executingNeedsBothSidesAbleToPayNow() throws {                      // a guessed hand in a playout may lack the card
+        var s = base(); try Engine.apply(.proposeTrade(offer), to: &s)
+        try Engine.apply(.respondToTrade(seat: 1, .accepted), to: &s)
+        try Engine.apply(.respondToTrade(seat: 2, .countered(TradeOffer(proposer: 0, give: [.timber: 3], want: [.ore: 1], to: 2))), to: &s)
+        #expect(Engine.legalMoves(s).contains(.executeTrade(with: 1))); #expect(Engine.legalMoves(s).contains(.executeTrade(with: 2)))
+        var poor = s; poor.set(hand: [:], for: 1)                                   // the acceptor lost its ore
+        #expect(!Engine.legalMoves(poor).contains(.executeTrade(with: 1))); #expect(Engine.legalMoves(poor).contains(.executeTrade(with: 2)))
+        #expect(throws: EngineError.self) { try Engine.apply(.executeTrade(with: 1), to: &poor) }
+        var broke = s; broke.set(hand: [.timber: 2], for: 0)                         // the proposer cannot pay the counter's 3 timber
+        #expect(Engine.legalMoves(broke).contains(.executeTrade(with: 1))); #expect(!Engine.legalMoves(broke).contains(.executeTrade(with: 2)))
+        #expect(Engine.legalMoves(broke).contains(.withdrawTrade))
+    }
     @Test func proposeToEveryoneSkipsEmptyHands() throws {
         var s = base(); s.set(hand: [:], for: 2)
         try Engine.apply(.proposeTrade(offer), to: &s)

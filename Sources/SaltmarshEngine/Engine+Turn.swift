@@ -77,7 +77,7 @@ extension Engine {
                 return
             }
             let r = resources[i]
-            for n in 0...min(hand[r], remaining) {
+            for n in 0...max(0, min(hand[r], remaining)) {          // a hand below zero is a bug elsewhere, not a reason to trap
                 current[r] = n
                 enumerate(i + 1, remaining - n)
             }

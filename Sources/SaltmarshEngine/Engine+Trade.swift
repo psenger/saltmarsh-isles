@@ -81,10 +81,17 @@ extension Engine {
             if s.players[seat].hand.contains(offer.want) { moves.append(.respondToTrade(seat: seat, .accepted)) }
         }
         if pending.isEmpty {
+            // Only while both sides can still pay: hands never change between an answer and the execution in a real
+            // game, but a guessed state inside the AI's search may hold a hand that lacks the card.
             for seat in responses.keys.sorted() {
+                let terms: TradeOffer
                 switch responses[seat] {
-                case .accepted, .countered: moves.append(.executeTrade(with: seat))
-                default: break
+                case .accepted: terms = offer
+                case .countered(let counter): terms = counter
+                default: continue
+                }
+                if s.players[offer.proposer].hand.contains(terms.give), s.players[seat].hand.contains(terms.want) {
+                    moves.append(.executeTrade(with: seat))
                 }
             }
         }
