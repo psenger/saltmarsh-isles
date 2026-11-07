@@ -4,6 +4,8 @@ public struct Player: Codable, Hashable, Sendable {
     public var hand: ResourceCounts
     public var devCards: [DevCard]
     public var knightsPlayed: Int
+    /// Every development card this player has played, oldest first. Nil in a game saved before it was recorded.
+    public var cardsPlayed: [DevCardType]?
     public var name: String { seat.name }
 }
 

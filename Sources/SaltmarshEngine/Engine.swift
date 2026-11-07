@@ -12,7 +12,7 @@ extension Engine {
         var state = GameState(
             board: board,
             players: config.controllers.enumerated().map {
-                Player(seat: Seat(rawValue: $0.offset)!, controller: $0.element, hand: ResourceCounts(), devCards: [], knightsPlayed: 0)
+                Player(seat: Seat(rawValue: $0.offset)!, controller: $0.element, hand: ResourceCounts(), devCards: [], knightsPlayed: 0, cardsPlayed: [])
             },
             firstPlayer: 0, current: 0, turn: 0, robberTile: board.desertTile, dice: nil,
             bank: .uniform(19), devDeck: deck, devCardPlayedThisTurn: false,

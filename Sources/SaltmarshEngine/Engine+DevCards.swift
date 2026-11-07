@@ -38,6 +38,7 @@ extension Engine {
 
     private static func spend(_ s: inout GameState, _ type: DevCardType) {
         if let i = playableCard(s, type) { s.players[s.current].devCards.remove(at: i) }
+        s.players[s.current].cardsPlayed = (s.players[s.current].cardsPlayed ?? []) + [type]
         s.devCardPlayedThisTurn = true
     }
 

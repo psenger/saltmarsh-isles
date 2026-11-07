@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import SaltmarshEngine
 import SaltmarshTestSupport
@@ -15,6 +16,23 @@ import SaltmarshTestSupport
         var s = base(); #expect(!Engine.legalMoves(s).contains(.buyDevCard))
         s.set(hand: Cost.devCard, for: 0); s.devDeck = []; #expect(!Engine.legalMoves(s).contains(.buyDevCard))
         var t = TestGames.afterSetup(); t.set(hand: Cost.devCard, for: t.current); #expect(!Engine.legalMoves(t).contains(.buyDevCard))
+    }
+    @Test func playedCardsAreRecorded() throws {
+        var s = base(); give(&s, .roadCrew); give(&s, .knight)
+        #expect(s.players[0].cardsPlayed == [])
+        try Engine.apply(.playRoadCrew, to: &s)
+        #expect(s.players[0].cardsPlayed == [.roadCrew])
+        s.phase = .main; s.devCardPlayedThisTurn = false   // as if the free roads were built and a turn had passed
+        try Engine.apply(.playKnight, to: &s)
+        #expect(s.players[0].cardsPlayed == [.roadCrew, .knight])
+    }
+    @Test func anOldSaveHasNoPlayedRecord() throws {
+        var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(TestGames.fresh())) as! [String: Any]
+        var players = json["players"] as! [[String: Any]]
+        #expect(players[0].removeValue(forKey: "cardsPlayed") != nil)
+        json["players"] = players
+        let old = try JSONDecoder().decode(GameState.self, from: JSONSerialization.data(withJSONObject: json))
+        #expect(old.players[0].cardsPlayed == nil)
     }
     @Test func cannotPlayCardBoughtThisTurn() { var s = base(); give(&s, .knight, turn: s.turn); #expect(!Engine.legalMoves(s).contains(.playKnight)) }
     @Test func oneCardPerTurn() throws {
