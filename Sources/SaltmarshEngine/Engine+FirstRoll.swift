@@ -15,9 +15,9 @@ extension Engine {
     static func applyRollForFirst(_ s: inout GameState) {
         guard case .rollingForFirst(var rolls, let contenders) = s.phase else { return }
         let p = actingPlayer(s)
-        let total = rollDice(&s).reduce(0, +)
+        let pair = rollDice(&s), total = pair.reduce(0, +)
         rolls[p] = total
-        s.log("\(s.players[p].name) rolled \(total) for first player.")
+        s.log("\(s.players[p].name) rolled \(total) (\(pair[0])+\(pair[1])) for first player.")
         guard contenders.allSatisfy({ rolls[$0] != nil }) else {
             s.phase = .rollingForFirst(rolls: rolls, contenders: contenders)
             return

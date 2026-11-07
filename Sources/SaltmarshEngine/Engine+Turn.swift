@@ -1,15 +1,15 @@
 extension Engine {
     static func applyRoll(_ s: inout GameState) {
-        let total = rollDice(&s).reduce(0, +)
-        let name = s.players[s.current].name
+        let pair = rollDice(&s), total = pair.reduce(0, +)
+        let name = s.players[s.current].name, dice = "(\(pair[0])+\(pair[1]))"
         if total == 7 {
-            s.log("\(name) rolled 7.")
+            s.log("\(name) rolled 7 \(dice).")
             let queue = s.players.indices.filter { s.players[$0].hand.total > 7 }
             s.phase = queue.isEmpty ? .movingRobber(returnTo: .main) : .discarding(queue: queue)
         } else {
             let mark = s.log.count
             let fragment = produce(roll: total, in: &s)
-            s.log.insert("\(name) rolled \(total). \(fragment)", at: mark)
+            s.log.insert("\(name) rolled \(total) \(dice). \(fragment)", at: mark)
             s.phase = .main
         }
     }
@@ -53,6 +53,7 @@ extension Engine {
     }
 
     static func applyEndTurn(_ s: inout GameState) {
+        s.log("\(s.players[s.current].name) ended the turn.")
         s.current = (s.current + 1) % s.playerCount
         s.dice = nil
         s.devCardPlayedThisTurn = false
@@ -118,7 +119,7 @@ extension Engine {
     static func applyMoveRobber(_ s: inout GameState, tile t: Int) {
         guard case .movingRobber(let returnTo) = s.phase else { return }
         s.robberTile = t
-        s.log("\(s.players[s.current].name) moved the robber.")
+        s.log("\(s.players[s.current].name) moved the robber to \(s.board.hexID(t)).")
         var candidates: [Int] = []
         var opponentsOnTile = false
         for c in s.board.tiles[t].corners {
@@ -141,15 +142,17 @@ extension Engine {
         guard case .choosingVictim(_, let returnTo) = s.phase else { return }
         let hand = s.players[victim].hand
         var k = Int.random(in: 0..<hand.total, using: &s.rng)
+        var stolen: Resource?
         for (r, n) in hand.nonZero {
             if k < n {
                 s.players[victim].hand[r] -= 1
                 s.players[s.current].hand[r] += 1
+                stolen = r
                 break
             }
             k -= n
         }
-        s.log("\(s.players[s.current].name) stole a card from \(s.players[victim].name).")
+        s.log("\(s.players[s.current].name) stole 1 \(stolen?.rawValue ?? "card") from \(s.players[victim].name).")
         s.phase = returnTo
     }
 }

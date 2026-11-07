@@ -45,7 +45,7 @@ Feature: Saltmarsh Isles pass-and-play game
 
     Scenario: Every seat rolls once, in seat order
       When Crimson rolls 9 for first player
-      Then the log reads "Crimson rolled 9 for first player."
+      Then the log reads "Crimson rolled 9 (6+3) for first player."
       And the header shows "Cobalt · first roll"
 
     Scenario: The highest roll goes first
@@ -121,7 +121,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Then every corner that obeys the distance rule glows
       When Crimson taps a glowing corner
       Then a Crimson settlement is placed there
-      And the log reads "Crimson founded a settlement."
+      And the log reads "Crimson founded a settlement at V0."
       And the status reads "Now a road! Tap a dashed edge next to your settlement."
       And only edges touching that settlement are dashed
 
@@ -129,7 +129,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Given Crimson has just placed a setup settlement
       When Crimson taps a dashed edge
       Then a Crimson road is placed there
-      And the log reads "Crimson laid a road."
+      And the log reads "Crimson laid a road E0-1."
       And it becomes the next player's setup step
 
     Scenario: Only the second setup settlement pays starting cards
@@ -164,7 +164,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Then Cobalt receives 1 card of that tile's resource
       And Amber receives 2 cards of that tile's resource
       And the number discs showing 8 are marked hit
-      And the log reads "Crimson rolled 8. Cobalt +1 ore, Amber +2 ore"
+      And the log reads "Crimson rolled 8 (6+2). Cobalt +1 ore, Amber +2 ore"
       And the status reads "The isles are yours! Build, trade, or end your turn."
 
     Scenario: A roll that produces nothing
@@ -189,7 +189,7 @@ Feature: Saltmarsh Isles pass-and-play game
 
     Scenario: Discard queue forms in seat order
       When Crimson rolls 7
-      Then the log reads "Crimson rolled 7."
+      Then the log reads "Crimson rolled 7 (6+1)."
       And no tile produces
       And Cobalt must discard 4 and then Amber must discard 5
       And Crimson does not discard
@@ -261,7 +261,7 @@ Feature: Saltmarsh Isles pass-and-play game
       When Crimson taps a numbered tile
       Then the robber is on that tile
       And that tile's number disc is marked as sitting below the robber
-      And the log reads "Crimson moved the robber."
+      And the log reads "Crimson moved the robber to H8."
 
     Scenario: Robber on the desert
       When the robber is on the desert
@@ -280,7 +280,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Then the panel shows "Steal from Cobalt" and "Steal from Amber"
       When Crimson taps <target>
       Then 1 random card moves from Cobalt to Crimson
-      And the log reads "Crimson stole a card from Cobalt."
+      And the log reads "Crimson stole 1 timber from Cobalt."
       And the steal buttons disappear
 
       Examples:
@@ -331,7 +331,7 @@ Feature: Saltmarsh Isles pass-and-play game
       When Crimson taps "Road" and taps a dashed edge
       Then a Crimson road is placed there
       And Crimson pays 1 timber and 1 clay
-      And the log reads "Crimson built a road."
+      And the log reads "Crimson built a road E1-2."
 
     Scenario: Roads must connect
       Then only edges touching a Crimson road, settlement or city are dashed
@@ -349,7 +349,7 @@ Feature: Saltmarsh Isles pass-and-play game
       When Crimson taps "Settlement" and taps a glowing corner
       Then a Crimson settlement is placed there
       And Crimson pays 1 timber, 1 clay, 1 wool and 1 grain
-      And the log reads "Crimson built a settlement."
+      And the log reads "Crimson built a settlement at V2."
 
     Scenario: Settlement placement rules
       Then glowing corners are empty
@@ -374,7 +374,7 @@ Feature: Saltmarsh Isles pass-and-play game
       When Crimson taps one of them
       Then it becomes a city
       And Crimson pays 2 grain and 3 ore
-      And the log reads "Crimson upgraded to a city."
+      And the log reads "Crimson upgraded to a city at V0."
 
   # ─────────────────────────────────────────────────────────────
   Rule: Trading with the bank at 4 for 1
@@ -448,7 +448,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Then the give side of that row is fixed to "2 wool"
       When Crimson chooses ore to get and taps "Trade 2 for 1"
       Then Crimson loses 2 wool and gains 1 ore
-      And the log reads "Crimson traded 2 wool for 1 ore at the 2:1 wool harbour."
+      And the log reads "Crimson traded 2 wool for 1 ore at the 2:1 wool harbour (PORT 51-52)."
 
     Scenario: Trading at a 3:1 harbour
       Given Crimson holds a 3:1 harbour and 3 clay
@@ -646,7 +646,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Then Crimson pays 1 wool, 1 grain and 1 ore
       And Crimson gains 1 development card
       And the deck count on the button drops by 1
-      And the log reads "Crimson bought a development card."
+      And the log reads "Crimson bought a development card: Victory point."
 
     Scenario Outline: Buying is disabled when not allowed
       Given <situation>
@@ -707,7 +707,7 @@ Feature: Saltmarsh Isles pass-and-play game
       And building, trading and ending the turn are disabled
       When Crimson taps 2 dashed edges
       Then 2 Crimson roads are placed without paying
-      And the log twice reads "Crimson built a free road."
+      And the log twice reads a line starting "Crimson built a free road E"
       And the status reads "The isles are yours! Build, trade, or end your turn."
 
     Scenario: Road crew with no room
@@ -727,7 +727,7 @@ Feature: Saltmarsh Isles pass-and-play game
       When Crimson chooses ore and taps "Play"
       Then Crimson gains 5 ore
       And Cobalt and Amber hold 0 ore
-      And the log reads "Crimson cornered the ore market and took 5."
+      And the log reads "Crimson cornered the ore market and took 5 (Cobalt 3, Amber 2)."
 
   # ─────────────────────────────────────────────────────────────
   Rule: Longest road

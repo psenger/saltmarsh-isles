@@ -9,7 +9,7 @@ import SaltmarshTestSupport
         var s = base(); s.set(hand: Cost.devCard, for: 0); let top = s.devDeck.last!
         try Engine.apply(.buyDevCard, to: &s)
         #expect(s.players[0].hand.isEmpty); #expect(s.players[0].devCards == [DevCard(type: top, boughtOnTurn: s.turn)]); #expect(s.devDeck.count == 24)
-        #expect(s.log.last == "Crimson bought a development card.")
+        #expect(s.log.last == "Crimson bought a development card: \(top.displayName).")
     }
     @Test func buyingNotAllowed() {
         var s = base(); #expect(!Engine.legalMoves(s).contains(.buyDevCard))
@@ -50,7 +50,7 @@ import SaltmarshTestSupport
         var s = base(); give(&s, .roadCrew)
         try Engine.apply(.playRoadCrew, to: &s); #expect(s.phase == .placingFreeRoads(remaining: 2)); #expect(s.log.last == "Crimson played Road crew.")
         for _ in 0..<2 { try Engine.apply(Engine.legalMoves(s).first!, to: &s) }
-        #expect(s.roads(of: 0) == 3); #expect(s.bank == .uniform(19)); #expect(Array(s.log.suffix(2)) == ["Crimson built a free road.", "Crimson built a free road."]); #expect(s.phase == .main)
+        #expect(s.roads(of: 0) == 3); #expect(s.bank == .uniform(19)); #expect(s.log.suffix(2).allSatisfy { $0.hasPrefix("Crimson built a free road E") }); #expect(s.phase == .main)
     }
     @Test func roadCrewNoRoom() throws {
         var s = TestGames.rolled(8); s.clearBoard(); s.clearHands(); s.place(settlement: 0, owner: 0)
@@ -84,6 +84,6 @@ import SaltmarshTestSupport
         var s = base(); give(&s, .cornerMarket); s.set(hand: [.ore: 3], for: 1); s.set(hand: [.ore: 2], for: 2)
         try Engine.apply(.playCornerMarket(.ore), to: &s)
         #expect(s.players[0].hand[.ore] == 5); #expect(s.players[1].hand[.ore] == 0); #expect(s.players[2].hand[.ore] == 0)
-        #expect(s.log.last == "Crimson cornered the ore market and took 5.")
+        #expect(s.log.last == "Crimson cornered the ore market and took 5 (Cobalt 3, Amber 2).")
     }
 }

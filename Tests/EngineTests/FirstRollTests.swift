@@ -24,7 +24,7 @@ import Testing
     @Test func rollLogged() throws {
         var s = game(); s.forcedRolls = [[4, 5]]
         try Engine.apply(.rollForFirst, to: &s)
-        #expect(s.log.last == "Crimson rolled 9 for first player.")
+        #expect(s.log.last == "Crimson rolled 9 (4+5) for first player.")
     }
     @Test func onlyRollForFirstIsLegal() { #expect(Engine.legalMoves(game()) == [.rollForFirst]) }
 }

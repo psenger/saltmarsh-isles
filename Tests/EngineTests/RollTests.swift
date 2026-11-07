@@ -14,7 +14,7 @@ import SaltmarshTestSupport
         let res = s.board.tiles[s.tile(numbered: 8)].resource!
         try Engine.apply(.roll, to: &s)
         #expect(s.players[1].hand[res] == 1); #expect(s.players[2].hand[res] == 2)
-        #expect(s.log.last == "Crimson rolled 8. Cobalt +1 \(res.rawValue), Amber +2 \(res.rawValue)")
+        #expect(s.log.last == "Crimson rolled 8 (6+2). Cobalt +1 \(res.rawValue), Amber +2 \(res.rawValue)")
         #expect(s.phase == .main); #expect(s.dice!.reduce(0, +) == 8)
     }
     @Test func rollNamesEveryResourceASeatReceives() throws {
@@ -25,11 +25,11 @@ import SaltmarshTestSupport
         let a = s.board.tiles[eights[0]].resource!, b = s.board.tiles[eights[1]].resource!
         try Engine.apply(.roll, to: &s)
         let expected = a == b ? "+2 \(a.rawValue)" : [a, b].sorted().map { "+1 \($0.rawValue)" }.joined(separator: " ")
-        #expect(s.log.last == "Crimson rolled 8. Cobalt \(expected)")
+        #expect(s.log.last == "Crimson rolled 8 (6+2). Cobalt \(expected)")
     }
     @Test func rollThatProducesNothing() throws {
         var s = crimsonToRoll(8); try Engine.apply(.roll, to: &s)
-        #expect(s.log.last == "Crimson rolled 8. Nobody harvested.")
+        #expect(s.log.last == "Crimson rolled 8 (6+2). Nobody harvested.")
     }
     @Test func robberBlocksProduction() throws {
         var s = crimsonToRoll(6)
@@ -57,13 +57,13 @@ import SaltmarshTestSupport
         s.place(settlement: s.corner(onTileNumbered: 8, index: 3), owner: 2)
         try Engine.apply(.roll, to: &s)
         #expect(s.players[1].hand[res] == 0); #expect(s.players[2].hand[res] == 0); #expect(s.bank[res] == 1)
-        #expect(s.log.suffix(2).first == "Crimson rolled 8. Nobody harvested.")
+        #expect(s.log.suffix(2).first == "Crimson rolled 8 (6+2). Nobody harvested.")
     }
     @Test func sevenBuildsDiscardQueueOrGoesToRobber() throws {
         var s = crimsonToRoll(7)
         s.set(hand: .uniform(2), for: 1)                     // 10 cards
         try Engine.apply(.roll, to: &s)
-        #expect(s.phase == .discarding(queue: [1])); #expect(s.log.last == "Crimson rolled 7.")
+        #expect(s.phase == .discarding(queue: [1])); #expect(s.log.last == "Crimson rolled 7 (6+1).")
         var t = crimsonToRoll(7); try Engine.apply(.roll, to: &t)
         #expect(t.phase == .movingRobber(returnTo: .main))
     }

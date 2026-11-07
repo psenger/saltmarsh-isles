@@ -2,6 +2,29 @@ import Foundation
 
 public enum BoardGenerator {
     /// Geometry only: every tile is desert with no number, and there are no harbours.
+    ///
+    /// This loop fixes the numbering the whole game uses, in moves, saves and the log (`H7`, `V12`, `E14-15`):
+    ///
+    /// **Hexes 0 to 18** are the axial coordinates `(q, r)` of a radius-2 hexagon, visited column by column:
+    /// `q` runs −2 to 2, and within a column `r` runs from `max(−2, −q−2)` to `min(2, −q+2)`, top to bottom.
+    /// So column q=−2 is H0 to H2 (r = 0, 1, 2), q=−1 is H3 to H6 (r = −1 to 2), q=0 is H7 to H11 (r = −2 to 2),
+    /// q=1 is H12 to H15 (r = −2 to 1) and q=2 is H16 to H18 (r = −2 to 0). The desert `(0, 0)` is H9.
+    /// A hex's centre is `x = S·√3·(q + r/2)`, `y = 1.5·S·r` with `S = 58`, y growing downwards.
+    ///
+    /// **Vertices 0 to 53** are numbered in the order they are first met while walking the hexes in that
+    /// order and, within a hex, its six corners at angles −30°, 30°, 90°, 150°, 210°, 270° (corner i at
+    /// 60·i − 30 degrees, clockwise on screen from the upper-right corner). A corner shared with an earlier
+    /// hex keeps the number it already has. H0's six corners are therefore V0 to V5; a later hex contributes
+    /// only its unseen corners.
+    ///
+    /// **Edges 0 to 71** are numbered the same way: hex edge i joins the hex's corners i and i+1, and an edge
+    /// already met keeps its number. The log writes an edge as its two vertices, smaller first (`E14-15`);
+    /// `Board.edgeIndex(ofID:)` recovers the index. An edge touching one hex is coastal; there are 30.
+    ///
+    /// **Harbours 0 to 8** are placed by `generate(using:)`: the 30 coastal edges are sorted by the angle of
+    /// their midpoint around the island centre, a random start is picked, and the harbours take the edges at
+    /// offsets 0, 3, 7, 10, 13, 17, 20, 23 and 27 from it, kinds alternating 2:1, 3:1, 2:1, … with the 2:1
+    /// resources in a shuffled order. The log names a harbour by its edge (`PORT 14-15`).
     public static func layout() -> Board {
         let s = Board.hexSize
         var tiles: [Tile] = [], corners: [Corner] = [], edges: [Edge] = []

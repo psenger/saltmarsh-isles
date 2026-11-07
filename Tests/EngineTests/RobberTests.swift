@@ -49,10 +49,12 @@ import SaltmarshTestSupport
         let t = s.tile(numbered: 8); s.place(settlement: s.board.tiles[t].corners[0], owner: 1)
         try Engine.apply(.moveRobber(tile: t), to: &s)
         #expect(s.robberTile == t); #expect(s.phase == .choosingVictim(candidates: [1], returnTo: .main))
-        #expect(s.log.last == "Crimson moved the robber.")
+        #expect(s.log.last == "Crimson moved the robber to H\(t).")
+        let before = s.players[1].hand
         try Engine.apply(.steal(from: 1), to: &s)
         #expect(s.players[1].hand.total == 4); #expect(s.players[0].hand.total == 5)
-        #expect(s.log.last == "Crimson stole a card from Cobalt."); #expect(s.phase == .main)
+        let stolen = Resource.allCases.first { s.players[1].hand[$0] < before[$0] }!
+        #expect(s.log.last == "Crimson stole 1 \(stolen.rawValue) from Cobalt."); #expect(s.phase == .main)
     }
     @Test func twoVictimsOffered() throws {
         var s = sevenRolled(cobalt: 5, amber: 5)

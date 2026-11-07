@@ -41,12 +41,12 @@ import SaltmarshTestSupport
         var s = base(); let h = harbour(s, .specific(.wool)); s.place(settlement: s.board.harbours[h].a, owner: 0); s.set(hand: [.wool: 2], for: 0)
         #expect(!Engine.legalMoves(s).contains(.harbourTrade(harbour: h, give: .grain, get: .ore)))
         try Engine.apply(.harbourTrade(harbour: h, give: .wool, get: .ore), to: &s)
-        #expect(s.players[0].hand == [.ore: 1]); #expect(s.log.last == "Crimson traded 2 wool for 1 ore at the 2:1 wool harbour.")
+        #expect(s.players[0].hand == [.ore: 1]); #expect(s.log.last == "Crimson traded 2 wool for 1 ore at the 2:1 wool harbour (\(s.board.portID(h))).")
     }
     @Test func threeForOne() throws {
         var s = base(); let h = harbour(s, .any); s.place(settlement: s.board.harbours[h].a, owner: 0); s.set(hand: [.clay: 3], for: 0)
         try Engine.apply(.harbourTrade(harbour: h, give: .clay, get: .grain), to: &s)
-        #expect(s.players[0].hand == [.grain: 1]); #expect(s.log.last == "Crimson traded 3 clay for 1 grain at the 3:1 harbour.")
+        #expect(s.players[0].hand == [.grain: 1]); #expect(s.log.last == "Crimson traded 3 clay for 1 grain at the 3:1 harbour (\(s.board.portID(h))).")
     }
     @Test func notEnoughCardsAndUnownedHarbour() {
         var s = base(); let h = harbour(s, .specific(.wool)); s.place(settlement: s.board.harbours[h].a, owner: 0); s.set(hand: [.wool: 1], for: 0)

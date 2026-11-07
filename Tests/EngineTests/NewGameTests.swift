@@ -33,6 +33,6 @@ import Testing
         #expect(Array(s.log.prefix(4)) == ["New game with 3 players. Everyone rolls for first player.",
                                           "Crimson is human.", "Cobalt is an AI Mate.", "Amber is an AI Admiral."])
         let two = Engine.newGame(GameConfig(controllers: [.ai(.deckhand), .human], seed: 2))
-        #expect(two.log.count == 3); #expect(two.log[1] == "Crimson is an AI Deckhand."); #expect(two.log[2] == "Cobalt is human.")
+        #expect(two.log[1] == "Crimson is an AI Deckhand."); #expect(two.log[2] == "Cobalt is human."); #expect(two.log[3] == "SEED 2")
     }
 }

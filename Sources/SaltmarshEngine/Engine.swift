@@ -26,6 +26,7 @@ extension Engine {
             case .ai(let level): state.log("\(player.name) is an AI \(level.name).")
             }
         }
+        recordBoard(&state, seed: config.seed)
         return state
     }
 
@@ -142,5 +143,26 @@ extension Engine {
         default:
             return s.current
         }
+    }
+}
+
+extension Engine {
+    /// The board record at the top of every game's log, which a replay rebuilds the game from (docs/game-log.md):
+    /// `SEED 42`, then one line per hex `H0 ore 10` (`H9 desert -`), one per harbour `PORT 14-15 wool 2:1` or
+    /// `PORT 20-21 3:1`, then the robber's starting hex `ROBBER H9`. IDs are those of `Board+IDs.swift`.
+    static func recordBoard(_ s: inout GameState, seed: UInt64) {
+        s.log("SEED \(seed)")
+        for (i, tile) in s.board.tiles.enumerated() {
+            s.log("\(s.board.hexID(i)) \(tile.resource?.rawValue ?? "desert") \(tile.number.map { String($0) } ?? "-")")
+        }
+        for (i, h) in s.board.harbours.enumerated() {
+            let kind: String
+            switch h.kind {
+            case .any: kind = "3:1"
+            case .specific(let r): kind = "\(r.rawValue) 2:1"
+            }
+            s.log("\(s.board.portID(i)) \(kind)")
+        }
+        s.log("ROBBER \(s.board.hexID(s.robberTile))")
     }
 }

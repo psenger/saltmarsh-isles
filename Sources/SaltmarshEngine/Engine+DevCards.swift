@@ -45,7 +45,7 @@ extension Engine {
         pay(&s, Cost.devCard)
         let type = s.devDeck.removeLast()
         s.players[s.current].devCards.append(DevCard(type: type, boughtOnTurn: s.turn))
-        s.log("\(s.players[s.current].name) bought a development card.")
+        s.log("\(s.players[s.current].name) bought a development card: \(type.displayName).")
         checkWin(&s)
     }
 
@@ -84,7 +84,7 @@ extension Engine {
     static func applyFreeRoad(_ s: inout GameState, edge e: Int) {
         guard case .placingFreeRoads(let remaining) = s.phase else { return }
         s.board.edges[e].owner = s.current
-        s.log("\(s.players[s.current].name) built a free road.")
+        s.log("\(s.players[s.current].name) built a free road \(s.board.edgeID(e)).")
         updateAwards(&s)
         s.phase = .placingFreeRoads(remaining: remaining - 1)
         endFreeRoadsIfStuck(&s)
@@ -102,12 +102,15 @@ extension Engine {
 
     static func applyCornerMarket(_ s: inout GameState, _ r: Resource) {
         spend(&s, .cornerMarket)
-        var taken = 0
+        var taken = 0, paid: [String] = []
         for i in s.players.indices where i != s.current {
-            taken += s.players[i].hand[r]
+            let n = s.players[i].hand[r]
+            if n > 0 { paid.append("\(s.players[i].name) \(n)") }
+            taken += n
             s.players[i].hand[r] = 0
         }
         s.players[s.current].hand[r] += taken
-        s.log("\(s.players[s.current].name) cornered the \(r.rawValue) market and took \(taken).")
+        let detail = paid.isEmpty ? "" : " (\(paid.joined(separator: ", ")))"
+        s.log("\(s.players[s.current].name) cornered the \(r.rawValue) market and took \(taken)\(detail).")
     }
 }

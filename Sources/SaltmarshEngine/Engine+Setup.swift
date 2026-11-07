@@ -11,15 +11,18 @@ extension Engine {
         guard case .setup(let step, _, _) = s.phase else { return }
         let p = s.current
         s.board.corners[c].owner = p
-        s.log("\(s.players[p].name) founded a settlement.")
+        s.log("\(s.players[p].name) founded a settlement at \(s.board.vertexID(c)).")
         if step >= s.playerCount {
             // The second settlement pays one card per adjacent land tile.
+            var gained = ResourceCounts()
             for t in s.board.corners[c].tiles {
                 if let r = s.board.tiles[t].resource, s.bank[r] > 0 {
                     s.bank[r] -= 1
                     s.players[p].hand[r] += 1
+                    gained[r] += 1
                 }
             }
+            if gained.total > 0 { s.log("\(s.players[p].name) collected \(gained).") }
         }
         s.phase = .setup(step: step, placingRoad: true, lastSettlement: c)
     }
@@ -28,7 +31,7 @@ extension Engine {
         guard case .setup(let step, _, _) = s.phase else { return }
         let p = s.current
         s.board.edges[e].owner = p
-        s.log("\(s.players[p].name) laid a road.")
+        s.log("\(s.players[p].name) laid a road \(s.board.edgeID(e)).")
         let next = step + 1
         if next == 2 * s.playerCount {
             s.current = s.firstPlayer

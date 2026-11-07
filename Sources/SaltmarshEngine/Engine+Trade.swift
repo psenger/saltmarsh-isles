@@ -38,7 +38,7 @@ extension Engine {
         let harbour = s.board.harbours[h]
         exchange(&s, give: give, count: harbour.ratio, get: get)
         let place = harbour.kind == .any ? "the 3:1 harbour" : "the 2:1 \(give.rawValue) harbour"
-        s.log("\(s.players[s.current].name) traded \(harbour.ratio) \(give.rawValue) for 1 \(get.rawValue) at \(place).")
+        s.log("\(s.players[s.current].name) traded \(harbour.ratio) \(give.rawValue) for 1 \(get.rawValue) at \(place) (\(s.board.portID(h))).")
     }
 
     // MARK: Trading between players

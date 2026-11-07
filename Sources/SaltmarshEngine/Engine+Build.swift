@@ -53,7 +53,7 @@ extension Engine {
     static func applyBuildRoad(_ s: inout GameState, edge e: Int) {
         pay(&s, Cost.road)
         s.board.edges[e].owner = s.current
-        s.log("\(s.players[s.current].name) built a road.")
+        s.log("\(s.players[s.current].name) built a road \(s.board.edgeID(e)).")
         updateAwards(&s)
         checkWin(&s)
     }
@@ -61,7 +61,7 @@ extension Engine {
     static func applyBuildSettlement(_ s: inout GameState, corner c: Int) {
         pay(&s, Cost.settlement)
         s.board.corners[c].owner = s.current
-        s.log("\(s.players[s.current].name) built a settlement.")
+        s.log("\(s.players[s.current].name) built a settlement at \(s.board.vertexID(c)).")
         updateAwards(&s)
         checkWin(&s)
     }
@@ -69,7 +69,7 @@ extension Engine {
     static func applyUpgradeCity(_ s: inout GameState, corner c: Int) {
         pay(&s, Cost.city)
         s.board.corners[c].isCity = true
-        s.log("\(s.players[s.current].name) upgraded to a city.")
+        s.log("\(s.players[s.current].name) upgraded to a city at \(s.board.vertexID(c)).")
         checkWin(&s)
     }
 }

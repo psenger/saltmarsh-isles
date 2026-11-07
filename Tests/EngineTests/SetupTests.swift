@@ -43,7 +43,7 @@ import SaltmarshTestSupport
         let legal = Engine.legalMoves(s)
         #expect(legal.count == s.board.corners[c].edges.count)
         for m in legal { if case .placeRoad(let e) = m { #expect(s.board.edges[e].a == c || s.board.edges[e].b == c) } else { Issue.record("non-road move in setup road step") } }
-        #expect(s.log.last == "Crimson founded a settlement.")
+        #expect(s.log.last == "Crimson founded a settlement at V10.")
     }
     @Test func distanceRuleDuringSetup() throws {
         var s = TestGames.fresh(); s.forcedRolls = [[6, 6], [1, 1], [1, 1]]

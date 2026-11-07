@@ -21,7 +21,7 @@ import SaltmarshTestSupport
         let e = Engine.legalMoves(s).compactMap { if case .placeRoad(let e) = $0 { e } else { nil } }.first!
         try Engine.apply(.placeRoad(edge: e), to: &s)
         #expect(s.board.edges[e].owner == 0); #expect(s.players[0].hand.isEmpty); #expect(s.bank == .uniform(19))
-        #expect(s.log.last == "Crimson built a road.")
+        #expect(s.log.last == "Crimson built a road \(s.board.edgeID(e)).")
     }
     @Test func roadsMustConnect() {
         var s = base(); s.set(hand: Cost.road, for: 0)
@@ -49,7 +49,7 @@ import SaltmarshTestSupport
         let spots = Engine.legalMoves(s).compactMap { if case .placeSettlement(let c) = $0 { c } else { nil } }
         #expect(spots == [far])                                       // mid is adjacent to corner 0, far is reachable
         try Engine.apply(.placeSettlement(corner: far), to: &s)
-        #expect(s.board.corners[far].owner == 0); #expect(s.players[0].hand.isEmpty); #expect(s.log.last == "Crimson built a settlement.")
+        #expect(s.board.corners[far].owner == 0); #expect(s.players[0].hand.isEmpty); #expect(s.log.last == "Crimson built a settlement at V\(far).")
     }
     @Test func sharedCrossroadIsARace() throws {
         var s = base(); s.set(hand: Cost.settlement, for: 0); s.set(hand: Cost.settlement, for: 1)
@@ -74,7 +74,7 @@ import SaltmarshTestSupport
     @Test func cityUpgrade() throws {
         var s = base(); s.set(hand: Cost.city, for: 0)
         try Engine.apply(.upgradeCity(corner: 0), to: &s)
-        #expect(s.board.corners[0].isCity); #expect(s.players[0].hand.isEmpty); #expect(s.log.last == "Crimson upgraded to a city.")
+        #expect(s.board.corners[0].isCity); #expect(s.players[0].hand.isEmpty); #expect(s.log.last == "Crimson upgraded to a city at V0.")
         #expect(!has(s) { $0 == .upgradeCity(corner: 0) })
     }
     @Test func pieceLimits() throws {
