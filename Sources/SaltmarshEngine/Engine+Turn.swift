@@ -17,7 +17,8 @@ extension Engine {
     /// Pays every building on a tile numbered `roll` (robber tile excluded), one card per settlement
     /// and two per city, subject to the bank rule: when the bank cannot cover a resource, a single
     /// claimant takes what is left and several claimants get nothing. Shortages are logged.
-    /// Returns "Cobalt +1, Amber +2" (recipients in seat order) or "Nobody harvested.".
+    /// Returns "Cobalt +1 grain, Amber +2 grain" (recipients in seat order, each resource named, in resource
+    /// order: "Amber +1 grain +1 ore") or "Nobody harvested.".
     static func produce(roll: Int, in s: inout GameState) -> String {
         var owed = Array(repeating: ResourceCounts(), count: s.playerCount)
         for (ti, tile) in s.board.tiles.enumerated() where tile.number == roll && ti != s.robberTile {
@@ -26,11 +27,11 @@ extension Engine {
                 if let o = s.board.corners[c].owner { owed[o][r] += s.board.corners[c].isCity ? 2 : 1 }
             }
         }
-        var received = Array(repeating: 0, count: s.playerCount)
+        var received = Array(repeating: ResourceCounts(), count: s.playerCount)
         func pay(_ p: Int, _ r: Resource, _ n: Int) {
             s.players[p].hand[r] += n
             s.bank[r] -= n
-            received[p] += n
+            received[p][r] += n
         }
         for r in Resource.allCases {
             let claimants = owed.indices.filter { owed[$0][r] > 0 }
@@ -43,9 +44,12 @@ extension Engine {
                 s.log("Bank is out of \(r.rawValue).")
             }
         }
-        let recipients = received.indices.filter { received[$0] > 0 }
+        let recipients = received.indices.filter { received[$0].total > 0 }
         if recipients.isEmpty { return "Nobody harvested." }
-        return recipients.map { "\(s.players[$0].name) +\(received[$0])" }.joined(separator: ", ")
+        return recipients.map { p in
+            let gains = Resource.allCases.filter { received[p][$0] > 0 }.map { "+\(received[p][$0]) \($0.rawValue)" }
+            return "\(s.players[p].name) \(gains.joined(separator: " "))"
+        }.joined(separator: ", ")
     }
 
     static func applyEndTurn(_ s: inout GameState) {

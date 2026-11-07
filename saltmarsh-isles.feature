@@ -164,7 +164,7 @@ Feature: Saltmarsh Isles pass-and-play game
       Then Cobalt receives 1 card of that tile's resource
       And Amber receives 2 cards of that tile's resource
       And the number discs showing 8 are marked hit
-      And the log reads "Crimson rolled 8. Cobalt +1, Amber +2"
+      And the log reads "Crimson rolled 8. Cobalt +1 ore, Amber +2 ore"
       And the status reads "The isles are yours! Build, trade, or end your turn."
 
     Scenario: A roll that produces nothing

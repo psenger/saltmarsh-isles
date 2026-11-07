@@ -14,8 +14,18 @@ import SaltmarshTestSupport
         let res = s.board.tiles[s.tile(numbered: 8)].resource!
         try Engine.apply(.roll, to: &s)
         #expect(s.players[1].hand[res] == 1); #expect(s.players[2].hand[res] == 2)
-        #expect(s.log.last == "Crimson rolled 8. Cobalt +1, Amber +2")
+        #expect(s.log.last == "Crimson rolled 8. Cobalt +1 \(res.rawValue), Amber +2 \(res.rawValue)")
         #expect(s.phase == .main); #expect(s.dice!.reduce(0, +) == 8)
+    }
+    @Test func rollNamesEveryResourceASeatReceives() throws {
+        var s = crimsonToRoll(8)
+        let eights = s.board.tiles.indices.filter { s.board.tiles[$0].number == 8 }
+        try #require(eights.count == 2)
+        for t in eights { s.place(settlement: s.board.tiles[t].corners[0], owner: 1) }
+        let a = s.board.tiles[eights[0]].resource!, b = s.board.tiles[eights[1]].resource!
+        try Engine.apply(.roll, to: &s)
+        let expected = a == b ? "+2 \(a.rawValue)" : [a, b].sorted().map { "+1 \($0.rawValue)" }.joined(separator: " ")
+        #expect(s.log.last == "Crimson rolled 8. Cobalt \(expected)")
     }
     @Test func rollThatProducesNothing() throws {
         var s = crimsonToRoll(8); try Engine.apply(.roll, to: &s)
