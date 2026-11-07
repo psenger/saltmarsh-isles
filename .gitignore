@@ -21,6 +21,7 @@ Package.resolved
 # Test output
 TestResults/
 *.xcresult
+*.profraw
 
 # Superpowers working files
 .superpowers/
