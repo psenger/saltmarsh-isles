@@ -1,0 +1,429 @@
+New game with 2 players. Everyone rolls for first player.
+Crimson is human.
+Cobalt is an AI Admiral.
+SEED 14091067325626091552
+H0 grain 3
+H1 wool 6
+H2 timber 11
+H3 timber 9
+H4 clay 10
+H5 grain 4
+H6 wool 2
+H7 grain 5
+H8 ore 12
+H9 desert -
+H10 clay 9
+H11 timber 8
+H12 wool 8
+H13 grain 11
+H14 timber 4
+H15 ore 3
+H16 ore 5
+H17 clay 6
+H18 wool 10
+PORT 52-53 ore 2:1
+PORT 35-46 3:1
+PORT 23-24 timber 2:1
+PORT 12-13 3:1
+PORT 2-9 clay 2:1
+PORT 5-16 3:1
+PORT 27-28 wool 2:1
+PORT 38-40 3:1
+PORT 48-50 grain 2:1
+ROBBER H9
+Crimson rolled 8 (4+4) for first player.
+Cobalt rolled 8 (6+2) for first player.
+Tie between Crimson and Cobalt. Roll again.
+Crimson rolled 6 (1+5) for first player.
+Cobalt rolled 5 (3+2) for first player.
+Crimson goes first. Place your first settlement.
+Crimson founded a settlement at V34.
+Crimson laid a road E22-34.
+Cobalt weighed 4 moves over 96 guessed hands (384 playouts, 0.3 s) and changed its mind.
+Cobalt founded a settlement at V43.
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt laid a road E42-43.
+Cobalt weighed 4 moves over 96 guessed hands (384 playouts, 0.3 s) and stuck with its first instinct.
+Cobalt founded a settlement at V39.
+Cobalt collected 1 wool, 1 grain, 1 ore.
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt laid a road E29-39.
+Crimson founded a settlement at V21.
+Crimson collected 1 clay, 1 wool, 1 grain.
+Crimson laid a road E21-22.
+Setup done. Crimson rolls first.
+Crimson rolled 8 (6+2). Crimson +1 timber, Cobalt +1 wool
+Crimson built a road E34-35.
+Crimson ended the turn.
+Cobalt rolled 4 (3+1). Crimson +1 grain, Cobalt +1 timber
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt bought a development card: Corner the market.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 clay.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 8 (5+3). Crimson +1 timber, Cobalt +1 wool
+Crimson ended the turn.
+Cobalt rolled 10 (6+4). Cobalt +1 wool
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt cornered the clay market and took 0.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 clay.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 2 wool for 1 clay.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 8 (4+4). Crimson +1 timber, Cobalt +1 wool
+Crimson ended the turn.
+Cobalt rolled 11 (5+6). Cobalt +1 grain
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 clay.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 2 wool for 1 clay.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt traded 4 wool for 1 clay with the bank.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt built a road E26-29.
+Cobalt ended the turn.
+Crimson rolled 8 (6+2). Crimson +1 timber, Cobalt +1 wool
+Crimson ended the turn.
+Cobalt rolled 7 (5+2).
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt moved the robber to H10.
+Cobalt stole 1 grain from Crimson.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 grain for 1 ore.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 8 (2+6). Crimson +1 timber, Cobalt +1 wool
+Crimson traded 4 timber for 1 clay with the bank.
+Crimson ended the turn.
+Cobalt rolled 9 (3+6). Nobody harvested.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 ore.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 8 (3+5). Crimson +1 timber, Cobalt +1 wool
+Crimson built a road E22-23.
+Crimson ended the turn.
+Cobalt rolled 11 (6+5). Cobalt +1 grain
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 ore.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 2 wool for 1 ore.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 11 (6+5). Cobalt +1 grain
+Crimson ended the turn.
+Cobalt rolled 10 (6+4). Cobalt +1 wool
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 ore.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 2 wool for 1 ore.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 6 (4+2). Cobalt +1 clay
+Crimson ended the turn.
+Cobalt rolled 7 (2+5).
+Cobalt discarded 2 wool, 2 grain.
+Cobalt now moves the robber.
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt moved the robber to H11.
+Cobalt stole 1 wool from Crimson.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 2 wool for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 11 (5+6). Cobalt +1 grain
+Crimson ended the turn.
+Cobalt rolled 11 (6+5). Cobalt +1 grain
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 grain for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 2 grain for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 9 (3+6). Crimson +2 clay
+Crimson ended the turn.
+Cobalt rolled 8 (5+3). Cobalt +1 wool
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 2 wool for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 4 (1+3). Crimson +1 grain, Cobalt +1 timber
+Crimson ended the turn.
+Cobalt rolled 6 (1+5). Cobalt +1 clay
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt built a settlement at V26.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 2 wool for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 6 (3+3). Cobalt +1 clay
+Crimson ended the turn.
+Cobalt rolled 5 (3+2). Cobalt +1 grain +1 ore
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt bought a development card: Road crew.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt offers 1 grain for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt offers 2 grain for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 6 (2+4). Cobalt +1 clay
+Crimson ended the turn.
+Cobalt rolled 5 (3+2). Cobalt +1 grain +1 ore
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.3 s) and stuck with its first instinct.
+Cobalt played Road crew.
+Cobalt built a free road E41-42.
+Cobalt built a free road E41-48.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt bought a development card: Knight.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 clay for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 2 clay for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 11 (6+5). Cobalt +1 grain
+Crimson ended the turn.
+Cobalt rolled 9 (6+3). Crimson +2 clay
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt offers 1 grain for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt offers 2 grain for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt ended the turn.
+Crimson rolled 7 (6+1).
+Cobalt discarded 2 clay, 2 grain.
+Crimson now moves the robber.
+Crimson moved the robber to H12.
+Crimson stole 1 grain from Cobalt.
+Crimson traded 4 clay for 1 timber with the bank.
+Crimson offers 1 grain for 1 clay.
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt countered: 1 timber, 1 grain for 1 clay.
+Crimson traded 1 timber, 1 grain with Cobalt for 1 clay.
+Crimson ended the turn.
+Cobalt played a Knight.
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt moved the robber to H10.
+Cobalt stole 1 clay from Crimson.
+Cobalt rolled 8 (2+6). Crimson +1 timber, Cobalt +2 wool
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt built a settlement at V48.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 ore.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 9 (5+4). Nobody harvested.
+Crimson ended the turn.
+Cobalt rolled 3 (2+1). Crimson +1 ore
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 ore.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 7 (4+3).
+Crimson moved the robber to H12.
+Crimson stole 1 grain from Cobalt.
+Crimson offers 1 grain for 1 clay.
+Cobalt declined the offer.
+Crimson withdrew the offer.
+Crimson ended the turn.
+Cobalt rolled 5 (4+1). Cobalt +1 grain +2 ore
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and changed its mind.
+Cobalt bought a development card: Knight.
+Cobalt ended the turn.
+Crimson rolled 3 (2+1). Crimson +1 ore
+Crimson ended the turn.
+Cobalt played a Knight.
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt moved the robber to H10.
+Cobalt stole 1 grain from Crimson.
+Cobalt rolled 9 (5+4). Nobody harvested.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt bought a development card: Knight.
+Cobalt ended the turn.
+Crimson rolled 6 (4+2). Cobalt +2 clay
+Crimson ended the turn.
+Cobalt rolled 4 (1+3). Crimson +1 grain, Cobalt +1 timber
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt played a Knight.
+Cobalt takes largest army (3 knights).
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt moved the robber to H11.
+Cobalt stole 1 timber from Crimson.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt built a road E39-41.
+Cobalt takes longest road (5).
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt built a road E14-26.
+Cobalt ended the turn.
+Crimson rolled 7 (1+6).
+Crimson moved the robber to H12.
+Nobody on that tile has cards to steal.
+Crimson ended the turn.
+Cobalt rolled 8 (6+2). Crimson +1 timber
+Cobalt ended the turn.
+Crimson rolled 3 (2+1). Crimson +1 ore
+Crimson upgraded to a city at V34.
+Crimson ended the turn.
+Cobalt rolled 8 (3+5). Crimson +2 timber
+Cobalt ended the turn.
+Crimson rolled 7 (3+4).
+Crimson moved the robber to H17.
+Nobody on that tile has cards to steal.
+Crimson ended the turn.
+Cobalt rolled 7 (3+4).
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt moved the robber to H10.
+Cobalt stole 1 grain from Crimson.
+Cobalt ended the turn.
+Crimson rolled 10 (4+6). Cobalt +1 wool
+Crimson ended the turn.
+Cobalt rolled 8 (5+3). Crimson +2 timber, Cobalt +2 wool
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 ore.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt offers 2 wool for 1 ore.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 4 (2+2). Crimson +1 grain, Cobalt +1 timber
+Crimson traded 4 timber for 1 clay with the bank.
+Crimson ended the turn.
+Cobalt rolled 7 (6+1).
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.3 s) and stuck with its first instinct.
+Cobalt moved the robber to H11.
+Cobalt stole 1 grain from Crimson.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 clay.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt offers 2 wool for 1 clay.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt traded 2 grain for 1 clay at the 2:1 grain harbour (PORT 48-50).
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt built a road E14-15.
+Cobalt ended the turn.
+Crimson rolled 8 (6+2). Cobalt +2 wool
+Crimson ended the turn.
+Cobalt rolled 8 (5+3). Cobalt +2 wool
+Cobalt ended the turn.
+Crimson rolled 8 (2+6). Cobalt +2 wool
+Crimson ended the turn.
+Cobalt rolled 4 (1+3). Crimson +1 grain, Cobalt +1 timber
+Cobalt ended the turn.
+Crimson rolled 6 (1+5). Cobalt +2 clay
+Crimson ended the turn.
+Cobalt rolled 8 (5+3). Cobalt +2 wool
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt built a road E0-15.
+Cobalt ended the turn.
+Crimson rolled 5 (1+4). Cobalt +1 grain +2 ore
+Crimson ended the turn.
+Cobalt rolled 6 (5+1). Cobalt +2 clay
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and changed its mind.
+Cobalt bought a development card: Knight.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt offers 1 wool for 1 grain.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt offers 2 wool for 1 grain.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt traded 4 wool for 1 grain with the bank.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt ended the turn.
+Crimson rolled 9 (6+3). Crimson +3 clay
+Crimson traded 4 clay for 1 wool with the bank.
+Crimson ended the turn.
+Cobalt rolled 11 (6+5). Cobalt +1 grain
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.3 s) and stuck with its first instinct.
+Cobalt bought a development card: Bumper harvest.
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.5 s) and changed its mind.
+Cobalt played a Knight.
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.5 s) and stuck with its first instinct.
+Cobalt moved the robber to H10.
+Cobalt stole 1 grain from Crimson.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.3 s) and stuck with its first instinct.
+Cobalt offers 2 wool for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.3 s) and stuck with its first instinct.
+Cobalt traded 4 wool for 1 timber with the bank.
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.3 s) and stuck with its first instinct.
+Cobalt built a settlement at V0.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.3 s) and stuck with its first instinct.
+Cobalt offers 1 clay for 1 timber.
+Crimson declined the offer.
+Cobalt withdrew the offer.
+Cobalt ended the turn.
+Crimson rolled 4 (1+3). Crimson +1 grain, Cobalt +1 timber
+Crimson ended the turn.
+Cobalt rolled 7 (5+2).
+Cobalt weighed 3 moves over 96 guessed hands (288 playouts, 0.5 s) and stuck with its first instinct.
+Cobalt moved the robber to H11.
+Cobalt stole 1 timber from Crimson.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.3 s) and stuck with its first instinct.
+Cobalt built a road E0-1.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.2 s) and stuck with its first instinct.
+Cobalt built a road E1-6.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt played Bumper harvest: wool and ore.
+Cobalt weighed 2 moves over 96 guessed hands (192 playouts, 0.1 s) and stuck with its first instinct.
+Cobalt bought a development card: Victory point.
+Cobalt wins with 10 points, including 1 hidden victory point card!

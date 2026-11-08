@@ -21,10 +21,11 @@ struct GoalPlan: Equatable, Sendable {
 }
 
 enum Goals {
-    /// The available goal with the fewest missing cards; ties go to the order city, settlement, road, devCard.
-    static func nearest(view: PlayerView) -> GoalPlan? {
+    /// The available goal with the fewest missing cards; ties go to the order city, settlement, road, devCard,
+    /// or to the order of `goals` when given.
+    static func nearest(view: PlayerView, among goals: [BuildGoal] = BuildGoal.allCases) -> GoalPlan? {
         var best: GoalPlan?
-        for goal in BuildGoal.allCases where available(goal, view: view) {
+        for goal in goals where available(goal, view: view) {
             let plan = GoalPlan(goal: goal, missing: missing(goal.cost, from: view.hand))
             if best == nil || plan.missing.total < best!.missing.total { best = plan }
         }

@@ -514,12 +514,12 @@ Build this first. It plays instantly, works offline, and is the fallback wheneve
 - **Each turn:**
   1. Play a Knight before rolling if the robber is on one of its own tiles.
   2. Roll.
-  3. Then, in priority order: build a city; build a settlement on the best reachable spot; build a road toward the best spot; buy a development card; trade at the best available rate if that completes one of these.
+  3. Then, in priority order: build a city; build a settlement on the best reachable spot; build a road toward the best spot; buy a development card, unless a city, settlement or road is one or two cards short and the card would spend cards it needs; trade at the best available rate if that completes one of these.
 - **Card play:**
   - Knights: play one when it would win or keep largest army.
   - Road crew: play it when it reaches a good settlement spot, or wins longest road.
   - Bumper harvest: play it when it completes a build.
-  - Corner the market: play it on the resource opponents hold most of.
+  - Corner the market: play it on the resource opponents hold most of, and never on one no opponent holds. 19 of each resource exist, so the bank and its own hand tell it how many the others have.
 - **Robber:** move it to the tile that blocks the most pips from the current points leader, without blocking any of its own tiles.
 
 ### 6.2 Language model opponent
