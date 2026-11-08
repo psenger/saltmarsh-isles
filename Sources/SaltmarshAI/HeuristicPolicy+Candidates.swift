@@ -54,7 +54,7 @@ extension HeuristicPolicy {
         for card in [Move.playKnight, .playRoadCrew] where legal.contains(card) { list.append(card) }
         if let plan = Goals.nearest(view: view) {
             if let harvest = bumperHarvest(completing: plan, hand: view.hand, legal: legal) { list.append(harvest) }
-            if let r = singleMissing(plan), legal.contains(.playCornerMarket(r)) { list.append(.playCornerMarket(r)) }
+            if let r = singleMissing(plan), legal.contains(.playCornerMarket(r)), heldByOpponents(r, view: view) > 0 { list.append(.playCornerMarket(r)) }
         }
         list.append(.endTurn)
         return list

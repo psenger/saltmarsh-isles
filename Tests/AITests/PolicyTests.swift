@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import SaltmarshEngine
 import SaltmarshTestSupport
@@ -123,5 +124,22 @@ import SaltmarshTestSupport
         #expect(!HeuristicPolicy.spendsGoalCards(Cost.devCard, hand: hand, plan: GoalPlan(goal: .city, missing: [.ore: 3])))
         #expect(!HeuristicPolicy.spendsGoalCards(Cost.devCard, hand: hand, plan: nil))
         #expect(!HeuristicPolicy.spendsGoalCards(Cost.devCard, hand: [.ore: 1, .grain: 2, .wool: 2, .timber: 1], plan: GoalPlan(goal: .settlement, missing: [.clay: 1])))
+    }
+
+    // MARK: Positions the owner called wrong
+
+    /// The owner's 2026-11-08 Admiral game: Cobalt cornered the clay market while Crimson held no clay, and took 0.
+    @Test func doesNotCornerAMarketNobodyHolds() throws {
+        let path = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/admiral-corner-nothing-2026-11-08.txt").path
+        let log = try LogReplay.lines(ofFile: path)
+        let cut = try #require(log.firstIndex(of: "Cobalt cornered the clay market and took 0."))
+        let s = try LogReplay.replay(Array(log[..<cut]))
+        let cobalt = Engine.actingPlayer(s)
+        try #require(cobalt == 1 && Engine.legalMoves(s).contains(.playCornerMarket(.clay)))
+        try #require(s.players[0].hand[.clay] == 0)
+        #expect(decide(s, as: cobalt) != .playCornerMarket(.clay))
+        var memory = TurnMemory(), rng = SeededRNG(seed: 1)
+        let candidates = HeuristicPolicy.candidates(view: Engine.view(s, for: cobalt), legal: Engine.legalMoves(s), profile: .forLevel(.admiral), memory: &memory, rng: &rng)
+        #expect(!candidates.contains(.playCornerMarket(.clay)))
     }
 }

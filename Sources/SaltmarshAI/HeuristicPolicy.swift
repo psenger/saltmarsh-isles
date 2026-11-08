@@ -129,7 +129,7 @@ public enum HeuristicPolicy {
             let wins = view.roadLength + 2 >= 5 && view.roadLength + 2 > maxOppRoad && view.longestRoadHolder != me
             if near || wins { return .playRoadCrew }
         }
-        if let plan, let r = singleMissing(plan), legal.contains(.playCornerMarket(r)),
+        if let plan, let r = singleMissing(plan), legal.contains(.playCornerMarket(r)), heldByOpponents(r, view: view) > 0,
            view.opponents.reduce(0, { $0 + BoardFacts.production(of: $1.index, board: board)[r] }) >= 4 {
             return .playCornerMarket(r)
         }
@@ -162,6 +162,11 @@ public enum HeuristicPolicy {
     static func spendsGoalCards(_ cost: ResourceCounts, hand: ResourceCounts, plan: GoalPlan?) -> Bool {
         guard let plan, (1...2).contains(plan.missing.total) else { return false }
         return !Goals.surplus(of: hand, over: plan).contains(cost)
+    }
+
+    /// Cards of `r` in the other hands: 19 of each exist, and the bank's count and my hand are public to me.
+    static func heldByOpponents(_ r: Resource, view: PlayerView) -> Int {
+        max(0, 19 - view.bank[r] - view.hand[r])
     }
 
     /// The one resource the plan is short of, when it is short of exactly one kind.
