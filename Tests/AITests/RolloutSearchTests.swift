@@ -52,18 +52,25 @@ import SaltmarshTestSupport
     static let starved = SearchBudget(samples: 14, rounds: 1, playouts: 60, timeCap: nil, holdBack: 4)
     static var guarded: SearchBudget { var b = starved; b.minPlayouts = 24; b.noiseMultiple = 2; return b }
 
-    /// No position `midGame(seed:moves: 70)` reaches for seeds 1 to 30 makes the starved search change its mind; this
-    /// one does: seed 1, then 23 moves of Mate's own play, where Cobalt's heuristic offers clay for timber.
+    /// The first decision where the unguarded starved search changes its mind. A `midGame(seed:moves: 70)` position
+    /// alone rarely has two candidates (most are a pending trade), so each one is played on with Mate's own moves.
     @Test func starvedSearchKeepsTheHeuristicsChoice() throws {
-        var s = TestGames.midGame(seed: 1, moves: 70)
-        RolloutSearch.playOut(&s, until: .max, moveCap: 23)
-        let v = Engine.view(s, for: Engine.actingPlayer(s))
-        var m = TurnMemory(), r0 = SeededRNG(seed: 1)
-        let c = HeuristicPolicy.candidates(view: v, legal: Engine.legalMoves(s), profile: .forLevel(.captain), memory: &m, rng: &r0)
-        var rng = SeededRNG(seed: 1)
-        try #require(RolloutSearch.choose(view: v, candidates: c, budget: Self.starved, rng: &rng).changedMind, "the unguarded starved search kept \(c.first.map { "\($0)" } ?? "nothing")")
+        var found: (view: PlayerView, candidates: [Move], seed: UInt64)?
+        search: for n in UInt64(1)...30 {
+            var s = TestGames.midGame(seed: n, moves: 70)
+            for _ in 0..<300 {
+                if case .gameOver = s.phase { break }
+                let v = Engine.view(s, for: Engine.actingPlayer(s))
+                var m = TurnMemory(), r0 = SeededRNG(seed: n)
+                let c = HeuristicPolicy.candidates(view: v, legal: Engine.legalMoves(s), profile: .forLevel(.captain), memory: &m, rng: &r0)
+                var rng = SeededRNG(seed: n)
+                if c.count >= 2, RolloutSearch.choose(view: v, candidates: c, budget: Self.starved, rng: &rng).changedMind { found = (v, c, n); break search }
+                RolloutSearch.playOut(&s, until: .max, moveCap: 1)
+            }
+        }
+        let (v, c, seed) = try #require(found, "the unguarded starved search never changed its mind")
         for guarded in [Self.guarded, { var b = Self.starved; b.noiseMultiple = 2; return b }()] {           // the count, then the spread alone
-            var rng = SeededRNG(seed: 1)
+            var rng = SeededRNG(seed: seed)
             let d = RolloutSearch.choose(view: v, candidates: c, budget: guarded, rng: &rng)
             #expect(!d.changedMind); #expect(d.move == c[0])
         }
