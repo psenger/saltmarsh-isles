@@ -139,7 +139,9 @@ public enum HeuristicPolicy {
         let spots = legal.compactMap { if case .placeSettlement(let c) = $0 { c } else { nil } }
         if let c = bestBy(spots, score: { BoardFacts.spotScore($0, board: board, produces: produces) }) { return .placeSettlement(corner: c) }
         if let road = roadMove(view: view, legal: legal, maxOppRoad: maxOppRoad) { return road }
-        if legal.contains(.buyDevCard) { return .buyDevCard }
+        // The card itself is always an affordable goal here, so the close goal is the nearest build.
+        if legal.contains(.buyDevCard),
+           !spendsGoalCards(Cost.devCard, hand: view.hand, plan: Goals.nearest(view: view, among: [.city, .settlement, .road])) { return .buyDevCard }
         if let trade = tradeToComplete(view: view, legal: legal, profile: profile, memory: &memory) { return trade }
         return legal.contains(.endTurn) ? .endTurn : legal[0]
     }
@@ -154,6 +156,12 @@ public enum HeuristicPolicy {
             var after = hand; after[a] += 1; after[b] += 1
             return after.contains(plan.goal.cost)
         }
+    }
+
+    /// Paying `cost` from `hand` would spend cards the plan needs, and the plan is one or two cards short.
+    static func spendsGoalCards(_ cost: ResourceCounts, hand: ResourceCounts, plan: GoalPlan?) -> Bool {
+        guard let plan, (1...2).contains(plan.missing.total) else { return false }
+        return !Goals.surplus(of: hand, over: plan).contains(cost)
     }
 
     /// The one resource the plan is short of, when it is short of exactly one kind.

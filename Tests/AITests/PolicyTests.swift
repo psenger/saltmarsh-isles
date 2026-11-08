@@ -96,4 +96,32 @@ import SaltmarshTestSupport
         #expect((60...140).contains(differs))
         #expect(deckhand.allSatisfy { Engine.isLegal($0, in: s) })
     }
+
+    // MARK: Development cards and a close goal (GitHub issue 1)
+
+    /// Seat 0 to move in the main phase after its roll, holding exactly `hand`.
+    func mainPhase(holding hand: ResourceCounts) -> GameState {
+        var s = TestGames.rolled(8); s.clearHands(); s.set(hand: hand, for: 0)
+        return s
+    }
+    @Test func keepsCityCardsInsteadOfBuyingACard() throws {
+        let s = mainPhase(holding: [.ore: 2, .grain: 2, .wool: 1])                     // a city is one ore short
+        try #require(s.current == 0 && s.phase == .main && !s.devDeck.isEmpty)
+        try #require(Engine.legalMoves(s).contains(.buyDevCard))
+        #expect(decide(s) != .buyDevCard)
+    }
+    @Test func buysACardWithCardsNoCloseGoalNeeds() throws {
+        let s = mainPhase(holding: [.ore: 1, .grain: 2, .wool: 2, .timber: 1])
+        let plan = try #require(Goals.nearest(view: Engine.view(s, for: 0), among: [.city, .settlement, .road]))
+        // No settlement spot is open on this board yet, so the nearest goal is a road; beyond it are 1 ore, 2 grain, 2 wool.
+        try #require(plan.goal == .road && plan.missing == [.clay: 1])
+        #expect(decide(s) == .buyDevCard)
+    }
+    @Test func onlyACloseGoalKeepsItsCards() {
+        let hand: ResourceCounts = [.ore: 2, .grain: 2, .wool: 1]
+        #expect(HeuristicPolicy.spendsGoalCards(Cost.devCard, hand: hand, plan: GoalPlan(goal: .city, missing: [.ore: 1])))
+        #expect(!HeuristicPolicy.spendsGoalCards(Cost.devCard, hand: hand, plan: GoalPlan(goal: .city, missing: [.ore: 3])))
+        #expect(!HeuristicPolicy.spendsGoalCards(Cost.devCard, hand: hand, plan: nil))
+        #expect(!HeuristicPolicy.spendsGoalCards(Cost.devCard, hand: [.ore: 1, .grain: 2, .wool: 2, .timber: 1], plan: GoalPlan(goal: .settlement, missing: [.clay: 1])))
+    }
 }
